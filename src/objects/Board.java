@@ -1,10 +1,11 @@
 package objects;
 
 import graphics.Colors;
+import interfaces.Drawable;
 
 import java.awt.*;
 
-public final class Board {
+public final class Board implements Drawable {
 
     public static final int CELL_SIZE = 40;
     public static final int WALL_SIZE = 16;
