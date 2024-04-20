@@ -1,4 +1,6 @@
-package graphics.menubar;
+package view.window;
+
+import controller.handlers.MenuHandlers;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,10 +19,10 @@ public final class MenuBar extends JMenuBar {
         JMenu aboutMenu = new JMenu("Help");
         aboutMenu.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
-        JMenuItem openItem = createMenuItem("Open", Handlers.openHandler());
-        JMenuItem saveItem = createMenuItem("Save", Handlers.saveHandler());
-        JMenuItem exitItem = createMenuItem("Exit", Handlers.exitHandler());
-        JMenuItem aboutItem = createMenuItem("About", Handlers.aboutHandler());
+        JMenuItem openItem = createMenuItem("Open", MenuHandlers.openHandler());
+        JMenuItem saveItem = createMenuItem("Save", MenuHandlers.saveHandler());
+        JMenuItem exitItem = createMenuItem("Exit", MenuHandlers.exitHandler());
+        JMenuItem aboutItem = createMenuItem("About", MenuHandlers.aboutHandler());
 
         fileMenu.add(openItem);
         fileMenu.add(saveItem);

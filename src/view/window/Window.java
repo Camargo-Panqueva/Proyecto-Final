@@ -1,6 +1,4 @@
-package graphics;
-
-import graphics.menubar.MenuBar;
+package view.window;
 
 import javax.swing.*;
 import java.awt.*;

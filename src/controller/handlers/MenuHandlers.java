@@ -1,9 +1,9 @@
-package graphics.menubar;
+package controller.handlers;
 
 import javax.swing.*;
 import java.awt.event.ActionListener;
 
-public abstract class Handlers {
+public abstract class MenuHandlers {
 
     public static ActionListener openHandler() {
         return event -> System.out.println("Open clicked");
