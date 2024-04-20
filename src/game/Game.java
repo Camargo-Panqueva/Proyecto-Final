@@ -1,9 +1,9 @@
 package game;
 
+import graphics.Colors;
 import graphics.Window;
 
 import java.awt.*;
-import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferStrategy;
 
 public final class Game implements Runnable {
@@ -25,14 +25,18 @@ public final class Game implements Runnable {
     @Override
     public void run() {
         final int TPS = 15;
+        final int FPS = 75;
+
         final double NS_PER_SECOND = 1_000_000_000;
-        final double NS_PER_TICK = NS_PER_SECOND / TPS;
+        final double NS_PER_UPDATE = NS_PER_SECOND / TPS;
+        final double NS_PER_FRAME = NS_PER_SECOND / FPS;
 
         long tickRef = System.nanoTime();
         long countRef = System.nanoTime();
 
         double time;
-        double delta = 0;
+        double deltaTPS = 0;
+        double deltaFPS = 0;
 
         while (isRunning) {
             final long start = System.nanoTime();
@@ -40,14 +44,18 @@ public final class Game implements Runnable {
             time = start - tickRef;
             tickRef = start;
 
-            delta += time / NS_PER_TICK;
+            deltaTPS += time / NS_PER_UPDATE;
+            deltaFPS += time / NS_PER_FRAME;
 
-            while (delta >= 1) {
+            while (deltaTPS >= 1) {
                 this.update();
-                delta--;
+                deltaTPS--;
             }
 
-            this.draw();
+            while (deltaFPS >= 1) {
+                this.draw();
+                deltaFPS--;
+            }
 
             if (System.nanoTime() - countRef > NS_PER_SECOND) {
                 window.getFrame().setTitle(window.getTitle() + " || TPS: " + currentTPS + " || FPS: " + currentFPS);
@@ -70,6 +78,8 @@ public final class Game implements Runnable {
         }
 
         Graphics2D graphics = (Graphics2D) bufferStrategy.getDrawGraphics();
+        graphics.setColor(Colors.WINDOW_BACKGROUND);
+        graphics.fillRect(0, 0, this.window.getCanvasSize(), this.window.getCanvasSize());
 
         // Draw area
 

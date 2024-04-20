@@ -26,7 +26,7 @@ public final class Window {
 
     private void setupJFrame(final int size, final String title) {
         this.frame.setSize(size, size);
-        this.frame.setBackground(Colors.BACKGROUND_2);
+        this.frame.setResizable(false);
         this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.frame.setLocationRelativeTo(null);
         this.frame.setTitle(title);
@@ -55,7 +55,7 @@ public final class Window {
         return title;
     }
 
-    public int getSize() {
+    public int getCanvasSize() {
         return size;
     }
 
