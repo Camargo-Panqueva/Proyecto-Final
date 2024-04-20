@@ -11,44 +11,34 @@ public final class Window {
     private final Canvas canvas;
     private final String title;
 
-    private final int size;
-
     public Window(final int size, final String title) {
-        this.size = size;
         this.title = title;
 
         this.frame = new JFrame();
         this.canvas = new Canvas();
 
-        this.setupJFrame(size, title);
         this.setupCanvas(size);
+        this.setupJFrame(title);
     }
 
-    private void setupJFrame(final int size, final String title) {
-        this.frame.setSize(size, size);
+    private void setupJFrame(final String title) {
+        this.frame.add(this.canvas);
+
         this.frame.setResizable(false);
         this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.frame.setLocationRelativeTo(null);
         this.frame.setTitle(title);
-
         this.frame.setJMenuBar(new MenuBar());
+
+        this.frame.pack();
+        this.frame.setLocationRelativeTo(null);
     }
 
     private void setupCanvas(int size) {
-        this.canvas.setMaximumSize(new Dimension(size, size));
-        this.canvas.setMinimumSize(new Dimension(size, size));
         this.canvas.setPreferredSize(new Dimension(size, size));
-
-        this.frame.add(this.canvas);
-        this.frame.pack();
     }
 
     public void makeVisible() {
         this.frame.setVisible(true);
-    }
-
-    public void makeInvisible() {
-        this.frame.setVisible(false);
     }
 
     public String getTitle() {
@@ -56,7 +46,7 @@ public final class Window {
     }
 
     public int getCanvasSize() {
-        return size;
+        return this.canvas.getWidth();
     }
 
     public JFrame getFrame() {

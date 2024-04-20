@@ -2,6 +2,7 @@ package game;
 
 import graphics.Colors;
 import graphics.Window;
+import objects.Board;
 
 import java.awt.*;
 import java.awt.image.BufferStrategy;
@@ -9,6 +10,7 @@ import java.awt.image.BufferStrategy;
 public final class Game implements Runnable {
 
     private final Window window;
+    private final Board board;
 
     private boolean isRunning;
     private int currentTPS;
@@ -17,7 +19,12 @@ public final class Game implements Runnable {
     private BufferStrategy bufferStrategy;
 
     public Game() {
-        this.window = new Window(600, "My Game");
+        final int canvasPadding = 100;
+
+        this.board = new Board(10);
+        this.window = new Window(this.board.getRealSize() + canvasPadding, "My Game");
+
+        this.board.calculateDrawingOffset(this.window.getCanvasSize());
 
         this.isRunning = false;
     }
@@ -82,7 +89,7 @@ public final class Game implements Runnable {
         graphics.fillRect(0, 0, this.window.getCanvasSize(), this.window.getCanvasSize());
 
         // Draw area
-
+        this.board.draw(graphics);
         // Draw area
 
         graphics.dispose();
