@@ -1,6 +1,6 @@
 package launcher;
 
-import graphics.Window;
+import game.Game;
 
 import javax.swing.*;
 
@@ -9,11 +9,12 @@ public class Launcher {
 
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
+                 UnsupportedLookAndFeelException e) {
             System.out.println("Could not set system look and feel");
         }
 
-        Window window = new Window(600, "My Game");
-        window.makeVisible();
+        Game game = new Game();
+        game.start();
     }
 }
