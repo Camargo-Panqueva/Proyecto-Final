@@ -2,6 +2,10 @@ package game;
 
 import graphics.Window;
 
+import java.awt.*;
+import java.awt.geom.RoundRectangle2D;
+import java.awt.image.BufferStrategy;
+
 public final class Game implements Runnable {
 
     private final Window window;
@@ -9,6 +13,8 @@ public final class Game implements Runnable {
     private boolean isRunning;
     private int currentTPS;
     private int currentFPS;
+
+    private BufferStrategy bufferStrategy;
 
     public Game() {
         this.window = new Window(600, "My Game");
@@ -57,6 +63,21 @@ public final class Game implements Runnable {
     }
 
     private void draw() {
+
+        if (bufferStrategy == null) {
+            this.window.getCanvas().createBufferStrategy(2);
+            this.bufferStrategy = this.window.getCanvas().getBufferStrategy();
+        }
+
+        Graphics2D graphics = (Graphics2D) bufferStrategy.getDrawGraphics();
+
+        // Draw area
+
+        // Draw area
+
+        graphics.dispose();
+        bufferStrategy.show();
+
         currentFPS++;
     }
 

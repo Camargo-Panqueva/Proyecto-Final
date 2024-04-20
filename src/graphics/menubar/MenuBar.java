@@ -20,6 +20,7 @@ public final class MenuBar extends JMenuBar {
 
         fileMenu.add(openItem);
         fileMenu.add(saveItem);
+        fileMenu.addSeparator();
         fileMenu.add(exitItem);
 
         aboutMenu.add(aboutItem);
