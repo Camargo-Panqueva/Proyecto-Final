@@ -7,6 +7,8 @@ import objects.Board;
 import java.awt.*;
 import java.awt.image.BufferStrategy;
 
+import static game.Constants.*;
+
 public final class Game implements Runnable {
 
     private final Window window;
@@ -19,10 +21,8 @@ public final class Game implements Runnable {
     private BufferStrategy bufferStrategy;
 
     public Game() {
-        final int canvasPadding = 100;
-
         this.board = new Board(10);
-        this.window = new Window(this.board.getRealSize() + canvasPadding, "My Game");
+        this.window = new Window(this.board.getRealSize() + CANVAS_PADDING, "My Game");
 
         this.board.calculateDrawingOffset(this.window.getCanvasSize());
 
@@ -85,6 +85,7 @@ public final class Game implements Runnable {
         }
 
         Graphics2D graphics = (Graphics2D) bufferStrategy.getDrawGraphics();
+        graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         graphics.setColor(Colors.WINDOW_BACKGROUND);
         graphics.fillRect(0, 0, this.window.getCanvasSize(), this.window.getCanvasSize());
 
