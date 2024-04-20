@@ -1,5 +1,7 @@
 package graphics;
 
+import graphics.menubar.MenuBar;
+
 import javax.swing.*;
 
 public final class Window {
