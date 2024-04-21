@@ -47,6 +47,11 @@ public final class Window {
         return this.canvas.getWidth();
     }
 
+    public void setCanvasSize(int size) {
+        this.canvas.setPreferredSize(new Dimension(size, size));
+        this.frame.pack();
+    }
+
     public JFrame getFrame() {
         return frame;
     }

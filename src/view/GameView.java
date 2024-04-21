@@ -8,7 +8,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferStrategy;
 
-import static view.Constants.WINDOW_BACKGROUND;
+import static view.Constants.*;
 
 public final class GameView {
 
@@ -18,6 +18,8 @@ public final class GameView {
     private BufferStrategy bufferStrategy;
     private ConcurrentLoop renderLoop;
 
+    private int currentFPS;
+
     public GameView(GameController controller) {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
@@ -26,8 +28,10 @@ public final class GameView {
             System.out.println("Could not set system look and feel");
         }
 
+        this.currentFPS = 0;
+
         this.controller = controller;
-        this.window = new Window(800, "Game of Life"); // TODO: Set window size from controller data
+        this.window = new Window(INITIAL_WINDOW_SIZE, "Quoridor"); // TODO: Set window size from controller data
     }
 
     public void start() {
@@ -35,7 +39,7 @@ public final class GameView {
 
         this.renderLoop = new ConcurrentLoop(this::render, 60, "View");
         this.renderLoop.start();
-        this.renderLoop.setTickConsumer(fps -> System.out.println("FPS: " + fps));
+        this.renderLoop.setTickConsumer(fps -> this.currentFPS = fps);
     }
 
     public void stop() {
@@ -50,12 +54,19 @@ public final class GameView {
         }
 
         Graphics2D graphics = (Graphics2D) bufferStrategy.getDrawGraphics();
-        graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        graphics.setColor(WINDOW_BACKGROUND);
 
-//        System.out.println("Rendering game view...");
+        this.renderBackground(graphics);
 
         graphics.dispose();
         bufferStrategy.show();
+    }
+
+    private void renderBackground(Graphics2D graphics) {
+        graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        graphics.setColor(WINDOW_BACKGROUND);
+        graphics.fillRect(0, 0, this.window.getCanvasSize(), this.window.getCanvasSize());
+
+        graphics.setColor(WHITE);
+        graphics.drawString("FPS: " + this.currentFPS, 6, 16);
     }
 }

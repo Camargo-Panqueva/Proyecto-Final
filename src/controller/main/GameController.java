@@ -1,22 +1,12 @@
 package controller.main;
 
-import util.ConcurrentLoop;
+import model.GameModel;
 
 public final class GameController {
 
-    private ConcurrentLoop updateLoop;
+    private final GameModel model;
 
-    public void start() {
-        this.updateLoop = new ConcurrentLoop(this::update, 20, "Controller");
-        this.updateLoop.start();
-        this.updateLoop.setTickConsumer(ups -> System.out.println("UPS: " + ups));
-    }
-
-    public void stop() {
-        this.updateLoop.stop();
-    }
-
-    private void update() {
-//        System.out.println("Updating game controller...");
+    public GameController(GameModel model) {
+        this.model = model;
     }
 }

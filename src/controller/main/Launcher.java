@@ -1,15 +1,16 @@
 package controller.main;
 
+import model.GameModel;
 import view.GameView;
 
 public final class Launcher {
 
     public static void main(String[] args) {
 
-        GameController gameController = new GameController();
+        GameModel gameModel = new GameModel();
+        GameController gameController = new GameController(gameModel);
         GameView gameView = new GameView(gameController);
 
-        gameController.start();
         gameView.start();
     }
 }
