@@ -50,6 +50,7 @@ public final class Window {
     public void setCanvasSize(int size) {
         this.canvas.setPreferredSize(new Dimension(size, size));
         this.frame.pack();
+        this.frame.setLocationRelativeTo(null);
     }
 
     public JFrame getFrame() {

@@ -1,6 +1,7 @@
 package controller.main;
 
 import model.GameModel;
+import model.states.BaseState;
 
 public final class GameController {
 
@@ -8,5 +9,9 @@ public final class GameController {
 
     public GameController(GameModel model) {
         this.model = model;
+    }
+
+    public BaseState getCurrentState() {
+        return this.model.getStateManager().getCurrentState();
     }
 }

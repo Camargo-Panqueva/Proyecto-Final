@@ -1,6 +1,7 @@
 package view;
 
 import controller.main.GameController;
+import model.states.BaseState;
 import util.ConcurrentLoop;
 import view.window.Window;
 
@@ -17,6 +18,7 @@ public final class GameView {
 
     private BufferStrategy bufferStrategy;
     private ConcurrentLoop renderLoop;
+
 
     private int currentFPS;
 
@@ -56,6 +58,7 @@ public final class GameView {
         Graphics2D graphics = (Graphics2D) bufferStrategy.getDrawGraphics();
 
         this.renderBackground(graphics);
+        this.renderCurrentState(graphics);
 
         graphics.dispose();
         bufferStrategy.show();
@@ -68,5 +71,41 @@ public final class GameView {
 
         graphics.setColor(WHITE);
         graphics.drawString("FPS: " + this.currentFPS, 6, 16);
+    }
+
+    private void renderCurrentState(Graphics2D graphics) {
+        BaseState currentState = this.controller.getCurrentState();
+
+        if (currentState.getStateType() == BaseState.StateType.WELCOME) {
+
+            graphics.setColor(TEXT_COLOR);
+
+            String title = "Quoridor!";
+            String subTitle = "By Camargo & Panqueva";
+
+            int centerX = this.window.getCanvasSize() / 2;
+
+            int titleMarginTop = this.window.getCanvasSize() / 4;
+            int titleUnderlineMargin = 10;
+            int titleUnderlineHeight = 8;
+            int titleFontSize = (int) (this.window.getCanvasSize() * 1.25 / title.length());
+
+            graphics.setFont(graphics.getFont().deriveFont(Font.BOLD, titleFontSize));
+            int titleWidth = graphics.getFontMetrics().stringWidth(title);
+            graphics.fillRect(
+                    centerX - titleWidth / 2,
+                    titleMarginTop + titleUnderlineMargin,
+                    titleWidth,
+                    titleUnderlineHeight
+            );
+            graphics.drawString(title, centerX - titleWidth / 2, titleMarginTop);
+
+            int subTitleMarginTop = titleMarginTop + 48;
+            int subTitleFontSize = 20;
+
+            graphics.setFont(graphics.getFont().deriveFont(Font.BOLD, subTitleFontSize));
+            int subTitleWidth = graphics.getFontMetrics().stringWidth(subTitle);
+            graphics.drawString(subTitle, centerX - subTitleWidth / 2, subTitleMarginTop);
+        }
     }
 }
