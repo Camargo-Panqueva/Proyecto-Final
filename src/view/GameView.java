@@ -3,6 +3,7 @@ package view;
 import controller.main.GameController;
 import model.states.BaseState;
 import util.ConcurrentLoop;
+import view.input.Mouse;
 import view.window.Window;
 
 import javax.swing.*;
@@ -15,12 +16,14 @@ public final class GameView {
 
     private final GameController controller;
     private final Window window;
+    private final Mouse mouse;
 
     private BufferStrategy bufferStrategy;
     private ConcurrentLoop renderLoop;
-
+    private ConcurrentLoop updateLoop;
 
     private int currentFPS;
+    private int currentUPS;
 
     public GameView(GameController controller) {
         try {
@@ -33,19 +36,30 @@ public final class GameView {
         this.currentFPS = 0;
 
         this.controller = controller;
+        this.mouse = new Mouse();
         this.window = new Window(INITIAL_WINDOW_SIZE, "Quoridor"); // TODO: Set window size from controller data
+        this.window.getCanvas().addMouseListener(this.mouse);
     }
 
     public void start() {
         this.window.makeVisible();
 
-        this.renderLoop = new ConcurrentLoop(this::render, 60, "View");
+        this.renderLoop = new ConcurrentLoop(this::render, 60, "View render");
         this.renderLoop.start();
         this.renderLoop.setTickConsumer(fps -> this.currentFPS = fps);
+
+        this.updateLoop = new ConcurrentLoop(this::update, 30, "View update");
+        this.updateLoop.start();
+        this.updateLoop.setTickConsumer(ups -> this.currentUPS = ups);
     }
 
     public void stop() {
         this.renderLoop.stop();
+        this.updateLoop.stop();
+    }
+
+    private void update() {
+        this.mouse.update(this.window);
     }
 
     private void render() {
@@ -71,6 +85,11 @@ public final class GameView {
 
         graphics.setColor(WHITE);
         graphics.drawString("FPS: " + this.currentFPS, 6, 16);
+        graphics.drawString("UPS: " + this.currentUPS, 6, 32);
+
+        Point mousePosition = this.mouse.getMousePosition();
+        String mouseText = String.format("Mouse: [%d, %d]", mousePosition.x, mousePosition.y);
+        graphics.drawString(mouseText, 6, 48);
     }
 
     private void renderCurrentState(Graphics2D graphics) {
