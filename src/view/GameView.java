@@ -3,6 +3,7 @@ package view;
 import controller.main.GameController;
 import model.states.BaseState;
 import util.ConcurrentLoop;
+import view.components.Button;
 import view.input.Mouse;
 import view.window.Window;
 
@@ -21,6 +22,7 @@ public final class GameView {
     private BufferStrategy bufferStrategy;
     private ConcurrentLoop renderLoop;
     private ConcurrentLoop updateLoop;
+    private Button button;
 
     private int currentFPS;
     private int currentUPS;
@@ -44,11 +46,11 @@ public final class GameView {
     public void start() {
         this.window.makeVisible();
 
-        this.renderLoop = new ConcurrentLoop(this::render, 60, "View render");
+        this.renderLoop = new ConcurrentLoop(this::render, 30, "View render");
         this.renderLoop.start();
         this.renderLoop.setTickConsumer(fps -> this.currentFPS = fps);
 
-        this.updateLoop = new ConcurrentLoop(this::update, 30, "View update");
+        this.updateLoop = new ConcurrentLoop(this::update, 60, "View update");
         this.updateLoop.start();
         this.updateLoop.setTickConsumer(ups -> this.currentUPS = ups);
     }

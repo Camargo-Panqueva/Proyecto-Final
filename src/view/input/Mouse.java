@@ -4,7 +4,6 @@ import view.window.Window;
 
 import java.awt.*;
 import java.awt.event.MouseAdapter;
-import java.util.ArrayList;
 
 public final class Mouse extends MouseAdapter {
 

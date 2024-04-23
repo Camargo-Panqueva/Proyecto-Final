@@ -2,6 +2,8 @@ package view.components;
 
 import java.awt.*;
 
+import static view.Constants.*;
+
 public class Button extends GameComponent {
 
     private final String text;
@@ -18,12 +20,20 @@ public class Button extends GameComponent {
 
     @Override
     public void render(Graphics2D graphics) {
-        graphics.setColor(Color.black);
-        graphics.fillRect(this.location.x, this.location.y, this.size.width, this.size.height);
+        graphics.setColor(PRIMARY_COLOR);
+        graphics.fillRoundRect(
+                this.location.x,
+                this.location.y,
+                this.size.width,
+                this.size.height,
+                COMPONENT_BORDER_RADIUS,
+                COMPONENT_BORDER_RADIUS
+        );
 
-        // TODO: Fix render method on Button
-        graphics.setColor(Color.WHITE);
         Point center = this.getCenter();
-        graphics.drawString(this.text, center.x, center.y);
+        Rectangle textBounds = graphics.getFontMetrics().getStringBounds(this.text, graphics).getBounds();
+
+        graphics.setColor(TEXT_COLOR);
+        graphics.drawString(this.text, center.x - textBounds.width / 2, center.y + textBounds.height / 4);
     }
 }
