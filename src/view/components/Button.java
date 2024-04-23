@@ -1,5 +1,7 @@
 package view.components;
 
+import view.context.ContextProvider;
+
 import java.awt.*;
 
 import static view.Constants.*;
@@ -8,8 +10,8 @@ public class Button extends GameComponent {
 
     private final String text;
 
-    public Button(int x, int y, int width, int height, String text) {
-        super(x, y, width, height);
+    public Button(int x, int y, int width, int height, String text, ContextProvider context) {
+        super(x, y, width, height, context);
         this.text = text;
     }
 

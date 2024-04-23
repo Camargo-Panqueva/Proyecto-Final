@@ -1,6 +1,7 @@
 package view.components;
 
 import util.ConsumerFunction;
+import view.context.ContextProvider;
 import view.input.Mouse;
 
 import java.awt.*;
@@ -9,30 +10,47 @@ import java.util.HashMap;
 
 public abstract class GameComponent {
 
-    private final HashMap<MouseEvent, ArrayList<ConsumerFunction<Mouse>>> mouseEventHandlers;
-
+    protected final ContextProvider contextProvider;
+    protected Cursor cursor;
     protected Point location;
     protected Dimension size;
-    protected Mouse mouse;
 
+    private final HashMap<MouseEvent, ArrayList<ConsumerFunction<Mouse>>> mouseEventHandlers;
     private boolean isMouseEntered;
     private boolean isMousePressed;
 
-    public GameComponent(final int x, final int y, final int width, final int height) {
+    public GameComponent(final int x, final int y, final int width, final int height, ContextProvider contextProvider) {
         this.location = new Point(x, y);
         this.size = new Dimension(width, height);
         this.mouseEventHandlers = new HashMap<>();
+        this.cursor = Cursor.getDefaultCursor();
+
+        this.contextProvider = contextProvider;
+
+        this.setupDefaultEventListeners();
     }
 
     public abstract void update();
 
-    public void pollMouseEvents() {
-        if (this.mouse == null) return;
+    public abstract void render(Graphics2D graphics);
 
-        if (this.getBounds().contains(this.mouse.getMousePosition())) {
+    private void setupDefaultEventListeners() {
+        this.addEventListener(MouseEvent.ENTER, _ -> {
+            this.contextProvider.window().getCanvas().setCursor(this.cursor);
+        });
+
+        this.addEventListener(MouseEvent.LEAVE, _ -> {
+            this.contextProvider.window().getCanvas().setCursor(Cursor.getDefaultCursor());
+        });
+    }
+
+    protected void pollMouseEvents() {
+        Mouse mouse = this.contextProvider.mouse();
+
+        if (this.getBounds().contains(mouse.getMousePosition())) {
             this.dispatchMouseEvent(MouseEvent.HOVER, mouse);
 
-            if (this.mouse.isButtonPressed(Mouse.LEFT_BUTTON)) {
+            if (mouse.isButtonPressed(Mouse.LEFT_BUTTON)) {
 
                 if (!this.isMousePressed) {
                     this.isMousePressed = true;
@@ -60,8 +78,6 @@ public abstract class GameComponent {
         }
     }
 
-    public abstract void render(Graphics2D graphics);
-
     public Point getCenter() {
         int centerX = this.location.x + this.size.width / 2;
         int centerY = this.location.y + this.size.height / 2;
@@ -71,10 +87,6 @@ public abstract class GameComponent {
 
     public Rectangle getBounds() {
         return new Rectangle(this.location.x, this.location.y, this.size.width, this.size.height);
-    }
-
-    public void setMouse(Mouse mouse) {
-        this.mouse = mouse;
     }
 
     public void addEventListener(MouseEvent event, ConsumerFunction<Mouse> handler) {
@@ -91,6 +103,10 @@ public abstract class GameComponent {
                 function.run(mouse);
             }
         }
+    }
+
+    public void setCursor(Cursor cursor) {
+        this.cursor = cursor;
     }
 
     public enum MouseEvent {

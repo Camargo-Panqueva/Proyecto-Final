@@ -4,6 +4,7 @@ import controller.main.GameController;
 import model.states.BaseState;
 import util.ConcurrentLoop;
 import view.components.Button;
+import view.context.ContextProvider;
 import view.input.Mouse;
 import view.window.Window;
 
@@ -16,13 +17,13 @@ import static view.Constants.*;
 public final class GameView {
 
     private final GameController controller;
+    private final ContextProvider contextProvider;
     private final Window window;
     private final Mouse mouse;
 
-    private BufferStrategy bufferStrategy;
     private ConcurrentLoop renderLoop;
     private ConcurrentLoop updateLoop;
-    private Button button;
+    private BufferStrategy bufferStrategy;
 
     private int currentFPS;
     private int currentUPS;
@@ -41,6 +42,8 @@ public final class GameView {
         this.mouse = new Mouse();
         this.window = new Window(INITIAL_WINDOW_SIZE, "Quoridor"); // TODO: Set window size from controller data
         this.window.getCanvas().addMouseListener(this.mouse);
+
+        this.contextProvider = new ContextProvider(this.window, this.mouse);
     }
 
     public void start() {
