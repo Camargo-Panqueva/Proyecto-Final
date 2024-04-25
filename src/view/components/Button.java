@@ -13,6 +13,15 @@ public class Button extends GameComponent {
     public Button(int x, int y, int width, int height, String text, ContextProvider context) {
         super(x, y, width, height, context);
         this.text = text;
+
+        this.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+    }
+
+    public Button(int x, int y, String text, ContextProvider context) {
+        super(x, y, context);
+        this.text = text;
+
+        this.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
     }
 
     @Override
@@ -37,5 +46,11 @@ public class Button extends GameComponent {
 
         graphics.setColor(TEXT_COLOR);
         graphics.drawString(this.text, center.x - textBounds.width / 2, center.y + textBounds.height / 4);
+    }
+
+    @Override
+    protected void pack() {
+        // TODO: Implement this method
+        this.size = new Dimension(200, 60);
     }
 }

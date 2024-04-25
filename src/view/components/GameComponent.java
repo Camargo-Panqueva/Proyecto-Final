@@ -20,21 +20,34 @@ public abstract class GameComponent {
     private boolean isMousePressed;
 
     public GameComponent(final int x, final int y, final int width, final int height, ContextProvider contextProvider) {
+        this.mouseEventHandlers = new HashMap<>();
         this.location = new Point(x, y);
         this.size = new Dimension(width, height);
-        this.mouseEventHandlers = new HashMap<>();
-        this.cursor = Cursor.getDefaultCursor();
 
+        this.cursor = Cursor.getDefaultCursor();
         this.contextProvider = contextProvider;
 
         this.setupDefaultEventListeners();
+    }
+
+    public GameComponent(final int x, final int y, ContextProvider contextProvider) {
+        this.mouseEventHandlers = new HashMap<>();
+        this.location = new Point(x, y);
+
+        this.cursor = Cursor.getDefaultCursor();
+        this.contextProvider = contextProvider;
+
+        this.setupDefaultEventListeners();
+        this.pack();
     }
 
     public abstract void update();
 
     public abstract void render(Graphics2D graphics);
 
-    private void setupDefaultEventListeners() {
+    protected abstract void pack();
+
+    protected void setupDefaultEventListeners() {
         this.addEventListener(MouseEvent.ENTER, _ -> {
             this.contextProvider.window().getCanvas().setCursor(this.cursor);
         });
@@ -107,6 +120,16 @@ public abstract class GameComponent {
 
     public void setCursor(Cursor cursor) {
         this.cursor = cursor;
+    }
+
+    public void centerHorizontally() {
+        int canvasSize = this.contextProvider.window().getCanvasSize();
+        this.location.x = (canvasSize - this.size.width) / 2;
+    }
+
+    public void centerVertically() {
+        int canvasSize = this.contextProvider.window().getCanvasSize();
+        this.location.y = (canvasSize - this.size.height) / 2;
     }
 
     public enum MouseEvent {

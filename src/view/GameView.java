@@ -6,6 +6,7 @@ import util.ConcurrentLoop;
 import view.components.Button;
 import view.context.ContextProvider;
 import view.input.Mouse;
+import view.scene.WelcomeScene;
 import view.window.Window;
 
 import javax.swing.*;
@@ -20,6 +21,8 @@ public final class GameView {
     private final ContextProvider contextProvider;
     private final Window window;
     private final Mouse mouse;
+
+    private final WelcomeScene welcomeScene;
 
     private ConcurrentLoop renderLoop;
     private ConcurrentLoop updateLoop;
@@ -44,6 +47,7 @@ public final class GameView {
         this.window.getCanvas().addMouseListener(this.mouse);
 
         this.contextProvider = new ContextProvider(this.window, this.mouse);
+        this.welcomeScene = new WelcomeScene(this.contextProvider);
     }
 
     public void start() {
@@ -65,6 +69,7 @@ public final class GameView {
 
     private void update() {
         this.mouse.update(this.window);
+        this.welcomeScene.update();
     }
 
     private void render() {
@@ -101,35 +106,7 @@ public final class GameView {
         BaseState currentState = this.controller.getCurrentState();
 
         if (currentState.getStateType() == BaseState.StateType.WELCOME) {
-
-            graphics.setColor(TEXT_COLOR);
-
-            String title = "Quoridor!";
-            String subTitle = "By Camargo & Panqueva";
-
-            int centerX = this.window.getCanvasSize() / 2;
-
-            int titleMarginTop = this.window.getCanvasSize() / 4;
-            int titleUnderlineMargin = 10;
-            int titleUnderlineHeight = 8;
-            int titleFontSize = (int) (this.window.getCanvasSize() * 1.25 / title.length());
-
-            graphics.setFont(graphics.getFont().deriveFont(Font.BOLD, titleFontSize));
-            int titleWidth = graphics.getFontMetrics().stringWidth(title);
-            graphics.fillRect(
-                    centerX - titleWidth / 2,
-                    titleMarginTop + titleUnderlineMargin,
-                    titleWidth,
-                    titleUnderlineHeight
-            );
-            graphics.drawString(title, centerX - titleWidth / 2, titleMarginTop);
-
-            int subTitleMarginTop = titleMarginTop + 48;
-            int subTitleFontSize = 20;
-
-            graphics.setFont(graphics.getFont().deriveFont(Font.BOLD, subTitleFontSize));
-            int subTitleWidth = graphics.getFontMetrics().stringWidth(subTitle);
-            graphics.drawString(subTitle, centerX - subTitleWidth / 2, subTitleMarginTop);
+            this.welcomeScene.render(graphics);
         }
     }
 }
