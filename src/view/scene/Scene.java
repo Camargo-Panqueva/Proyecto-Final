@@ -28,5 +28,6 @@ public abstract class Scene {
         this.components.add(component);
     }
 
-    protected abstract void init();
+    protected abstract void addAllComponents();
+    protected abstract void setupComponents();
 }

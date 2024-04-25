@@ -1,24 +1,16 @@
 package view.components;
 
 import view.context.ContextProvider;
+import view.context.Style;
 
 import java.awt.*;
-
-import static view.Constants.*;
 
 public class Button extends GameComponent {
 
     private final String text;
 
-    public Button(int x, int y, int width, int height, String text, ContextProvider context) {
-        super(x, y, width, height, context);
-        this.text = text;
-
-        this.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-    }
-
-    public Button(int x, int y, String text, ContextProvider context) {
-        super(x, y, context);
+    public Button(String text, Style style, ContextProvider context) {
+        super(style, context);
         this.text = text;
 
         this.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -31,26 +23,27 @@ public class Button extends GameComponent {
 
     @Override
     public void render(Graphics2D graphics) {
-        graphics.setColor(PRIMARY_COLOR);
+        graphics.setFont(this.style.font);
+
+        graphics.setColor(this.style.backgroundColor);
         graphics.fillRoundRect(
-                this.location.x,
-                this.location.y,
-                this.size.width,
-                this.size.height,
-                COMPONENT_BORDER_RADIUS,
-                COMPONENT_BORDER_RADIUS
+                this.style.x,
+                this.style.y,
+                this.style.width,
+                this.style.height,
+                this.style.borderRadius,
+                this.style.borderRadius
         );
 
         Point center = this.getCenter();
         Rectangle textBounds = graphics.getFontMetrics().getStringBounds(this.text, graphics).getBounds();
 
-        graphics.setColor(TEXT_COLOR);
+        graphics.setColor(this.style.foregroundColor);
         graphics.drawString(this.text, center.x - textBounds.width / 2, center.y + textBounds.height / 4);
     }
 
     @Override
-    protected void pack() {
+    public void fitSize() {
         // TODO: Implement this method
-        this.size = new Dimension(200, 60);
     }
 }

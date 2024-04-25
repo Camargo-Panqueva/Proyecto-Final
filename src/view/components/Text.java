@@ -1,23 +1,17 @@
 package view.components;
 
 import view.context.ContextProvider;
+import view.context.Style;
 
 import java.awt.*;
-
-import static view.Constants.TEXT_COLOR;
 
 public final class Text extends GameComponent {
 
     private final String text;
 
-    public Text(int x, int y, String text, ContextProvider contextProvider) {
-        super(x, y, contextProvider);
+    public Text(String text, Style style, ContextProvider contextProvider) {
+        super(style, contextProvider);
         this.text = text;
-
-        int canvasSize = this.contextProvider.window().getCanvasSize();
-
-        this.location = new Point(canvasSize / 2, canvasSize / 2);
-        this.size = new Dimension(canvasSize, 60);
     }
 
     @Override
@@ -26,13 +20,18 @@ public final class Text extends GameComponent {
 
     @Override
     public void render(Graphics2D graphics) {
-        graphics.setColor(TEXT_COLOR);
-        graphics.drawString(this.text, this.location.x, this.location.y);
+        graphics.setFont(this.style.font);
+        FontMetrics fontMetrics = this.contextProvider.window().getCanvas().getFontMetrics(this.style.font);
+
+        graphics.setColor(this.style.foregroundColor);
+        graphics.drawString(this.text, this.style.x, this.style.y + this.style.height - fontMetrics.getDescent());
     }
 
     @Override
-    protected void pack() {
-        // TODO: Implement this method
-        this.size = new Dimension(this.contextProvider.window().getCanvasSize(), 60);
+    public void fitSize() {
+        FontMetrics fontMetrics = this.contextProvider.window().getCanvas().getFontMetrics(this.style.font);
+
+        this.style.width = fontMetrics.stringWidth(this.text) + this.style.paddingX;
+        this.style.height = fontMetrics.getHeight() + this.style.paddingY;
     }
 }

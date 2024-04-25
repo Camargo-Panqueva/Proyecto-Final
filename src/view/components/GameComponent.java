@@ -2,6 +2,7 @@ package view.components;
 
 import util.ConsumerFunction;
 import view.context.ContextProvider;
+import view.context.Style;
 import view.input.Mouse;
 
 import java.awt.*;
@@ -11,45 +12,30 @@ import java.util.HashMap;
 public abstract class GameComponent {
 
     protected final ContextProvider contextProvider;
-    protected Cursor cursor;
-    protected Point location;
-    protected Dimension size;
+    protected final Style style;
 
     private final HashMap<MouseEvent, ArrayList<ConsumerFunction<Mouse>>> mouseEventHandlers;
     private boolean isMouseEntered;
     private boolean isMousePressed;
 
-    public GameComponent(final int x, final int y, final int width, final int height, ContextProvider contextProvider) {
+    public GameComponent(Style style, ContextProvider contextProvider) {
         this.mouseEventHandlers = new HashMap<>();
-        this.location = new Point(x, y);
-        this.size = new Dimension(width, height);
+        this.style = style;
 
-        this.cursor = Cursor.getDefaultCursor();
         this.contextProvider = contextProvider;
 
         this.setupDefaultEventListeners();
-    }
-
-    public GameComponent(final int x, final int y, ContextProvider contextProvider) {
-        this.mouseEventHandlers = new HashMap<>();
-        this.location = new Point(x, y);
-
-        this.cursor = Cursor.getDefaultCursor();
-        this.contextProvider = contextProvider;
-
-        this.setupDefaultEventListeners();
-        this.pack();
     }
 
     public abstract void update();
 
     public abstract void render(Graphics2D graphics);
 
-    protected abstract void pack();
+    public abstract void fitSize();
 
     protected void setupDefaultEventListeners() {
         this.addEventListener(MouseEvent.ENTER, _ -> {
-            this.contextProvider.window().getCanvas().setCursor(this.cursor);
+            this.contextProvider.window().getCanvas().setCursor(this.style.cursor);
         });
 
         this.addEventListener(MouseEvent.LEAVE, _ -> {
@@ -92,14 +78,14 @@ public abstract class GameComponent {
     }
 
     public Point getCenter() {
-        int centerX = this.location.x + this.size.width / 2;
-        int centerY = this.location.y + this.size.height / 2;
+        int centerX = this.style.x + this.style.width / 2;
+        int centerY = this.style.y + this.style.height / 2;
 
         return new Point(centerX, centerY);
     }
 
     public Rectangle getBounds() {
-        return new Rectangle(this.location.x, this.location.y, this.size.width, this.size.height);
+        return new Rectangle(this.style.x, this.style.y, this.style.width, this.style.height);
     }
 
     public void addEventListener(MouseEvent event, ConsumerFunction<Mouse> handler) {
@@ -119,17 +105,11 @@ public abstract class GameComponent {
     }
 
     public void setCursor(Cursor cursor) {
-        this.cursor = cursor;
+        this.style.cursor = cursor;
     }
 
-    public void centerHorizontally() {
-        int canvasSize = this.contextProvider.window().getCanvasSize();
-        this.location.x = (canvasSize - this.size.width) / 2;
-    }
-
-    public void centerVertically() {
-        int canvasSize = this.contextProvider.window().getCanvasSize();
-        this.location.y = (canvasSize - this.size.height) / 2;
+    public Style getStyle() {
+        return style;
     }
 
     public enum MouseEvent {
