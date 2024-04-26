@@ -14,6 +14,10 @@ public abstract class Scene {
     public Scene(ContextProvider contextProvider) {
         this.components = new ArrayList<>();
         this.contextProvider = contextProvider;
+
+        this.setupComponents();
+        this.setupEvents();
+        this.addAllComponents();
     }
 
     public void update() {
@@ -30,4 +34,5 @@ public abstract class Scene {
 
     protected abstract void addAllComponents();
     protected abstract void setupComponents();
+    protected abstract void setupEvents();
 }

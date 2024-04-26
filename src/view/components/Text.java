@@ -2,6 +2,7 @@ package view.components;
 
 import view.context.ContextProvider;
 import view.context.Style;
+import view.themes.Theme;
 
 import java.awt.*;
 
@@ -33,5 +34,10 @@ public final class Text extends GameComponent {
 
         this.style.width = fontMetrics.stringWidth(this.text) + this.style.paddingX;
         this.style.height = fontMetrics.getHeight() + this.style.paddingY;
+    }
+
+    @Override
+    protected void handleThemeChange(Theme theme) {
+        this.style.foregroundColor = theme.foregroundColor;
     }
 }

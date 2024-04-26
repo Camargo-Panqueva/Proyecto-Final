@@ -2,10 +2,11 @@ package view.components;
 
 import view.context.ContextProvider;
 import view.context.Style;
+import view.themes.Theme;
 
 import java.awt.*;
 
-public class Button extends GameComponent {
+public final class Button extends GameComponent {
 
     private final String text;
 
@@ -45,5 +46,11 @@ public class Button extends GameComponent {
     @Override
     public void fitSize() {
         // TODO: Implement this method
+    }
+
+    @Override
+    protected void handleThemeChange(Theme theme) {
+        this.style.backgroundColor = theme.primaryColor;
+        this.style.foregroundColor = theme.backgroundColor;
     }
 }

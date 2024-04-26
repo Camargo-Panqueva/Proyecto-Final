@@ -4,6 +4,7 @@ import util.ConsumerFunction;
 import view.context.ContextProvider;
 import view.context.Style;
 import view.input.Mouse;
+import view.themes.Theme;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -25,6 +26,8 @@ public abstract class GameComponent {
         this.contextProvider = contextProvider;
 
         this.setupDefaultEventListeners();
+        this.handleThemeChange(this.contextProvider.themeManager().getCurrentTheme());
+        this.contextProvider.themeManager().addListener(this::handleThemeChange);
     }
 
     public abstract void update();
@@ -32,6 +35,8 @@ public abstract class GameComponent {
     public abstract void render(Graphics2D graphics);
 
     public abstract void fitSize();
+
+    protected abstract void handleThemeChange(Theme theme);
 
     protected void setupDefaultEventListeners() {
         this.addEventListener(MouseEvent.ENTER, _ -> {

@@ -3,22 +3,22 @@ package view;
 import controller.main.GameController;
 import model.states.BaseState;
 import util.ConcurrentLoop;
-import view.components.Button;
 import view.context.ContextProvider;
 import view.input.Mouse;
 import view.scene.WelcomeScene;
+import view.themes.DarkTheme;
+import view.themes.ThemeManager;
 import view.window.Window;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferStrategy;
 
-import static view.Constants.*;
-
 public final class GameView {
 
     private final GameController controller;
     private final ContextProvider contextProvider;
+    private final ThemeManager themeManager;
     private final Window window;
     private final Mouse mouse;
 
@@ -43,17 +43,18 @@ public final class GameView {
 
         this.controller = controller;
         this.mouse = new Mouse();
-        this.window = new Window(INITIAL_WINDOW_SIZE, "Quoridor"); // TODO: Set window size from controller data
+        this.themeManager = new ThemeManager();
+        this.window = new Window(600, "Quoridor"); // TODO: Set window size from controller data
         this.window.getCanvas().addMouseListener(this.mouse);
 
-        this.contextProvider = new ContextProvider(this.window, this.mouse);
+        this.contextProvider = new ContextProvider(this.window, this.controller, this.mouse, this.themeManager);
         this.welcomeScene = new WelcomeScene(this.contextProvider);
     }
 
     public void start() {
         this.window.makeVisible();
 
-        this.renderLoop = new ConcurrentLoop(this::render, 30, "View render");
+        this.renderLoop = new ConcurrentLoop(this::render, 10, "View render");
         this.renderLoop.start();
         this.renderLoop.setTickConsumer(fps -> this.currentFPS = fps);
 
@@ -90,10 +91,10 @@ public final class GameView {
 
     private void renderBackground(Graphics2D graphics) {
         graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        graphics.setColor(WINDOW_BACKGROUND);
+        graphics.setColor(this.themeManager.getCurrentTheme().backgroundColor);
         graphics.fillRect(0, 0, this.window.getCanvasSize(), this.window.getCanvasSize());
 
-        graphics.setColor(WHITE);
+        graphics.setColor(this.themeManager.getCurrentTheme().foregroundColor);
         graphics.drawString("FPS: " + this.currentFPS, 6, 16);
         graphics.drawString("UPS: " + this.currentUPS, 6, 32);
 
