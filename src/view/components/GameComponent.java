@@ -13,20 +13,19 @@ import java.util.HashMap;
 public abstract class GameComponent {
 
     protected final ContextProvider contextProvider;
-    protected final Style style;
+    protected Style style;
 
     private final HashMap<MouseEvent, ArrayList<ConsumerFunction<Mouse>>> mouseEventHandlers;
     private boolean isMouseEntered;
     private boolean isMousePressed;
 
-    public GameComponent(Style style, ContextProvider contextProvider) {
+    public GameComponent(ContextProvider contextProvider) {
         this.mouseEventHandlers = new HashMap<>();
-        this.style = style;
-
         this.contextProvider = contextProvider;
+        this.style = new Style();
 
         this.setupDefaultEventListeners();
-        this.handleThemeChange(this.contextProvider.themeManager().getCurrentTheme());
+        this.setupDefaultStyle();
         this.contextProvider.themeManager().addListener(this::handleThemeChange);
     }
 
@@ -37,15 +36,11 @@ public abstract class GameComponent {
     public abstract void fitSize();
 
     protected abstract void handleThemeChange(Theme theme);
+    protected abstract void setupDefaultStyle();
 
     protected void setupDefaultEventListeners() {
-        this.addEventListener(MouseEvent.ENTER, _ -> {
-            this.contextProvider.window().getCanvas().setCursor(this.style.cursor);
-        });
-
-        this.addEventListener(MouseEvent.LEAVE, _ -> {
-            this.contextProvider.window().getCanvas().setCursor(Cursor.getDefaultCursor());
-        });
+        this.addEventListener(MouseEvent.ENTER, _ -> this.contextProvider.window().getCanvas().setCursor(this.style.cursor));
+        this.addEventListener(MouseEvent.LEAVE, _ -> this.contextProvider.window().getCanvas().setCursor(Cursor.getDefaultCursor()));
     }
 
     protected void pollMouseEvents() {

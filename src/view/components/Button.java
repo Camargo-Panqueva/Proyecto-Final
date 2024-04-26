@@ -1,7 +1,6 @@
 package view.components;
 
 import view.context.ContextProvider;
-import view.context.Style;
 import view.themes.Theme;
 
 import java.awt.*;
@@ -10,8 +9,8 @@ public final class Button extends GameComponent {
 
     private final String text;
 
-    public Button(String text, Style style, ContextProvider context) {
-        super(style, context);
+    public Button(String text, ContextProvider context) {
+        super(context);
         this.text = text;
 
         this.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -52,5 +51,15 @@ public final class Button extends GameComponent {
     protected void handleThemeChange(Theme theme) {
         this.style.backgroundColor = theme.primaryColor;
         this.style.foregroundColor = theme.backgroundColor;
+    }
+
+    @Override
+    protected void setupDefaultStyle() {
+        this.style.backgroundColor = this.contextProvider.themeManager().getCurrentTheme().primaryColor;
+        this.style.foregroundColor = this.contextProvider.themeManager().getCurrentTheme().backgroundColor;
+        this.style.font = new Font("Arial", Font.BOLD, 24);
+        this.style.height = 60;
+        this.style.width = 300;
+        this.style.borderRadius = 16;
     }
 }

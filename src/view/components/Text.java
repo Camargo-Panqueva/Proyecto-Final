@@ -1,7 +1,6 @@
 package view.components;
 
 import view.context.ContextProvider;
-import view.context.Style;
 import view.themes.Theme;
 
 import java.awt.*;
@@ -10,8 +9,8 @@ public final class Text extends GameComponent {
 
     private final String text;
 
-    public Text(String text, Style style, ContextProvider contextProvider) {
-        super(style, contextProvider);
+    public Text(String text, ContextProvider contextProvider) {
+        super(contextProvider);
         this.text = text;
     }
 
@@ -39,5 +38,11 @@ public final class Text extends GameComponent {
     @Override
     protected void handleThemeChange(Theme theme) {
         this.style.foregroundColor = theme.foregroundColor;
+    }
+
+    @Override
+    protected void setupDefaultStyle() {
+        this.style.font = new Font("Arial", Font.PLAIN, 12);
+        this.style.foregroundColor = this.contextProvider.themeManager().getCurrentTheme().foregroundColor;
     }
 }
