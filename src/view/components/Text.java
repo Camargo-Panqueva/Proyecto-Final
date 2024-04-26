@@ -42,7 +42,7 @@ public final class Text extends GameComponent {
 
     @Override
     protected void setupDefaultStyle() {
-        this.style.font = new Font("Arial", Font.PLAIN, 12);
+        this.style.font = this.contextProvider.window().getCanvas().getFont().deriveFont(16.0f);
         this.style.foregroundColor = this.contextProvider.themeManager().getCurrentTheme().foregroundColor;
     }
 }

@@ -6,13 +6,16 @@ import util.ConcurrentLoop;
 import view.context.ContextProvider;
 import view.input.Mouse;
 import view.scene.WelcomeScene;
-import view.themes.DarkTheme;
 import view.themes.ThemeManager;
 import view.window.Window;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferStrategy;
+import java.io.File;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 public final class GameView {
 
@@ -32,12 +35,7 @@ public final class GameView {
     private int currentUPS;
 
     public GameView(GameController controller) {
-        try {
-            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
-                 UnsupportedLookAndFeelException e) {
-            System.out.println("Could not set system look and feel");
-        }
+        this.setupGraphicsEnvironment();
 
         this.currentFPS = 0;
 
@@ -46,6 +44,7 @@ public final class GameView {
         this.themeManager = new ThemeManager();
         this.window = new Window(600, "Quoridor"); // TODO: Set window size from controller data
         this.window.getCanvas().addMouseListener(this.mouse);
+        this.window.getCanvas().setFont(new Font("Yoster Island Regular", Font.PLAIN, 16));
 
         this.contextProvider = new ContextProvider(this.window, this.controller, this.mouse, this.themeManager);
         this.welcomeScene = new WelcomeScene(this.contextProvider);
@@ -54,7 +53,7 @@ public final class GameView {
     public void start() {
         this.window.makeVisible();
 
-        this.renderLoop = new ConcurrentLoop(this::render, 10, "View render");
+        this.renderLoop = new ConcurrentLoop(this::render, 16, "View render");
         this.renderLoop.start();
         this.renderLoop.setTickConsumer(fps -> this.currentFPS = fps);
 
@@ -95,6 +94,7 @@ public final class GameView {
         graphics.fillRect(0, 0, this.window.getCanvasSize(), this.window.getCanvasSize());
 
         graphics.setColor(this.themeManager.getCurrentTheme().foregroundColor);
+        graphics.setFont(new Font("Arial", Font.PLAIN, 12));
         graphics.drawString("FPS: " + this.currentFPS, 6, 16);
         graphics.drawString("UPS: " + this.currentUPS, 6, 32);
 
@@ -108,6 +108,28 @@ public final class GameView {
 
         if (currentState.getStateType() == BaseState.StateType.WELCOME) {
             this.welcomeScene.render(graphics);
+        }
+    }
+
+    private void setupGraphicsEnvironment() {
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
+                 UnsupportedLookAndFeelException e) {
+            JOptionPane.showMessageDialog(null, e.getMessage());
+        }
+
+        GraphicsEnvironment GE = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        List<String> availableFontFamilyNames = Arrays.asList(GE.getAvailableFontFamilyNames());
+
+        try {
+            File fontFile = new File("res/fonts/yoster.ttf");
+            Font gameFont = Font.createFont(Font.TRUETYPE_FONT, fontFile);
+            if (!availableFontFamilyNames.contains(gameFont.getFontName())) {
+                GE.registerFont(gameFont);
+            }
+        } catch (FontFormatException | IOException exception) {
+            JOptionPane.showMessageDialog(null, exception.getMessage());
         }
     }
 }

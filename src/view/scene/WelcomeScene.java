@@ -5,8 +5,6 @@ import view.components.GameComponent;
 import view.components.Text;
 import view.context.ContextProvider;
 
-import java.awt.*;
-
 public final class WelcomeScene extends Scene {
 
     private Text welcomeTitle;
@@ -30,13 +28,13 @@ public final class WelcomeScene extends Scene {
     protected void setupComponents() {
         this.welcomeTitle = new Text("Quoridor!", contextProvider);
         this.welcomeTitle.getStyle().y = 80;
-        this.welcomeTitle.getStyle().font = new Font("Times New Roman", Font.BOLD, 84);
+        this.welcomeTitle.getStyle().font = this.contextProvider.window().getCanvas().getFont().deriveFont(100.0f);
         this.welcomeTitle.fitSize();
         this.welcomeTitle.getStyle().centerHorizontally(contextProvider);
 
-        this.authorsText = new Text("By Camargo & Panqueva", contextProvider);
-        this.authorsText.getStyle().y = 180;
-        this.authorsText.getStyle().font = new Font("Times New Roman", Font.BOLD, 18);
+        this.authorsText = new Text("Camargo # Panqueva", contextProvider);
+        this.authorsText.getStyle().y = 190;
+        this.authorsText.getStyle().font = this.contextProvider.window().getCanvas().getFont().deriveFont(21.0f);
         this.authorsText.fitSize();
         this.authorsText.getStyle().centerHorizontally(contextProvider);
 

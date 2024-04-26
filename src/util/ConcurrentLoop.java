@@ -5,8 +5,10 @@ public final class ConcurrentLoop implements Runnable {
     private final VoidFunction function;
     private final String threadName;
     private final int targetTPS;
+
     private ConsumerFunction<Integer> tickConsumer;
     private Thread thread;
+
     private boolean isLooping;
     private int currentTPS;
 

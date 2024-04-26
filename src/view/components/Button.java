@@ -57,7 +57,7 @@ public final class Button extends GameComponent {
     protected void setupDefaultStyle() {
         this.style.backgroundColor = this.contextProvider.themeManager().getCurrentTheme().primaryColor;
         this.style.foregroundColor = this.contextProvider.themeManager().getCurrentTheme().backgroundColor;
-        this.style.font = new Font("Arial", Font.BOLD, 24);
+        this.style.font = this.contextProvider.window().getCanvas().getFont().deriveFont(26.0f);
         this.style.height = 60;
         this.style.width = 300;
         this.style.borderRadius = 16;
