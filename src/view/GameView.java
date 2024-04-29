@@ -31,13 +31,8 @@ public final class GameView {
     private ConcurrentLoop updateLoop;
     private BufferStrategy bufferStrategy;
 
-    private int currentFPS;
-    private int currentUPS;
-
     public GameView(GameController controller) {
         this.setupGraphicsEnvironment();
-
-        this.currentFPS = 0;
 
         this.controller = controller;
         this.mouse = new Mouse();
@@ -53,13 +48,11 @@ public final class GameView {
     public void start() {
         this.window.makeVisible();
 
-        this.renderLoop = new ConcurrentLoop(this::render, 16, "View render");
-        this.renderLoop.start();
-        this.renderLoop.setTickConsumer(fps -> this.currentFPS = fps);
+        this.renderLoop = new ConcurrentLoop(this::render, 30, "View render");
+        this.updateLoop = new ConcurrentLoop(this::update, 600, "View update");
 
-        this.updateLoop = new ConcurrentLoop(this::update, 60, "View update");
+        this.renderLoop.start();
         this.updateLoop.start();
-        this.updateLoop.setTickConsumer(ups -> this.currentUPS = ups);
     }
 
     public void stop() {
@@ -95,8 +88,8 @@ public final class GameView {
 
         graphics.setColor(this.themeManager.getCurrentTheme().foregroundColor);
         graphics.setFont(new Font("Arial", Font.PLAIN, 12));
-        graphics.drawString("FPS: " + this.currentFPS, 6, 16);
-        graphics.drawString("UPS: " + this.currentUPS, 6, 32);
+        graphics.drawString(String.format("FPS: %d", this.renderLoop.getCurrentTPS()), 6, 16);
+        graphics.drawString(String.format("TPS: %d", this.updateLoop.getCurrentTPS()), 6, 32);
 
         Point mousePosition = this.mouse.getMousePosition();
         String mouseText = String.format("Mouse: [%d, %d]", mousePosition.x, mousePosition.y);

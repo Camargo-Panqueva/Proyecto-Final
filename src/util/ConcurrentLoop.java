@@ -6,10 +6,10 @@ public final class ConcurrentLoop implements Runnable {
     private final String threadName;
     private final int targetTPS;
 
-    private ConsumerFunction<Integer> tickConsumer;
     private Thread thread;
 
     private boolean isLooping;
+    private int counterTPS;
     private int currentTPS;
 
     public ConcurrentLoop(VoidFunction function, int targetTPS, String threadName) {
@@ -45,9 +45,9 @@ public final class ConcurrentLoop implements Runnable {
                 deltaTPS--;
             }
 
-            if (this.tickConsumer != null && System.nanoTime() - countRef > NS_PER_SECOND) {
-                tickConsumer.run(this.currentTPS);
-                currentTPS = 0;
+            if (System.nanoTime() - countRef > NS_PER_SECOND) {
+                this.currentTPS = this.counterTPS;
+                this.counterTPS = 0;
                 countRef = System.nanoTime();
             }
         }
@@ -55,7 +55,7 @@ public final class ConcurrentLoop implements Runnable {
 
     private void tick() {
         this.function.run();
-        this.currentTPS++;
+        this.counterTPS++;
     }
 
     public void start() {
@@ -75,7 +75,7 @@ public final class ConcurrentLoop implements Runnable {
         }
     }
 
-    public void setTickConsumer(ConsumerFunction<Integer> tickConsumer) {
-        this.tickConsumer = tickConsumer;
+    public int getCurrentTPS() {
+        return currentTPS;
     }
 }
