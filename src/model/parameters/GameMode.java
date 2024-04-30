@@ -1,4 +1,4 @@
-package model.gameType;
+package model.parameters;
 
 public abstract class GameMode {
 
