@@ -4,6 +4,7 @@ import view.context.ContextProvider;
 import view.themes.Theme;
 
 import java.awt.*;
+import java.util.ArrayList;
 
 /**
  * A component that allows the user to select an option from a list of options.
@@ -14,15 +15,16 @@ import java.awt.*;
  */
 public final class Selector extends GameComponent {
 
-    private final String[] options;
+    private final ArrayList<String> options;
     private int selectedOption;
 
     /**
-     * Creates a new selector component.
+     * Creates a new Selector with the given options and context provider.
      *
-     * @param contextProvider the context provider for the component.
+     * @param options         the list of options for the selector.
+     * @param contextProvider the context provider for the selector.
      */
-    public Selector(String[] options, ContextProvider contextProvider) {
+    public Selector(ArrayList<String> options, ContextProvider contextProvider) {
         super(contextProvider);
 
         this.options = options;
@@ -138,9 +140,9 @@ public final class Selector extends GameComponent {
         this.addEventListener(MouseEventType.CLICK, event -> {
             Point relativePoint = event.relativeMousePosition;
             if (relativePoint.x < this.style.width / 2) {
-                this.selectedOption = (this.selectedOption - 1 + this.options.length) % this.options.length;
+                this.selectedOption = (this.selectedOption - 1 + this.options.size()) % this.options.size();
             } else {
-                this.selectedOption = (this.selectedOption + 1) % this.options.length;
+                this.selectedOption = (this.selectedOption + 1) % this.options.size();
             }
         });
     }
@@ -151,6 +153,6 @@ public final class Selector extends GameComponent {
      * @return the selected option from the selector.
      */
     public String getSelectedOption() {
-        return this.options[this.selectedOption];
+        return this.options.get(this.selectedOption);
     }
 }

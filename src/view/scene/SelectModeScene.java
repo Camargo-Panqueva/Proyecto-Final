@@ -1,10 +1,13 @@
 package view.scene;
 
+import controller.serviceResponse.ServiceResponse;
 import view.components.BackgroundSeparator;
 import view.components.Button;
 import view.components.Selector;
 import view.components.Text;
 import view.context.ContextProvider;
+
+import java.util.ArrayList;
 
 //TODO: Update docs when different modes are implemented
 
@@ -73,7 +76,15 @@ public final class SelectModeScene extends Scene {
         this.selectModeText.fitSize();
         this.selectModeText.getStyle().centerHorizontally(contextProvider);
 
-        String[] options = {"Please", "Get this", "From", "Controller", "# & #"};
+        ServiceResponse<ArrayList<String>> gameModesResponse = this.contextProvider.controller().getGameModes();
+
+        if (!gameModesResponse.ok) {
+            //TODO: Handle error
+            throw new RuntimeException("Error getting game modes " + gameModesResponse.message);
+        }
+
+        ArrayList<String> options = gameModesResponse.payload;
+
         this.gameModeSelect = new Selector(options, contextProvider);
         this.gameModeSelect.getStyle().y = separatorHeight + separatorMargin + 150;
         this.gameModeSelect.getStyle().centerHorizontally(contextProvider);

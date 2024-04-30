@@ -101,11 +101,7 @@ public final class GameView {
     }
 
     private void renderCurrentState(Graphics2D graphics) {
-        BaseState currentState = this.controller.getCurrentState();
-
-        if (currentState.getStateType() == BaseState.StateType.WELCOME) {
-            this.currentScene.render(graphics);
-        }
+        this.currentScene.render(graphics);
     }
 
     private void setupGraphicsEnvironment() {
