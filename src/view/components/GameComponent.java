@@ -16,8 +16,10 @@ public abstract class GameComponent {
     protected Style style;
 
     private final HashMap<MouseEvent, ArrayList<ConsumerFunction<Mouse>>> mouseEventHandlers;
-    private boolean isMouseEntered;
-    private boolean isMousePressed;
+
+    protected boolean isMouseEntered;
+    protected boolean isMousePressed;
+    protected boolean hasFocus;
 
     public GameComponent(ContextProvider contextProvider) {
         this.mouseEventHandlers = new HashMap<>();
@@ -56,6 +58,11 @@ public abstract class GameComponent {
                     this.dispatchMouseEvent(MouseEvent.CLICK, mouse);
                 }
 
+                if (!this.hasFocus) {
+                    this.hasFocus = true;
+                    this.dispatchMouseEvent(MouseEvent.GET_FOCUS, mouse);
+                }
+
                 this.dispatchMouseEvent(MouseEvent.PRESSED, mouse);
             } else {
 
@@ -70,6 +77,11 @@ public abstract class GameComponent {
                 this.dispatchMouseEvent(MouseEvent.ENTER, mouse);
             }
         } else {
+            if (this.hasFocus && mouse.isButtonPressed(Mouse.LEFT_BUTTON)) {
+                this.hasFocus = false;
+                this.dispatchMouseEvent(MouseEvent.LOSE_FOCUS, mouse);
+            }
+
             if (this.isMouseEntered) {
                 this.isMouseEntered = false;
                 this.dispatchMouseEvent(MouseEvent.LEAVE, mouse);
@@ -118,6 +130,8 @@ public abstract class GameComponent {
         ENTER,
         LEAVE,
         PRESSED,
-        RELEASED
+        RELEASED,
+        GET_FOCUS,
+        LOSE_FOCUS
     }
 }

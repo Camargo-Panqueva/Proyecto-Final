@@ -2,6 +2,7 @@ package view.scene;
 
 import view.components.BackgroundSeparator;
 import view.components.Button;
+import view.components.GameComponent;
 import view.components.Text;
 import view.context.ContextProvider;
 
@@ -54,7 +55,7 @@ public final class SelectModeScene extends Scene {
 
     @Override
     protected void setupEvents() {
-        this.singlePlayerButton.addEventListener(Button.MouseEvent.CLICK, _ -> System.out.println("Single player button clicked"));
-        this.multiPlayerButton.addEventListener(Button.MouseEvent.CLICK, _ -> System.out.println("Multi player button clicked"));
+        this.singlePlayerButton.addEventListener(GameComponent.MouseEvent.CLICK, _ -> System.out.println("Single player button clicked"));
+        this.multiPlayerButton.addEventListener(GameComponent.MouseEvent.CLICK, _ -> System.out.println("Multi player button clicked"));
     }
 }
