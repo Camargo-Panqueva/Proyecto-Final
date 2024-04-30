@@ -2,7 +2,7 @@ package view.scene;
 
 import view.components.BackgroundSeparator;
 import view.components.Button;
-import view.components.GameComponent;
+import view.components.Selector;
 import view.components.Text;
 import view.context.ContextProvider;
 
@@ -20,8 +20,8 @@ public final class SelectModeScene extends Scene {
 
     private BackgroundSeparator separator;
     private Text selectModeText;
-    private Button singlePlayerButton;
-    private Button multiPlayerButton;
+    private Selector gameModeSelect;
+    private Button startButton;
 
     /**
      * Creates a new SelectModeScene with the given context provider.
@@ -43,8 +43,8 @@ public final class SelectModeScene extends Scene {
     protected void addAllComponents() {
         this.addComponent(this.separator);
         this.addComponent(this.selectModeText);
-        this.addComponent(this.singlePlayerButton);
-        this.addComponent(this.multiPlayerButton);
+        this.addComponent(this.gameModeSelect);
+        this.addComponent(this.startButton);
     }
 
     /**
@@ -73,13 +73,14 @@ public final class SelectModeScene extends Scene {
         this.selectModeText.fitSize();
         this.selectModeText.getStyle().centerHorizontally(contextProvider);
 
-        this.singlePlayerButton = new Button("Single Player", contextProvider);
-        this.singlePlayerButton.getStyle().y = separatorHeight + separatorMargin + 150;
-        this.singlePlayerButton.getStyle().centerHorizontally(contextProvider);
+        String[] options = {"Single Player", "Multi Player"};
+        this.gameModeSelect = new Selector(options, contextProvider);
+        this.gameModeSelect.getStyle().y = separatorHeight + separatorMargin + 150;
+        this.gameModeSelect.getStyle().centerHorizontally(contextProvider);
 
-        this.multiPlayerButton = new Button("1 VS 1", contextProvider);
-        this.multiPlayerButton.getStyle().y = separatorHeight + separatorMargin + 250;
-        this.multiPlayerButton.getStyle().centerHorizontally(contextProvider);
+        this.startButton = new Button("Start", contextProvider);
+        this.startButton.getStyle().y = separatorHeight + separatorMargin + 250;
+        this.startButton.getStyle().centerHorizontally(contextProvider);
     }
 
     /**
@@ -91,7 +92,6 @@ public final class SelectModeScene extends Scene {
      */
     @Override
     protected void setupEvents() {
-        this.singlePlayerButton.addEventListener(GameComponent.MouseEvent.CLICK, _ -> System.out.println("Single player button clicked"));
-        this.multiPlayerButton.addEventListener(GameComponent.MouseEvent.CLICK, _ -> System.out.println("Multi player button clicked"));
+        //TODO: Implement event handling for the scene
     }
 }
