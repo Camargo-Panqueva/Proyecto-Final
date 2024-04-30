@@ -5,6 +5,16 @@ import view.components.GameComponent;
 import view.components.Text;
 import view.context.ContextProvider;
 
+//TODO: Update docs when different modes are implemented
+
+/**
+ * Represents the scene for welcoming the player to the game.
+ * <p>
+ * This class represents the scene for welcoming the player to the game.
+ * It provides a basic structure for rendering the welcome screen.
+ * The scene contains a welcome title, authors text, start button, and theme button.
+ * </p>
+ */
 public final class WelcomeScene extends Scene {
 
     private Text welcomeTitle;
@@ -12,10 +22,22 @@ public final class WelcomeScene extends Scene {
     private Button startButton;
     private Button themeButton;
 
+    /**
+     * Creates a new WelcomeScene with the given context provider.
+     *
+     * @param contextProvider the context provider for the scene.
+     */
     public WelcomeScene(ContextProvider contextProvider) {
         super(contextProvider);
     }
 
+    /**
+     * Adds all components to the scene.
+     * <p>
+     * This method adds all components to the scene.
+     * It's a protected and self-implemented method by the class.
+     * </p>
+     */
     @Override
     protected void addAllComponents() {
         this.addComponent(this.welcomeTitle);
@@ -24,6 +46,13 @@ public final class WelcomeScene extends Scene {
         this.addComponent(this.themeButton);
     }
 
+    /**
+     * Sets up the components for the scene.
+     * <p>
+     * This method sets up the components for the scene.
+     * It's a protected and self-implemented method by the class.
+     * </p>
+     */
     @Override
     protected void setupComponents() {
         this.welcomeTitle = new Text("Quoridor!", contextProvider);
@@ -47,6 +76,13 @@ public final class WelcomeScene extends Scene {
         this.themeButton.getStyle().centerHorizontally(contextProvider);
     }
 
+    /**
+     * Sets up the events for the scene.
+     * <p>
+     * This method sets up the events for the scene.
+     * It's a protected and self-implemented method by the class.
+     * </p>
+     */
     @Override
     protected void setupEvents() {
         this.startButton.addEventListener(GameComponent.MouseEvent.CLICK, _ -> System.out.println("Start button clicked"));
