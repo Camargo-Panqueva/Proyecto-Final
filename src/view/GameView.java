@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 public final class GameView {
 
@@ -50,7 +51,7 @@ public final class GameView {
         this.window.makeVisible();
 
         this.renderLoop = new ConcurrentLoop(this::render, 30, "View render");
-        this.updateLoop = new ConcurrentLoop(this::update, 600, "View update");
+        this.updateLoop = new ConcurrentLoop(this::update, 60, "View update");
 
         this.renderLoop.start();
         this.updateLoop.start();

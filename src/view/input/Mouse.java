@@ -10,13 +10,15 @@ public final class Mouse extends MouseAdapter {
     public static final int LEFT_BUTTON = 1;
     public static final int MIDDLE_BUTTON = 2;
     public static final int RIGHT_BUTTON = 3;
+    public static final int BACKWARD_BUTTON = 4;
+    public static final int FORWARD_BUTTON = 5;
 
     private final Point mousePosition;
     private final boolean[] buttons;
 
     public Mouse() {
         this.mousePosition = new Point();
-        this.buttons = new boolean[3];
+        this.buttons = new boolean[5];
     }
 
     public void update(Window window) {
