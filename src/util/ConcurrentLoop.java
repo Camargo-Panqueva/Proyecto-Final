@@ -1,17 +1,46 @@
 package util;
 
+/**
+ * Represents a concurrent loop that can be used to run a function at a target TPS.
+ * <p>
+ * This class represents a concurrent loop that can be used to run a function at a target TPS.
+ * It provides a structure for running a function in a loop at a target TPS inside his own
+ * thread.
+ * </p>
+ */
 public final class ConcurrentLoop implements Runnable {
 
+    /**
+     * The function to run in the loop.
+     */
     private final VoidFunction function;
+
+    /**
+     * The name of the thread.
+     */
     private final String threadName;
+
+    /**
+     * The target TPS of the loop.
+     */
     private final int targetTPS;
 
+    /**
+     * The thread of the loop.
+     */
     private Thread thread;
 
     private boolean isLooping;
     private int counterTPS;
     private int currentTPS;
 
+    /**
+     * Creates a new ConcurrentLoop with the given function, target TPS, and thread name.
+     *
+     * @param function   the function to run in the loop.
+     * @param targetTPS  the target TPS of the loop.
+     * @param threadName the name of the thread.
+     */
     public ConcurrentLoop(VoidFunction function, int targetTPS, String threadName) {
         this.function = function;
         this.targetTPS = targetTPS;
@@ -21,6 +50,15 @@ public final class ConcurrentLoop implements Runnable {
         this.currentTPS = 0;
     }
 
+    /**
+     * Runs the loop.
+     * <p>
+     * This method runs the loop and executes the function at the target TPS.
+     * The loop runs until the isLooping flag is set to false.
+     * The loop calculates the delta time between frames and executes the function
+     * at the target TPS.
+     * </p>
+     */
     @Override
     public void run() {
         final double NS_PER_SECOND = 1_000_000_000;
@@ -53,11 +91,24 @@ public final class ConcurrentLoop implements Runnable {
         }
     }
 
+    /**
+     * Executes the function.
+     * <p>
+     * This method executes the function and increments the counterTPS.
+     * It's a private and self-implemented method by the class.
+     * </p>
+     */
     private void tick() {
         this.function.run();
         this.counterTPS++;
     }
 
+    /**
+     * Starts the loop.
+     * <p>
+     * This method starts the loop and the thread.
+     * </p>
+     */
     public void start() {
         this.isLooping = true;
 
@@ -65,6 +116,12 @@ public final class ConcurrentLoop implements Runnable {
         this.thread.start();
     }
 
+    /**
+     * Stops the loop.
+     * <p>
+     * This method stops the loop and the thread.
+     * </p>
+     */
     public void stop() {
         this.isLooping = false;
 
@@ -75,6 +132,11 @@ public final class ConcurrentLoop implements Runnable {
         }
     }
 
+    /**
+     * Gets the current TPS of the loop.
+     *
+     * @return the current TPS of the loop.
+     */
     public int getCurrentTPS() {
         return currentTPS;
     }

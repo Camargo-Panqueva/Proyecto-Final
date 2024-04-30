@@ -85,7 +85,7 @@ public final class WelcomeScene extends Scene {
      */
     @Override
     protected void setupEvents() {
-        this.startButton.addEventListener(GameComponent.MouseEvent.CLICK, _ -> System.out.println("Start button clicked"));
-        this.themeButton.addEventListener(GameComponent.MouseEvent.CLICK, _ -> this.contextProvider.themeManager().toggleTheme());
+        this.startButton.addEventListener(GameComponent.MouseEventType.CLICK, _ -> System.out.println("Start button clicked"));
+        this.themeButton.addEventListener(GameComponent.MouseEventType.CLICK, _ -> this.contextProvider.themeManager().toggleTheme());
     }
 }
