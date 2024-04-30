@@ -8,12 +8,14 @@ public abstract class Theme {
     public final Color secondaryColor;
 
     public final Color backgroundColor;
+    public final Color backgroundContrastColor;
     public final Color foregroundColor;
 
-    public Theme(Color primaryColor, Color secondaryColor, Color backgroundColor, Color foregroundColor) {
+    public Theme(Color primaryColor, Color secondaryColor, Color backgroundColor, Color backgroundContrastColor, Color foregroundColor) {
         this.primaryColor = primaryColor;
         this.secondaryColor = secondaryColor;
         this.backgroundColor = backgroundColor;
         this.foregroundColor = foregroundColor;
+        this.backgroundContrastColor = backgroundContrastColor;
     }
 }

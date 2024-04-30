@@ -5,7 +5,8 @@ import model.states.BaseState;
 import util.ConcurrentLoop;
 import view.context.ContextProvider;
 import view.input.Mouse;
-import view.scene.WelcomeScene;
+import view.scene.Scene;
+import view.scene.SelectModeScene;
 import view.themes.ThemeManager;
 import view.window.Window;
 
@@ -25,7 +26,7 @@ public final class GameView {
     private final Window window;
     private final Mouse mouse;
 
-    private final WelcomeScene welcomeScene;
+    private final Scene currentScene;
 
     private ConcurrentLoop renderLoop;
     private ConcurrentLoop updateLoop;
@@ -42,7 +43,7 @@ public final class GameView {
         this.window.getCanvas().setFont(new Font("Yoster Island Regular", Font.PLAIN, 16));
 
         this.contextProvider = new ContextProvider(this.window, this.controller, this.mouse, this.themeManager);
-        this.welcomeScene = new WelcomeScene(this.contextProvider);
+        this.currentScene = new SelectModeScene(this.contextProvider);
     }
 
     public void start() {
@@ -62,7 +63,7 @@ public final class GameView {
 
     private void update() {
         this.mouse.update(this.window);
-        this.welcomeScene.update();
+        this.currentScene.update();
     }
 
     private void render() {
@@ -76,6 +77,7 @@ public final class GameView {
 
         this.renderBackground(graphics);
         this.renderCurrentState(graphics);
+        this.renderPerformance(graphics);
 
         graphics.dispose();
         bufferStrategy.show();
@@ -85,7 +87,9 @@ public final class GameView {
         graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         graphics.setColor(this.themeManager.getCurrentTheme().backgroundColor);
         graphics.fillRect(0, 0, this.window.getCanvasSize(), this.window.getCanvasSize());
+    }
 
+    private void renderPerformance(Graphics2D graphics) {
         graphics.setColor(this.themeManager.getCurrentTheme().foregroundColor);
         graphics.setFont(new Font("Arial", Font.PLAIN, 12));
         graphics.drawString(String.format("FPS: %d", this.renderLoop.getCurrentTPS()), 6, 16);
@@ -100,7 +104,7 @@ public final class GameView {
         BaseState currentState = this.controller.getCurrentState();
 
         if (currentState.getStateType() == BaseState.StateType.WELCOME) {
-            this.welcomeScene.render(graphics);
+            this.currentScene.render(graphics);
         }
     }
 
