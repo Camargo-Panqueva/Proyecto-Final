@@ -4,6 +4,7 @@ import util.ConsumerFunction;
 import view.context.ContextProvider;
 import view.context.Style;
 import view.input.Mouse;
+import view.input.MouseEvent;
 import view.themes.Theme;
 
 import java.awt.*;
@@ -20,7 +21,7 @@ import java.util.HashMap;
 public abstract class GameComponent {
 
     protected final ContextProvider contextProvider;
-    private final HashMap<MouseEvent, ArrayList<ConsumerFunction<Mouse>>> mouseEventHandlers;
+    private final HashMap<MouseEventType, ArrayList<ConsumerFunction<MouseEvent>>> mouseEventHandlers;
     protected Style style;
     protected boolean isMouseEntered;
     protected boolean isMousePressed;
@@ -74,8 +75,8 @@ public abstract class GameComponent {
      * Sets up the default event listeners for the component.
      */
     protected void setupDefaultEventListeners() {
-        this.addEventListener(MouseEvent.ENTER, _ -> this.contextProvider.window().getCanvas().setCursor(this.style.cursor));
-        this.addEventListener(MouseEvent.LEAVE, _ -> this.contextProvider.window().getCanvas().setCursor(Cursor.getDefaultCursor()));
+        this.addEventListener(MouseEventType.ENTER, _ -> this.contextProvider.window().getCanvas().setCursor(this.style.cursor));
+        this.addEventListener(MouseEventType.LEAVE, _ -> this.contextProvider.window().getCanvas().setCursor(Cursor.getDefaultCursor()));
     }
 
     /**
@@ -92,44 +93,47 @@ public abstract class GameComponent {
      */
     protected void pollMouseEvents() {
         Mouse mouse = this.contextProvider.mouse();
+        GameComponent component = this;
+
+        MouseEvent event = new MouseEvent(mouse, component);
 
         if (this.getBounds().contains(mouse.getMousePosition())) {
-            this.dispatchMouseEvent(MouseEvent.HOVER, mouse);
+            this.dispatchMouseEvent(MouseEventType.HOVER, event);
 
             if (mouse.isButtonPressed(Mouse.LEFT_BUTTON)) {
 
                 if (!this.isMousePressed) {
                     this.isMousePressed = true;
-                    this.dispatchMouseEvent(MouseEvent.CLICK, mouse);
+                    this.dispatchMouseEvent(MouseEventType.CLICK, event);
                 }
 
                 if (!this.hasFocus) {
                     this.hasFocus = true;
-                    this.dispatchMouseEvent(MouseEvent.GET_FOCUS, mouse);
+                    this.dispatchMouseEvent(MouseEventType.GET_FOCUS, event);
                 }
 
-                this.dispatchMouseEvent(MouseEvent.PRESSED, mouse);
+                this.dispatchMouseEvent(MouseEventType.PRESSED, event);
             } else {
 
                 if (this.isMousePressed) {
                     this.isMousePressed = false;
-                    this.dispatchMouseEvent(MouseEvent.RELEASED, mouse);
+                    this.dispatchMouseEvent(MouseEventType.RELEASED, event);
                 }
             }
 
             if (!this.isMouseEntered) {
                 this.isMouseEntered = true;
-                this.dispatchMouseEvent(MouseEvent.ENTER, mouse);
+                this.dispatchMouseEvent(MouseEventType.ENTER, event);
             }
         } else {
             if (this.hasFocus && mouse.isButtonPressed(Mouse.LEFT_BUTTON)) {
                 this.hasFocus = false;
-                this.dispatchMouseEvent(MouseEvent.LOSE_FOCUS, mouse);
+                this.dispatchMouseEvent(MouseEventType.LOSE_FOCUS, event);
             }
 
             if (this.isMouseEntered) {
                 this.isMouseEntered = false;
-                this.dispatchMouseEvent(MouseEvent.LEAVE, mouse);
+                this.dispatchMouseEvent(MouseEventType.LEAVE, event);
             }
         }
     }
@@ -158,27 +162,27 @@ public abstract class GameComponent {
     /**
      * Adds an event listener for the given mouse event.
      *
-     * @param event   the mouse event to listen for.
-     * @param handler the handler for the event.
+     * @param eventType the mouse event type to listen for.
+     * @param handler   the event handler to run when the event is dispatched.
      */
-    public void addEventListener(MouseEvent event, ConsumerFunction<Mouse> handler) {
-        if (!this.mouseEventHandlers.containsKey(event)) {
-            this.mouseEventHandlers.put(event, new ArrayList<>());
+    public void addEventListener(MouseEventType eventType, ConsumerFunction<MouseEvent> handler) {
+        if (!this.mouseEventHandlers.containsKey(eventType)) {
+            this.mouseEventHandlers.put(eventType, new ArrayList<>());
         }
 
-        this.mouseEventHandlers.get(event).add(handler);
+        this.mouseEventHandlers.get(eventType).add(handler);
     }
 
     /**
      * Dispatches a mouse event to the event handlers.
      *
-     * @param event the mouse event to dispatch.
-     * @param mouse the mouse object to dispatch the event with.
+     * @param eventType the type of the mouse event.
+     * @param event     the mouse event to dispatch.
      */
-    public void dispatchMouseEvent(MouseEvent event, Mouse mouse) {
-        if (this.mouseEventHandlers.containsKey(event)) {
-            for (ConsumerFunction<Mouse> function : this.mouseEventHandlers.get(event)) {
-                function.run(mouse);
+    public void dispatchMouseEvent(MouseEventType eventType, MouseEvent event) {
+        if (this.mouseEventHandlers.containsKey(eventType)) {
+            for (ConsumerFunction<MouseEvent> function : this.mouseEventHandlers.get(eventType)) {
+                function.run(event);
             }
         }
     }
@@ -204,7 +208,7 @@ public abstract class GameComponent {
     /**
      * Represents a mouse event that can be dispatched to the event handlers.
      */
-    public enum MouseEvent {
+    public enum MouseEventType {
         HOVER,
         CLICK,
         ENTER,

@@ -73,7 +73,7 @@ public final class SelectModeScene extends Scene {
         this.selectModeText.fitSize();
         this.selectModeText.getStyle().centerHorizontally(contextProvider);
 
-        String[] options = {"Single Player", "Multi Player"};
+        String[] options = {"Please", "Get this", "From", "Controller", "# & #"};
         this.gameModeSelect = new Selector(options, contextProvider);
         this.gameModeSelect.getStyle().y = separatorHeight + separatorMargin + 150;
         this.gameModeSelect.getStyle().centerHorizontally(contextProvider);

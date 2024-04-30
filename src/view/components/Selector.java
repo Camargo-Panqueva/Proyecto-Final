@@ -122,13 +122,27 @@ public final class Selector extends GameComponent {
         this.style.borderRadius = 16;
     }
 
+    /**
+     * Sets up the default event listeners for the component.
+     * <p>
+     * This method sets up the default event listeners for the selector component.
+     * It adds a click event listener that changes the selected option when the user clicks on the selector.
+     * The selected option is changed to the previous option when the user clicks on the left side of the selector.
+     * The selected option is changed to the next option when the user clicks on the right side of the selector.
+     * </p>
+     */
     @Override
     protected void setupDefaultEventListeners() {
         super.setupDefaultEventListeners();
 
-//        this.addEventListener(MouseEvent.CLICK, (event) -> {
-//            this.selectedOption = (this.selectedOption + 1) % this.options.length;
-//        });
+        this.addEventListener(MouseEventType.CLICK, event -> {
+            Point relativePoint = event.relativeMousePosition;
+            if (relativePoint.x < this.style.width / 2) {
+                this.selectedOption = (this.selectedOption - 1 + this.options.length) % this.options.length;
+            } else {
+                this.selectedOption = (this.selectedOption + 1) % this.options.length;
+            }
+        });
     }
 
     /**
