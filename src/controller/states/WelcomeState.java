@@ -1,6 +1,6 @@
-package model.states;
+package controller.states;
 
-public final class WelcomeState extends BaseState {
+public final class WelcomeState extends GlobalState {
 
     @Override
     public StateType getStateType() {

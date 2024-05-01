@@ -3,10 +3,10 @@ package controller.main;
 import controller.serviceResponse.ErrorResponse;
 import controller.serviceResponse.ServiceResponse;
 import controller.serviceResponse.SuccessResponse;
+import controller.states.GlobalState;
 import model.GameModel;
 import model.cell.BaseCell;
 import model.parameters.GameModes;
-import model.states.BaseState;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,7 +41,7 @@ public final class GameController {
         return new SuccessResponse<>(model.board.getBoardCells(), "Current board height");
     }
 
-    public BaseState getCurrentState() {
+    public GlobalState getCurrentState() {
         return this.model.getStateManager().getCurrentState();
     }
 }

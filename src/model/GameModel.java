@@ -3,7 +3,7 @@ package model;
 import model.board.Board;
 import model.parameters.GameMode;
 import model.parameters.GameModes;
-import model.states.StateManager;
+import controller.states.StateManager;
 
 public final class GameModel {
 
@@ -57,7 +57,6 @@ public final class GameModel {
         READY,
         STARTED,
         PLAYING,
-        PAYER1WON,
-        PLAYER2WON;
+        WINNER;
     }
 }

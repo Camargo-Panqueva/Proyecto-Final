@@ -1,6 +1,6 @@
-package model.states;
+package controller.states;
 
-public final class SelectingGameModeState extends BaseState {
+public final class SelectingGameModeState extends GlobalState {
 
     @Override
     public StateType getStateType() {

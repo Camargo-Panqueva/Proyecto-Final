@@ -1,7 +1,6 @@
 package view;
 
 import controller.main.GameController;
-import model.states.BaseState;
 import util.ConcurrentLoop;
 import view.context.ContextProvider;
 import view.input.Mouse;

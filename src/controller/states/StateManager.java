@@ -1,18 +1,18 @@
-package model.states;
+package controller.states;
 
 public final class StateManager {
 
-    private BaseState currentState;
+    private GlobalState currentState;
 
     public StateManager() {
         this.currentState = new WelcomeState();
     }
 
-    public BaseState getCurrentState() {
+    public GlobalState getCurrentState() {
         return this.currentState;
     }
 
-    public void setCurrentState(BaseState.StateType newState) {
+    public void setCurrentState(GlobalState.StateType newState) {
         switch (newState) {
             case WELCOME:
                 this.currentState = new WelcomeState();
