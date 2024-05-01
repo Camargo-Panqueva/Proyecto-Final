@@ -6,7 +6,7 @@ import controller.serviceResponse.SuccessResponse;
 import controller.states.GlobalState;
 import controller.states.GlobalStateManager;
 import model.GameModel;
-import model.cell.BaseCell;
+import model.cell.CellType;
 import model.modes.GameModes;
 
 import java.util.ArrayList;
@@ -37,7 +37,7 @@ public final class GameController {
         return new SuccessResponse<>(null, "Ok");
     }
 
-    public ServiceResponse<ArrayList<BaseCell>> getBoardCells() {
+    public ServiceResponse<ArrayList<CellType>> getBoardCells() {
         if (this.model.gameState == GameModel.GameState.STARTED) {
             return new ErrorResponse<>("The model have not parameters for built it, use setGameMode");
         }

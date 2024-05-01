@@ -1,13 +1,12 @@
 package model.board;
 
-import model.cell.BaseCell;
-import model.cell.NormalCell;
+import model.cell.CellType;
 
 import java.util.ArrayList;
 
 public final class Board {
 
-    private final ArrayList<BaseCell> boardCells;
+    private final ArrayList<CellType> boardCells;
 
     private int height;
     private int width;
@@ -22,7 +21,7 @@ public final class Board {
     private void createCells() {
         for (int x = 0; x < this.width; x++) {
             for (int y = 0; y < this.height; y++) {
-                this.boardCells.add(new NormalCell(x, y));
+                this.boardCells.add(CellType.NORMAL);
             }
         }
     }
@@ -32,11 +31,11 @@ public final class Board {
         return x + y * this.width;
     }
 
-    public BaseCell getCell(final int x, final int y) {
+    public CellType getCell(final int x, final int y) {
         return this.boardCells.get(this.convertToLinePosition(x, y));
     }
 
-    public ArrayList<BaseCell> getBoardCells() {
+    public ArrayList<CellType> getBoardCells() {
         return boardCells;
     }
 
