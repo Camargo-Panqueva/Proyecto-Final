@@ -1,20 +1,20 @@
 package model;
 
+import model.board.Board;
 import model.parameters.GameMode;
 import model.parameters.GameModes;
 import model.states.StateManager;
 
 public final class GameModel {
 
-    private int height;
-    private int width;
+    private int numOfPlayers;
+    private int numOfWalls;
 
-    private int nPlayers;
-    private int nWall;
+    public Board board;
 
-     public GameState gameState;
+    public GameState gameState;
 
-     private GameMode gameMode;
+    private GameMode gameMode;
 
     private final StateManager stateManager;
 
@@ -23,16 +23,17 @@ public final class GameModel {
         this.gameState = GameState.STARTED;
     }
 
-    public void startGame(GameModes gameMode){
+    public void startGame(GameModes gameMode) {
         this.gameMode = gameMode.getGameModeClass();
-        this.builtParams();
+        this.builtParameters();
     }
 
-    private void builtParams(){
-        this.height = this.gameMode.getBoardHeight();
-        this.width = this.gameMode.getBoardWidth();
-        this.nPlayers = this.gameMode.getNumOfPlayers();
-        this.nWall = this.gameMode.getNumOfWalls();
+    private void builtParameters() {
+        this.numOfPlayers = this.gameMode.getNumOfPlayers();
+        this.numOfWalls = this.gameMode.getNumOfWalls();
+
+        this.board = new Board(this.gameMode.getBoardHeight(), this.gameMode.getBoardWidth());
+
         this.gameState = GameState.READY;
     }
 
@@ -40,27 +41,19 @@ public final class GameModel {
         return this.stateManager;
     }
 
-    public int getHeight() {
-        return height;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
     public int getNPlayers() {
-        return nPlayers;
+        return numOfPlayers;
     }
 
-    public int getNWall() {
-        return nWall;
+    public int get() {
+        return numOfWalls;
     }
 
     public GameMode getGameMode() {
         return gameMode;
     }
 
-    public enum GameState{
+    public enum GameState {
         READY,
         STARTED,
         PLAYING,

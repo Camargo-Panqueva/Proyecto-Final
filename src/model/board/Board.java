@@ -3,27 +3,52 @@ package model.board;
 import model.cell.BaseCell;
 import model.cell.NormalCell;
 
-public final class Board {
-    private final BaseCell[] baseCells;
+import java.util.ArrayList;
 
-    public Board(final int cellCount) {
-        this.baseCells = new BaseCell[cellCount * cellCount];
+public final class Board {
+
+    private final ArrayList<BaseCell> boardCells;
+
+    private int height;
+    private int width;
+
+    public Board(final int length, final int width) {
+        this.height = length;
+        this.width = width;
+        this.boardCells = new ArrayList<>();
         this.createCells();
     }
 
     private void createCells() {
-        for (int x = 0; x < this.getCellCount(); x++) {
-            for (int y = 0; y < this.getCellCount(); y++) {
-                this.baseCells[x + y * this.getCellCount()] = new NormalCell(x, y);
+        for (int x = 0; x < this.width; x++) {
+            for (int y = 0; y < this.height; y++) {
+                this.boardCells.add(new NormalCell(x, y));
             }
         }
     }
 
-    public int getCellCount() {
-        return this.baseCells.length;
+    private int convertToLinePosition(final int x, final int y) {
+        //TODO : Send this to controller. ERROR handler, x, y out of range
+        return x + y * this.width;
     }
 
-    public BaseCell[] getCells() {
-        return this.baseCells;
+    public BaseCell getCell(final int x, final int y) {
+        return this.boardCells.get(this.convertToLinePosition(x, y));
+    }
+
+    public ArrayList<BaseCell> getBoardCells() {
+        return boardCells;
+    }
+
+    public int getCellCount() {
+        return this.boardCells.size();
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public int getWidth() {
+        return width;
     }
 }

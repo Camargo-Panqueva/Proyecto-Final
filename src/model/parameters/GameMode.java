@@ -8,7 +8,7 @@ public abstract class GameMode {
     protected final int numOfPlayers;
     protected final int numOfWalls;
 
-    public GameMode(int boardHeight, int boardWidth, int numOfPlayers, int numOfWalls){
+    public GameMode(int boardHeight, int boardWidth, int numOfPlayers, int numOfWalls) {
         this.boardHeight = boardHeight;
         this.boardWidth = boardWidth;
         this.numOfPlayers = numOfPlayers;

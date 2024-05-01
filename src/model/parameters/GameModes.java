@@ -3,8 +3,9 @@ package model.parameters;
 import java.util.ArrayList;
 
 public enum GameModes {
-    NORMAL("Normal", new TwoNormalMode()),
-    NORMAL_4_PLAYERS("Normal 4 Players", new FourNormalMode());
+    NORMAL_TWO_PLAYERS("Player vs Player", new TwoNormalMode()),
+    NORMAL_PLAYER_IA("Player vs IA", new TwoNormalMode()),
+    NORMAL_FOUR_PLAYERS("4 Players", new FourNormalMode());
 
     private final String mode;
     private final GameMode gameModeClass;
