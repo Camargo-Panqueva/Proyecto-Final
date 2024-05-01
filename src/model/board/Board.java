@@ -12,8 +12,8 @@ public final class Board {
     private int height;
     private int width;
 
-    public Board(final int length, final int width) {
-        this.height = length;
+    public Board(final int width, final int height) {
+        this.height = height;
         this.width = width;
         this.boardCells = new ArrayList<>();
         this.createCells();

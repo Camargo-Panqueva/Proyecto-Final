@@ -1,56 +1,56 @@
 package model;
 
 import model.board.Board;
-import model.parameters.GameMode;
-import model.parameters.GameModes;
-import controller.states.StateManager;
+import model.modes.GameModeBases;
+import model.modes.GameModeManager;
+import model.modes.GameModes;
 
 public final class GameModel {
 
-    private int numOfPlayers;
-    private int numOfWalls;
+    private int playersCount;
+    private int wallsCount;
 
     public Board board;
 
     public GameState gameState;
 
-    private GameMode gameMode;
-
-    private final StateManager stateManager;
+    private final GameModeManager gameModeManager;
+    private GameModeBases baseParameters;
 
     public GameModel() {
-        this.stateManager = new StateManager();
+        this.gameModeManager = new GameModeManager();
         this.gameState = GameState.STARTED;
     }
 
-    public void startGame(GameModes gameMode) {
-        this.gameMode = gameMode.getGameModeClass();
+    public void builtGame(GameModes gameMode) {
+        this.gameModeManager.setCurrentGameMode(gameMode);
+        this.baseParameters = this.gameModeManager.getBaseParameters();
         this.builtParameters();
     }
 
     private void builtParameters() {
-        this.numOfPlayers = this.gameMode.getNumOfPlayers();
-        this.numOfWalls = this.gameMode.getNumOfWalls();
+        this.playersCount = this.baseParameters.playersCount;
+        this.wallsCount = this.baseParameters.wallsCount;
 
-        this.board = new Board(this.gameMode.getBoardHeight(), this.gameMode.getBoardWidth());
+        this.board = new Board(this.baseParameters.boardWidth, this.baseParameters.boardHeight);
 
         this.gameState = GameState.READY;
     }
 
-    public StateManager getStateManager() {
-        return this.stateManager;
+    public GameModeManager getGameModeManager() {
+        return this.gameModeManager;
     }
 
-    public int getNPlayers() {
-        return numOfPlayers;
+    public int getPlayersCount() {
+        return playersCount;
     }
 
-    public int get() {
-        return numOfWalls;
+    public int getWallsCount() {
+        return wallsCount;
     }
 
-    public GameMode getGameMode() {
-        return gameMode;
+    public GameModes getGameMode() {
+        return gameModeManager.getCurrentGameMode();
     }
 
     public enum GameState {

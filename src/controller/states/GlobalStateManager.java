@@ -1,10 +1,10 @@
 package controller.states;
 
-public final class StateManager {
+public final class GlobalStateManager {
 
     private GlobalState currentState;
 
-    public StateManager() {
+    public GlobalStateManager() {
         this.currentState = new WelcomeState();
     }
 
