@@ -33,27 +33,40 @@ public final class GameController {
 
         this.model.setBoard(this.model.getGameModeManager().getBaseParameters().boardWidth, this.model.getGameModeManager().getBaseParameters().boardHeight);
 
-        this.model.setMatchState(GameModel.MatchState.READY);
+        this.model.setMatchState(GameModel.MatchState.STARTED);
     }
 
     public ServiceResponse<Void> setGameMode(String selection) {
+
+        if (!model.getMatchState().equals(GameModel.MatchState.INITIALIZED)){
+            return new ErrorResponse<>("Cannot change the Game Mode after started");
+        }
+
         Optional<GameModes> gameMode = Arrays.stream(GameModes.values()).filter(c -> c.getMode().equals(selection)).findAny();
         if (gameMode.isEmpty()) {
             return new ErrorResponse<>("Invalid Game Mode");
         }
 
         this.model.getGameModeManager().setCurrentGameMode(gameMode.get());
-        this.builtGame();
         return new SuccessResponse<>(null, "Ok");
     }
 
+    public ServiceResponse<Void> setInitialCustomParameters(final int width, final int height, final int playerCount, final int wallCount){
+        //TODO : Error handler for invalid initial parameters
+        model.getGameModeManager().setCurrentGameMode(GameModes.CUSTOM, width, height, playerCount, wallCount);
+        return new SuccessResponse<>(null, "Custom initial parameters were established");
+    }
+
     public ServiceResponse<Void> startGame() {
+        model.getGameModeManager().setCurrentParameters();
+        model.setMatchState(GameModel.MatchState.STARTED);
+        this.builtGame();
 
         return new SuccessResponse<>(null, "Game Started");
     }
 
     public ServiceResponse<ArrayList<CellType>> getBoardCells() {
-        if (this.model.getMatchState() == GameModel.MatchState.STARTED) {
+        if (this.model.getMatchState().equals(GameModel.MatchState.INITIALIZED)) {
             return new ErrorResponse<>("The model have not parameters for built it, use setGameMode");
         }
         return new SuccessResponse<>(model.getBoard().getBoardCells(), "Current board height");

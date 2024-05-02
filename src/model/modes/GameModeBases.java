@@ -8,7 +8,7 @@ public abstract class GameModeBases {
     public final int playersCount;
     public final int wallsCount;
 
-    public GameModeBases(int boardHeight, int boardWidth, int numOfPlayers, int numOfWalls) {
+    public GameModeBases(int boardWidth, int boardHeight, int numOfPlayers, int numOfWalls) {
         this.boardHeight = boardHeight;
         this.boardWidth = boardWidth;
         this.playersCount = numOfPlayers;
@@ -16,4 +16,9 @@ public abstract class GameModeBases {
     }
 
     public abstract GameModes getGameModeType();
+
+    @Override
+    public String toString() {
+        return STR."Base Parameter: boardHeight=\{boardHeight}, boardWidth=\{boardWidth}, playersCount=\{playersCount}, wallsCount=\{wallsCount}, gameModeType=\{getGameModeType()}";
+    }
 }

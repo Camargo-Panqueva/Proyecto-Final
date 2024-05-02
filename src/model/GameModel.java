@@ -1,7 +1,6 @@
 package model;
 
 import model.board.Board;
-import model.modes.GameModeBases;
 import model.modes.GameModeManager;
 import model.modes.GameModes;
 import model.player.Player;
@@ -23,7 +22,7 @@ public final class GameModel {
 
     public GameModel() {
         this.gameModeManager = new GameModeManager();
-        this.matchState = MatchState.STARTED;
+        this.matchState = MatchState.INITIALIZED;
     }
 
     public void setBoard(final int wight, final int height) {
@@ -73,8 +72,8 @@ public final class GameModel {
     }
 
     public enum MatchState {
-        READY,
         STARTED,
+        INITIALIZED,
         PLAYING,
         WINNER;
     }

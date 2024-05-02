@@ -5,7 +5,8 @@ import java.util.ArrayList;
 public enum GameModes {
     NORMAL_TWO_PLAYERS("Player vs Player"),
     NORMAL_PLAYER_IA("Player vs IA"),
-    NORMAL_FOUR_PLAYERS("4 Players");
+    NORMAL_FOUR_PLAYERS("4 Players"),
+    CUSTOM("Custom");
 
     private final String mode;
 
