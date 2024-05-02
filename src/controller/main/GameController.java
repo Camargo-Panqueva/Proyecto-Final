@@ -6,8 +6,8 @@ import controller.serviceResponse.SuccessResponse;
 import controller.states.GlobalState;
 import controller.states.GlobalStateManager;
 import model.GameModel;
-import model.cell.CellType; //enum
-import model.modes.GameModes; //enum
+import model.cell.CellType;
+import model.modes.GameModes;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,12 +28,12 @@ public final class GameController {
     }
 
     private void builtGame() {
-        this.model.playersCount = this.model.gameModeManager.getBaseParameters().playersCount;
-        this.model.wallsCount = this.model.gameModeManager.getBaseParameters().wallsCount;
+        this.model.setPlayerCount(this.model.getGameModeManager().getBaseParameters().playersCount);
+        this.model.setWallCount(this.model.getGameModeManager().getBaseParameters().wallsCount);
 
-        this.model.setBoard(this.model.gameModeManager.getBaseParameters().boardWidth, this.model.gameModeManager.getBaseParameters().boardHeight);
+        this.model.setBoard(this.model.getGameModeManager().getBaseParameters().boardWidth, this.model.getGameModeManager().getBaseParameters().boardHeight);
 
-        this.model.gameState = GameModel.GameState.READY;
+        this.model.setMatchState(GameModel.MatchState.READY);
     }
 
     public ServiceResponse<Void> setGameMode(String selection) {
@@ -42,7 +42,7 @@ public final class GameController {
             return new ErrorResponse<>("Invalid Game Mode");
         }
 
-        this.model.gameModeManager.setCurrentGameMode(gameMode.get());
+        this.model.getGameModeManager().setCurrentGameMode(gameMode.get());
         this.builtGame();
         return new SuccessResponse<>(null, "Ok");
     }
@@ -53,10 +53,10 @@ public final class GameController {
     }
 
     public ServiceResponse<ArrayList<CellType>> getBoardCells() {
-        if (this.model.gameState == GameModel.GameState.STARTED) {
+        if (this.model.getMatchState() == GameModel.MatchState.STARTED) {
             return new ErrorResponse<>("The model have not parameters for built it, use setGameMode");
         }
-        return new SuccessResponse<>(model.board.getBoardCells(), "Current board height");
+        return new SuccessResponse<>(model.getBoard().getBoardCells(), "Current board height");
     }
 
     public GlobalState getGlobalCurrentState() {
