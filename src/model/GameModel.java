@@ -7,14 +7,14 @@ import model.modes.GameModes;
 
 public final class GameModel {
 
-    private int playersCount;
-    private int wallsCount;
+    public int playersCount;
+    public int wallsCount;
 
     public Board board;
 
     public GameState gameState;
 
-    private final GameModeManager gameModeManager;
+    public final GameModeManager gameModeManager;
     private GameModeBases baseParameters;
 
     public GameModel() {
@@ -22,23 +22,8 @@ public final class GameModel {
         this.gameState = GameState.STARTED;
     }
 
-    public void builtGame(GameModes gameMode) {
-        this.gameModeManager.setCurrentGameMode(gameMode);
-        this.baseParameters = this.gameModeManager.getBaseParameters();
-        this.builtParameters();
-    }
-
-    private void builtParameters() {
-        this.playersCount = this.baseParameters.playersCount;
-        this.wallsCount = this.baseParameters.wallsCount;
-
-        this.board = new Board(this.baseParameters.boardWidth, this.baseParameters.boardHeight);
-
-        this.gameState = GameState.READY;
-    }
-
-    public GameModeManager getGameModeManager() {
-        return this.gameModeManager;
+    public void setBoard(final int wight, final int height) {
+        this.board = new Board(wight, height);
     }
 
     public int getPlayersCount() {
