@@ -38,7 +38,7 @@ public final class GameController {
 
     public ServiceResponse<Void> setGameMode(String selection) {
 
-        if (!model.getMatchState().equals(GameModel.MatchState.INITIALIZED)){
+        if (!this.model.getMatchState().equals(GameModel.MatchState.INITIALIZED)) {
             return new ErrorResponse<>("Cannot change the Game Mode after started");
         }
 
@@ -51,16 +51,18 @@ public final class GameController {
         return new SuccessResponse<>(null, "Ok");
     }
 
-    public ServiceResponse<Void> setInitialCustomParameters(final int width, final int height, final int playerCount, final int wallCount){
+    public ServiceResponse<Void> setInitialCustomParameters(final int width, final int height, final int playerCount, final int wallCount) {
         //TODO : Error handler for invalid initial parameters
-        model.getGameModeManager().setCurrentGameMode(GameModes.CUSTOM, width, height, playerCount, wallCount);
+        this.model.getGameModeManager().setCurrentGameMode(GameModes.CUSTOM, width, height, playerCount, wallCount);
         return new SuccessResponse<>(null, "Custom initial parameters were established");
     }
 
     public ServiceResponse<Void> startGame() {
-        model.getGameModeManager().setCurrentParameters();
-        model.setMatchState(GameModel.MatchState.STARTED);
+        this.model.getGameModeManager().setCurrentParameters();
+        this.model.setMatchState(GameModel.MatchState.STARTED);
         this.builtGame();
+
+        this.globalStateManager.setCurrentState(GlobalState.GlobalStateType.PLAYING);
 
         return new SuccessResponse<>(null, "Game Started");
     }
@@ -69,10 +71,16 @@ public final class GameController {
         if (this.model.getMatchState().equals(GameModel.MatchState.INITIALIZED)) {
             return new ErrorResponse<>("The model have not parameters for built it, use setGameMode");
         }
-        return new SuccessResponse<>(model.getBoard().getBoardCells(), "Current board height");
+        return new SuccessResponse<>(this.model.getBoard().getBoardCells(), "Current board height");
     }
 
     public GlobalState getGlobalCurrentState() {
         return this.globalStateManager.getCurrentState();
+    }
+
+    public ServiceResponse<Void> setGlobalState(GlobalState.GlobalStateType globalState) {
+        //TODO : logic upon change global state
+        this.globalStateManager.setCurrentState(globalState);
+        return new SuccessResponse<>(null, "Global State Changed");
     }
 }

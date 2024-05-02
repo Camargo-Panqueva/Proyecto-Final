@@ -12,7 +12,7 @@ public final class GlobalStateManager {
         return this.currentState;
     }
 
-    public void setCurrentState(GlobalState.StateType newState) {
+    public void setCurrentState(GlobalState.GlobalStateType newState) {
         switch (newState) {
             case WELCOME:
                 this.currentState = new WelcomeState();

@@ -2,12 +2,13 @@ package controller.states;
 
 public abstract class GlobalState {
 
-    public abstract StateType getStateType();
+    public abstract GlobalStateType getStateType();
 
     //One for each scene
-    public enum StateType {
+    public enum GlobalStateType {
         WELCOME,
         SELECTING_GAME_MODE,
         PLAYING,
+        GAME_FINISHED;
     }
 }
