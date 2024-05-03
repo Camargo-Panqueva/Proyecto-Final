@@ -15,6 +15,7 @@ public final class SceneManager {
     public SceneManager(ContextProvider contextProvider) {
         this.scenes = new HashMap<>();
         this.contextProvider = contextProvider;
+        this.fetchCurrentGlobalState();
     }
 
     public void fetchCurrentGlobalState() {

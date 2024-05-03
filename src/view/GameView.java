@@ -1,13 +1,10 @@
 package view;
 
 import controller.main.GameController;
-import controller.states.GlobalState;
 import util.ConcurrentLoop;
 import view.context.ContextProvider;
 import view.input.Mouse;
-import view.scene.Scene;
 import view.scene.SceneManager;
-import view.scene.SelectModeScene;
 import view.themes.ThemeManager;
 import view.window.Window;
 
@@ -69,7 +66,7 @@ public final class GameView {
 
     private void render() {
 
-        if (bufferStrategy == null) {
+        if (this.bufferStrategy == null) {
             this.window.getCanvas().createBufferStrategy(2);
             this.bufferStrategy = this.window.getCanvas().getBufferStrategy();
         }
