@@ -1,5 +1,6 @@
 package view.scene;
 
+import controller.states.GlobalState;
 import view.components.Button;
 import view.components.GameComponent;
 import view.components.Text;
@@ -72,7 +73,7 @@ public final class WelcomeScene extends Scene {
         this.startButton.getStyle().centerHorizontally(contextProvider);
 
         this.themeButton = new Button("Toggle Theme", contextProvider);
-        this.themeButton.getStyle().y = 490;
+        this.themeButton.getStyle().y = this.startButton.getStyle().y + 90;
         this.themeButton.getStyle().centerHorizontally(contextProvider);
     }
 
@@ -85,7 +86,7 @@ public final class WelcomeScene extends Scene {
      */
     @Override
     protected void setupEvents() {
-        this.startButton.addEventListener(GameComponent.MouseEventType.CLICK, _ -> System.out.println("Start button clicked"));
-        this.themeButton.addEventListener(GameComponent.MouseEventType.CLICK, _ -> this.contextProvider.themeManager().toggleTheme());
+        this.startButton.addEventListener(GameComponent.MouseEventType.RELEASED, _ -> this.contextProvider.controller().setGlobalState(GlobalState.SELECTING_GAME_MODE));
+        this.themeButton.addEventListener(GameComponent.MouseEventType.RELEASED, _ -> this.contextProvider.themeManager().toggleTheme());
     }
 }

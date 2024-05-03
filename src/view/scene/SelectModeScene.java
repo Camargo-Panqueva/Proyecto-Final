@@ -1,10 +1,8 @@
 package view.scene;
 
 import controller.serviceResponse.ServiceResponse;
-import view.components.BackgroundSeparator;
-import view.components.Button;
-import view.components.Selector;
-import view.components.Text;
+import controller.states.GlobalState;
+import view.components.*;
 import view.context.ContextProvider;
 
 import java.util.ArrayList;
@@ -86,11 +84,11 @@ public final class SelectModeScene extends Scene {
         ArrayList<String> options = gameModesResponse.payload;
 
         this.gameModeSelect = new Selector(options, contextProvider);
-        this.gameModeSelect.getStyle().y = separatorHeight + separatorMargin + 150;
+        this.gameModeSelect.getStyle().y = 400;
         this.gameModeSelect.getStyle().centerHorizontally(contextProvider);
 
         this.startButton = new Button("Start", contextProvider);
-        this.startButton.getStyle().y = separatorHeight + separatorMargin + 250;
+        this.startButton.getStyle().y = this.gameModeSelect.getStyle().y + 90;
         this.startButton.getStyle().centerHorizontally(contextProvider);
     }
 
@@ -104,5 +102,13 @@ public final class SelectModeScene extends Scene {
     @Override
     protected void setupEvents() {
         //TODO: Implement event handling for the scene
+        this.startButton.addEventListener(GameComponent.MouseEventType.RELEASED, _ -> {
+            ServiceResponse<Void> response = this.contextProvider.controller().setGlobalState(GlobalState.WELCOME);
+
+            if (!response.ok) {
+                //TODO: Handle error
+                throw new RuntimeException("Error setting game mode " + response.message);
+            }
+        });
     }
 }

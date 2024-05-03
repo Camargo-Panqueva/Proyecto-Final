@@ -62,7 +62,7 @@ public final class GameController {
         this.model.setMatchState(GameModel.MatchState.STARTED);
         this.builtGame();
 
-        this.globalStateManager.setCurrentState(GlobalState.GlobalStateType.PLAYING);
+        this.globalStateManager.setCurrentState(GlobalState.PLAYING);
 
         return new SuccessResponse<>(null, "Game Started");
     }
@@ -78,7 +78,7 @@ public final class GameController {
         return this.globalStateManager.getCurrentState();
     }
 
-    public ServiceResponse<Void> setGlobalState(GlobalState.GlobalStateType globalState) {
+    public ServiceResponse<Void> setGlobalState(GlobalState globalState) {
         //TODO : logic upon change global state
         this.globalStateManager.setCurrentState(globalState);
         return new SuccessResponse<>(null, "Global State Changed");

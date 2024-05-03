@@ -104,7 +104,6 @@ public abstract class GameComponent {
 
                 if (!this.isMousePressed) {
                     this.isMousePressed = true;
-                    this.dispatchMouseEvent(MouseEventType.CLICK, event);
                 }
 
                 if (!this.hasFocus) {
@@ -126,9 +125,15 @@ public abstract class GameComponent {
                 this.dispatchMouseEvent(MouseEventType.ENTER, event);
             }
         } else {
-            if (this.hasFocus && mouse.isButtonPressed(Mouse.LEFT_BUTTON)) {
-                this.hasFocus = false;
-                this.dispatchMouseEvent(MouseEventType.LOSE_FOCUS, event);
+
+            //TODO: Delete this comment after check that the code below allows drag and drop functionality
+            if (mouse.isButtonPressed(Mouse.LEFT_BUTTON)) {
+                if (this.hasFocus) {
+                    this.hasFocus = false;
+                    this.dispatchMouseEvent(MouseEventType.LOSE_FOCUS, event);
+                }
+            } else {
+                this.isMousePressed = false;
             }
 
             if (this.isMouseEntered) {
@@ -210,7 +215,6 @@ public abstract class GameComponent {
      */
     public enum MouseEventType {
         HOVER,
-        CLICK,
         ENTER,
         LEAVE,
         PRESSED,

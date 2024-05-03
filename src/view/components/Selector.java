@@ -137,7 +137,7 @@ public final class Selector extends GameComponent {
     protected void setupDefaultEventListeners() {
         super.setupDefaultEventListeners();
 
-        this.addEventListener(MouseEventType.CLICK, event -> {
+        this.addEventListener(MouseEventType.RELEASED, event -> {
             Point relativePoint = event.relativeMousePosition;
             if (relativePoint.x < this.style.width / 2) {
                 this.selectedOption = (this.selectedOption - 1 + this.options.size()) % this.options.size();

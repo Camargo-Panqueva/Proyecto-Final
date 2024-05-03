@@ -1,10 +1,12 @@
 package view;
 
 import controller.main.GameController;
+import controller.states.GlobalState;
 import util.ConcurrentLoop;
 import view.context.ContextProvider;
 import view.input.Mouse;
 import view.scene.Scene;
+import view.scene.SceneManager;
 import view.scene.SelectModeScene;
 import view.themes.ThemeManager;
 import view.window.Window;
@@ -19,13 +21,13 @@ import java.util.List;
 
 public final class GameView {
 
-    private final GameController controller;
     private final ContextProvider contextProvider;
+    private final GameController controller;
+    private final SceneManager sceneManager;
     private final ThemeManager themeManager;
     private final Window window;
     private final Mouse mouse;
 
-    private final Scene currentScene;
 
     private ConcurrentLoop renderLoop;
     private ConcurrentLoop updateLoop;
@@ -42,13 +44,13 @@ public final class GameView {
         this.window.getCanvas().setFont(new Font("Yoster Island Regular", Font.PLAIN, 16));
 
         this.contextProvider = new ContextProvider(this.window, this.controller, this.mouse, this.themeManager);
-        this.currentScene = new SelectModeScene(this.contextProvider);
+        this.sceneManager = new SceneManager(this.contextProvider);
     }
 
     public void start() {
         this.window.makeVisible();
 
-        this.renderLoop = new ConcurrentLoop(this::render, 30, "View render");
+        this.renderLoop = new ConcurrentLoop(this::render, 60, "View render");
         this.updateLoop = new ConcurrentLoop(this::update, 60, "View update");
 
         this.renderLoop.start();
@@ -62,7 +64,7 @@ public final class GameView {
 
     private void update() {
         this.mouse.update(this.window);
-        this.currentScene.update();
+        this.sceneManager.update();
     }
 
     private void render() {
@@ -100,7 +102,7 @@ public final class GameView {
     }
 
     private void renderCurrentState(Graphics2D graphics) {
-        this.currentScene.render(graphics);
+        this.sceneManager.render(graphics);
     }
 
     private void setupGraphicsEnvironment() {
