@@ -1,5 +1,6 @@
 package view;
 
+import com.sun.management.OperatingSystemMXBean;
 import controller.main.GameController;
 import util.ConcurrentLoop;
 import view.context.ContextProvider;
@@ -13,6 +14,8 @@ import java.awt.*;
 import java.awt.image.BufferStrategy;
 import java.io.File;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.lang.management.MemoryMXBean;
 import java.util.Arrays;
 import java.util.List;
 
@@ -90,12 +93,27 @@ public final class GameView {
     private void renderPerformance(Graphics2D graphics) {
         graphics.setColor(this.themeManager.getCurrentTheme().foregroundColor);
         graphics.setFont(new Font("Arial", Font.PLAIN, 12));
+
+        FontMetrics fontMetrics = graphics.getFontMetrics();
+        int canvasSize = this.window.getCanvasSize();
+
         graphics.drawString(String.format("FPS: %d", this.renderLoop.getCurrentTPS()), 6, 16);
         graphics.drawString(String.format("TPS: %d", this.updateLoop.getCurrentTPS()), 6, 32);
 
         Point mousePosition = this.mouse.getMousePosition();
         String mouseText = String.format("Mouse: [%d, %d]", mousePosition.x, mousePosition.y);
         graphics.drawString(mouseText, 6, 48);
+
+        MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
+        long memoryUsed = memoryMXBean.getHeapMemoryUsage().getUsed() / 1024 / 1024;
+        long memoryMax = memoryMXBean.getHeapMemoryUsage().getMax() / 1024 / 1024;
+        String memoryText = String.format("Memory: %d / %d MB", memoryUsed, memoryMax);
+        graphics.drawString(memoryText, canvasSize - fontMetrics.stringWidth(memoryText) - 6, 16);
+
+        OperatingSystemMXBean osBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
+        double cpuLoad = osBean.getCpuLoad() * 100;
+        String cpuText = String.format("CPU: %.2f%%", cpuLoad);
+        graphics.drawString(cpuText, canvasSize - fontMetrics.stringWidth(cpuText) - 6, 32);
     }
 
     private void renderCurrentState(Graphics2D graphics) {
@@ -114,7 +132,7 @@ public final class GameView {
         List<String> availableFontFamilyNames = Arrays.asList(GE.getAvailableFontFamilyNames());
 
         try {
-            File fontFile = new File("res/fonts/yoster.ttf");
+            File fontFile = new File("src/resources/fonts/yoster.ttf");
             Font gameFont = Font.createFont(Font.TRUETYPE_FONT, fontFile);
             if (!availableFontFamilyNames.contains(gameFont.getFontName())) {
                 GE.registerFont(gameFont);
