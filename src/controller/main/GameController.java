@@ -8,7 +8,9 @@ import controller.states.GlobalStateManager;
 import model.GameModel;
 import model.cell.CellType;
 import model.modes.GameModes;
+import model.player.Player;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
@@ -28,12 +30,33 @@ public final class GameController {
     }
 
     private void builtGame() {
-        this.model.setPlayerCount(this.model.getGameModeManager().getBaseParameters().playersCount);
         this.model.setWallCount(this.model.getGameModeManager().getBaseParameters().wallsCount);
 
         this.model.setBoard(this.model.getGameModeManager().getBaseParameters().boardWidth, this.model.getGameModeManager().getBaseParameters().boardHeight);
 
+        this.setPlayers();
+
         this.model.setMatchState(GameModel.MatchState.STARTED);
+    }
+
+    private void setPlayers() {
+        final int width = this.model.getBoard().getWidth();
+        final int height = this.model.getBoard().getHeight();
+
+        final boolean widthIsEven = this.model.getBoard().getWidth() % 2 == 0;
+        final boolean heightIsEven = this.model.getBoard().getHeight() % 2 == 0;
+
+        final int widthCenterPosition = widthIsEven ? (width / 2) : (width / 2) + 1;
+        final int heightCenterPosition = heightIsEven ? (height / 2) : (height / 2) + 1;
+
+
+        this.model.addPlayer(new Player(new Point(widthCenterPosition, 0), "Player 1"));
+        this.model.addPlayer(new Player(new Point(widthCenterPosition, height), "Player 2"));
+
+        if (this.model.getPlayerCount() == 4) {
+            this.model.addPlayer(new Player(new Point(0, heightCenterPosition), "Player 3"));
+            this.model.addPlayer(new Player(new Point(width, heightCenterPosition), "Player 4"));
+        }
     }
 
     public ServiceResponse<Void> setGameMode(String selection) {

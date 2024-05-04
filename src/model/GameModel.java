@@ -6,22 +6,23 @@ import model.modes.GameModes;
 import model.player.Player;
 
 import java.awt.*;
+import java.util.ArrayList;
 
 public final class GameModel {
 
-    private int playerCount;
     private int wallCount;
 
     private Board board;
 
     private MatchState matchState;
 
-    private Player player;
+    private final ArrayList<Player> players;
 
     private final GameModeManager gameModeManager;
 
     public GameModel() {
         this.gameModeManager = new GameModeManager();
+        this.players = new ArrayList<>();
         this.matchState = MatchState.INITIALIZED;
     }
 
@@ -41,18 +42,24 @@ public final class GameModel {
         return matchState;
     }
 
-    public void setPlayer(Player player) {
-        this.player = player;
-    }
-    public void setPlayerPosition(Point point){
-        player.setPosition(point);
-    }
-    public int getPlayerCount() {
-        return playerCount;
+    public void setPlayer(int playerIndex, Player newPlayer) {
+        this.players.set(playerIndex, newPlayer);
     }
 
-    public void setPlayerCount(int playerCount) {
-        this.playerCount = playerCount;
+    public void setPlayerPosition(int indexPlayer, Point newPoint) {
+        this.players.get(indexPlayer).setPosition(newPoint);
+    }
+
+    public void addPlayer(Player newPlayer) {
+        this.players.add(newPlayer);
+    }
+
+    public int getPlayerCount() {
+        return this.gameModeManager.getBaseParameters().playersCount;
+    }
+
+    public ArrayList<Player> getPlayers() {
+        return this.players;
     }
 
     public int getWallCount() {
