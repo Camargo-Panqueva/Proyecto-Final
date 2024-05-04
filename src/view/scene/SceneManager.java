@@ -36,7 +36,15 @@ public final class SceneManager {
 
                 this.currentScene = this.scenes.get(GlobalState.SELECTING_GAME_MODE);
             }
+            case PLAYING -> {
+                if (!this.scenes.containsKey(GlobalState.PLAYING)) {
+                    this.scenes.put(GlobalState.PLAYING, new PlayingScene(this.contextProvider));
+                }
+
+                this.currentScene = this.scenes.get(GlobalState.PLAYING);
+            }
             default -> {
+                //TODO: Handle invalid state error
                 System.out.println("Invalid state");
             }
         }

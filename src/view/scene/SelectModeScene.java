@@ -103,11 +103,23 @@ public final class SelectModeScene extends Scene {
     protected void setupEvents() {
         //TODO: Implement event handling for the scene
         this.startButton.addEventListener(GameComponent.MouseEventType.RELEASED, _ -> {
-            ServiceResponse<Void> response = this.contextProvider.controller().setGlobalState(GlobalState.WELCOME);
+            ServiceResponse<Void> gameModeResponse = this.contextProvider.controller().setGameMode(this.gameModeSelect.getSelectedOption());
+            ServiceResponse<Void> startGameResponse = this.contextProvider.controller().startGame();
+            ServiceResponse<Void> globalStateResponse = this.contextProvider.controller().setGlobalState(GlobalState.PLAYING);
 
-            if (!response.ok) {
+            if (!gameModeResponse.ok) {
                 //TODO: Handle error
-                throw new RuntimeException("Error setting game mode " + response.message);
+                throw new RuntimeException("Error setting game mode " + gameModeResponse.message);
+            }
+
+            if (!startGameResponse.ok) {
+                //TODO: Handle error
+                throw new RuntimeException("Error starting game " + startGameResponse.message);
+            }
+
+            if (!globalStateResponse.ok) {
+                //TODO: Handle error
+                throw new RuntimeException("Error setting game mode " + globalStateResponse.message);
             }
         });
     }
