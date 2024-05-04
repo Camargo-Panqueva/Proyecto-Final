@@ -104,16 +104,29 @@ public final class GameView {
         String mouseText = String.format("Mouse: [%d, %d]", mousePosition.x, mousePosition.y);
         graphics.drawString(mouseText, 6, 48);
 
+        OperatingSystemMXBean osBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
+        double cpuLoad = osBean.getCpuLoad() * 100;
+        String cpuText = String.format("CPU: %.2f%%", cpuLoad);
+        graphics.drawString(cpuText, canvasSize - fontMetrics.stringWidth(cpuText) - 6, 16);
+
         MemoryMXBean memoryMXBean = ManagementFactory.getMemoryMXBean();
         long memoryUsed = memoryMXBean.getHeapMemoryUsage().getUsed() / 1024 / 1024;
         long memoryMax = memoryMXBean.getHeapMemoryUsage().getMax() / 1024 / 1024;
         String memoryText = String.format("Memory: %d / %d MB", memoryUsed, memoryMax);
-        graphics.drawString(memoryText, canvasSize - fontMetrics.stringWidth(memoryText) - 6, 16);
+        graphics.drawString(memoryText, canvasSize - fontMetrics.stringWidth(memoryText) - 6, 32);
 
-        OperatingSystemMXBean osBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
-        double cpuLoad = osBean.getCpuLoad() * 100;
-        String cpuText = String.format("CPU: %.2f%%", cpuLoad);
-        graphics.drawString(cpuText, canvasSize - fontMetrics.stringWidth(cpuText) - 6, 32);
+        double upTimeNanoSeconds = (double) ManagementFactory.getRuntimeMXBean().getUptime() * 1_000_000;
+
+        long renderThreadCpuTime = ManagementFactory.getThreadMXBean().getThreadCpuTime(this.renderLoop.getThread().threadId());
+        long updateThreadCpuTime = ManagementFactory.getThreadMXBean().getThreadCpuTime(this.updateLoop.getThread().threadId());
+
+        String uptimeText = String.format("Uptime: %.0f s", upTimeNanoSeconds / 1_000_000_000);
+        String renderThreadCPU = String.format("Render thread time: %.1f%%", 100 * renderThreadCpuTime / upTimeNanoSeconds);
+        String updateThreadCPU = String.format("Update thread time: %.1f%%", 100 * updateThreadCpuTime / upTimeNanoSeconds);
+
+        graphics.drawString(renderThreadCPU, canvasSize - fontMetrics.stringWidth(renderThreadCPU) - 6, 48);
+        graphics.drawString(updateThreadCPU, canvasSize - fontMetrics.stringWidth(updateThreadCPU) - 6, 64);
+        graphics.drawString(uptimeText, canvasSize - fontMetrics.stringWidth(uptimeText) - 6, 80);
     }
 
     private void renderCurrentState(Graphics2D graphics) {
