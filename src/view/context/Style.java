@@ -98,44 +98,6 @@ public final class Style {
     }
 
     /**
-     * Returns the location of the component.
-     *
-     * @return the location of the component.
-     */
-    public Point getLocation() {
-        return new Point(x, y);
-    }
-
-    /**
-     * Sets the location of the component.
-     *
-     * @param location the location to set.
-     */
-    public void setLocation(Point location) {
-        this.x = location.x;
-        this.y = location.y;
-    }
-
-    /**
-     * Returns the size of the component.
-     *
-     * @return the size of the component.
-     */
-    public Dimension getSize() {
-        return new Dimension(width, height);
-    }
-
-    /**
-     * Sets the size of the component.
-     *
-     * @param size the size to set.
-     */
-    public void setSize(Dimension size) {
-        this.width = size.width;
-        this.height = size.height;
-    }
-
-    /**
      * Centers the component horizontally on the canvas.
      * <p>
      * This method centers the component horizontally on the canvas.
