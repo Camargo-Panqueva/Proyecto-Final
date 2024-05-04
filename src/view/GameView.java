@@ -28,7 +28,6 @@ public final class GameView {
     private final Window window;
     private final Mouse mouse;
 
-
     private ConcurrentLoop renderLoop;
     private ConcurrentLoop updateLoop;
     private BufferStrategy bufferStrategy;
@@ -117,8 +116,8 @@ public final class GameView {
 
         double upTimeNanoSeconds = (double) ManagementFactory.getRuntimeMXBean().getUptime() * 1_000_000;
 
-        long renderThreadCpuTime = ManagementFactory.getThreadMXBean().getThreadCpuTime(this.renderLoop.getThread().threadId());
-        long updateThreadCpuTime = ManagementFactory.getThreadMXBean().getThreadCpuTime(this.updateLoop.getThread().threadId());
+        long renderThreadCpuTime = ManagementFactory.getThreadMXBean().getThreadCpuTime(this.renderLoop.getThread().getId());
+        long updateThreadCpuTime = ManagementFactory.getThreadMXBean().getThreadCpuTime(this.updateLoop.getThread().getId());
 
         String uptimeText = String.format("Uptime: %.0f s", upTimeNanoSeconds / 1_000_000_000);
         String renderThreadCPU = String.format("Render thread time: %.1f%%", 100 * renderThreadCpuTime / upTimeNanoSeconds);

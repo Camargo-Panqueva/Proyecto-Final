@@ -105,7 +105,7 @@ public final class SelectModeScene extends Scene {
     @Override
     protected void setupEvents() {
         //TODO: Implement event handling for the scene
-        this.startButton.addEventListener(GameComponent.MouseEventType.RELEASED, _ -> {
+        this.startButton.addEventListener(GameComponent.MouseEventType.RELEASED, _event -> {
             ServiceResponse<Void> gameModeResponse = this.contextProvider.controller().setGameMode(this.gameModeSelect.getSelectedOption());
             ServiceResponse<Void> startGameResponse = this.contextProvider.controller().startGame();
 

@@ -86,7 +86,7 @@ public final class WelcomeScene extends Scene {
      */
     @Override
     protected void setupEvents() {
-        this.startButton.addEventListener(GameComponent.MouseEventType.RELEASED, _ -> this.contextProvider.controller().setGlobalState(GlobalState.SELECTING_GAME_MODE));
-        this.themeButton.addEventListener(GameComponent.MouseEventType.RELEASED, _ -> this.contextProvider.themeManager().toggleTheme());
+        this.startButton.addEventListener(GameComponent.MouseEventType.RELEASED, _event -> this.contextProvider.controller().setGlobalState(GlobalState.SELECTING_GAME_MODE));
+        this.themeButton.addEventListener(GameComponent.MouseEventType.RELEASED, _event -> this.contextProvider.themeManager().toggleTheme());
     }
 }

@@ -19,6 +19,6 @@ public abstract class GameModeBases {
 
     @Override
     public String toString() {
-        return STR."Base Parameter: boardHeight=\{boardHeight}, boardWidth=\{boardWidth}, playersCount=\{playersCount}, wallsCount=\{wallsCount}, gameModeType=\{getGameModeType()}";
+        return String.format("Base Parameter: boardHeight=%d, boardWidth=%d, playersCount=%d, wallsCount=%d, gameModeType=%s", boardHeight, boardWidth, playersCount, wallsCount, getGameModeType());
     }
 }

@@ -75,8 +75,8 @@ public abstract class GameComponent {
      * Sets up the default event listeners for the component.
      */
     protected void setupDefaultEventListeners() {
-        this.addEventListener(MouseEventType.ENTER, _ -> this.contextProvider.window().getCanvas().setCursor(this.style.cursor));
-        this.addEventListener(MouseEventType.LEAVE, _ -> this.contextProvider.window().getCanvas().setCursor(Cursor.getDefaultCursor()));
+        this.addEventListener(MouseEventType.ENTER, _event -> this.contextProvider.window().getCanvas().setCursor(this.style.cursor));
+        this.addEventListener(MouseEventType.LEAVE, _event -> this.contextProvider.window().getCanvas().setCursor(Cursor.getDefaultCursor()));
     }
 
     /**
