@@ -67,11 +67,22 @@ public final class GameController {
         return new SuccessResponse<>(null, "Game Started");
     }
 
-    public ServiceResponse<ArrayList<CellType>> getBoardCells() {
+    public ServiceResponse<CellType[][]> getBoardCells() {
         if (this.model.getMatchState().equals(GameModel.MatchState.INITIALIZED)) {
-            return new ErrorResponse<>("The model have not parameters for built it, use setGameMode");
+            return new ErrorResponse<>("The model does not have parameters to build it; select them using setGameMode, and build them using startGame");
         }
-        return new SuccessResponse<>(this.model.getBoard().getBoardCells(), "Current board height");
+
+        int width = this.model.getBoard().getWidth();
+        int height = this.model.getBoard().getHeight();
+
+        CellType[][] cellTypesCopy = new CellType[width][height];
+
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                cellTypesCopy[x][y] = this.model.getBoard().getCell(x, y);
+            }
+        }
+        return new SuccessResponse<>(cellTypesCopy, "Ok");
     }
 
     public GlobalState getGlobalCurrentState() {
