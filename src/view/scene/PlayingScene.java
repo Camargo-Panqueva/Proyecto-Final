@@ -27,8 +27,8 @@ public final class PlayingScene extends Scene {
 
     @Override
     protected void setupComponents() {
-        ServiceResponse<ArrayList<CellType>> cellsResponse = this.contextProvider.controller().getBoardCells();
-        ArrayList<CellType> cells = cellsResponse.payload;
+        ServiceResponse<CellType[][]> cellsResponse = this.contextProvider.controller().getBoardCells();
+        CellType[][] cells = cellsResponse.payload;
 
         if (!cellsResponse.ok) {
             //TODO: Handle error
