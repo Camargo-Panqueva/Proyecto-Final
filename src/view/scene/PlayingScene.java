@@ -2,7 +2,7 @@ package view.scene;
 
 import controller.serviceResponse.ServiceResponse;
 import model.cell.CellType;
-import view.components.Board;
+import view.components.match.Board;
 import view.context.ContextProvider;
 
 import java.util.ArrayList;

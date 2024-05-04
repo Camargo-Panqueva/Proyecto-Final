@@ -1,5 +1,6 @@
-package view.components;
+package view.components.ui;
 
+import view.components.GameComponent;
 import view.context.ContextProvider;
 import view.themes.Theme;
 

@@ -1,9 +1,9 @@
 package view.scene;
 
 import controller.states.GlobalState;
-import view.components.Button;
+import view.components.ui.Button;
 import view.components.GameComponent;
-import view.components.Text;
+import view.components.ui.Text;
 import view.context.ContextProvider;
 
 //TODO: Update docs when different modes are implemented

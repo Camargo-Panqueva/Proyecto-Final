@@ -1,6 +1,7 @@
-package view.components;
+package view.components.match;
 
 import model.cell.CellType;
+import view.components.GameComponent;
 import view.context.ContextProvider;
 import view.themes.Theme;
 

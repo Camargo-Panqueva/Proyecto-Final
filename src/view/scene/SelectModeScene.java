@@ -1,8 +1,11 @@
 package view.scene;
 
 import controller.serviceResponse.ServiceResponse;
-import controller.states.GlobalState;
 import view.components.*;
+import view.components.ui.BackgroundSeparator;
+import view.components.ui.Button;
+import view.components.ui.Selector;
+import view.components.ui.Text;
 import view.context.ContextProvider;
 
 import java.util.ArrayList;
@@ -105,7 +108,6 @@ public final class SelectModeScene extends Scene {
         this.startButton.addEventListener(GameComponent.MouseEventType.RELEASED, _ -> {
             ServiceResponse<Void> gameModeResponse = this.contextProvider.controller().setGameMode(this.gameModeSelect.getSelectedOption());
             ServiceResponse<Void> startGameResponse = this.contextProvider.controller().startGame();
-            ServiceResponse<Void> globalStateResponse = this.contextProvider.controller().setGlobalState(GlobalState.PLAYING);
 
             if (!gameModeResponse.ok) {
                 //TODO: Handle error
@@ -115,11 +117,6 @@ public final class SelectModeScene extends Scene {
             if (!startGameResponse.ok) {
                 //TODO: Handle error
                 throw new RuntimeException("Error starting game " + startGameResponse.message);
-            }
-
-            if (!globalStateResponse.ok) {
-                //TODO: Handle error
-                throw new RuntimeException("Error setting game mode " + globalStateResponse.message);
             }
         });
     }
