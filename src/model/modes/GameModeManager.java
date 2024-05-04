@@ -24,10 +24,10 @@ public final class GameModeManager {
         }
     }
 
-    public void setCurrentGameMode(GameModes selectedGameMode, final int width,final int height, final int playerCount, final int wallCount) {
+    public void setCurrentGameMode(final GameModes selectedGameMode, final int width,final int height, final int playerCount, final int wallsPerPlayer) {
         switch (selectedGameMode) {
             case CUSTOM:
-                this.currentGameMode = new CustomBaseParameters(width, height, playerCount, wallCount);
+                this.currentGameMode = new CustomBaseParameters(width, height, playerCount, wallsPerPlayer);
                 break;
             default:
                 this.currentGameMode = new TwoNormalMode();

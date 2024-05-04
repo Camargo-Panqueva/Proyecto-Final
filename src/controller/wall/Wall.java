@@ -1,39 +1,40 @@
 package controller.wall;
 
 import model.GameModel;
+import model.wall.WallData;
 import model.wall.WallType;
 
 import java.util.ArrayList;
 
 public abstract class Wall {
 
-    protected ArrayList<WallType> wallShape;
-    protected int length;
-    protected WallType wallType;
+    protected final WallData wallData;
 
     public Wall() {
+        this.wallData = new WallData();
     }
 
     public abstract void action(GameModel gameModel);
 
     protected int convertToLinePosition(final int x, final int y) {
         //TODO : ERROR handler, x, y out of range
-        return x + y * this.length;
+        return x + y * this.wallData.getLength();
     }
 
     public void rotate() {
-        int row = this.length - 1;
-        int col = this.length - 1;
+        int length = this.wallData.getLength();
+        int row = length - 1;
+        int col = length - 1;
 
         ArrayList<WallType> shapeRotated = new ArrayList<>();
-        for (int i = 0; i < this.length * this.length; i++) {
+        for (int i = 0; i < length * length; i++) {
             shapeRotated.add(null);
         }
 
         for (int x = 0; x < row; x++) {
             for (int y = x; y < col; y++) {
-                WallType temp = this.wallShape.get(this.convertToLinePosition(x, y));
-                shapeRotated.set(this.convertToLinePosition(x, y), this.wallShape.get(this.convertToLinePosition(y, x)));
+                WallType temp = this.wallData.getWallShape().get(this.convertToLinePosition(x, y));
+                shapeRotated.set(this.convertToLinePosition(x, y), this.wallData.getWallShape().get(this.convertToLinePosition(y, x)));
                 shapeRotated.set(this.convertToLinePosition(y, x), temp);
             }
 
@@ -50,25 +51,25 @@ public abstract class Wall {
                 high--;
             }
 
-            this.wallShape = shapeRotated;
+            this.wallData.setWallShape(shapeRotated);
 
         }
     }
 
     @Override
     public String toString() {
-        if (wallShape == null) {
+        if (this.wallData.getWallShape() == null) {
             return "Null";
         }
         StringBuilder sb = new StringBuilder();
         int i = 1;
-        for (WallType wallType : wallShape) {
+        for (WallType wallType : this.wallData.getWallShape()) {
             if (wallType == WallType.NORMAL) {
                 sb.append("Normal").append(" ");
             } else {
                 sb.append("  0   ").append(" ");
             }
-            if (i % length == 0) {
+            if (i % this.wallData.getLength() == 0) {
                 sb.append("\n");
             }
             i++;

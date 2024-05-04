@@ -30,7 +30,7 @@ public final class GameController {
     }
 
     private void builtGame() {
-        this.model.setWallCount(this.model.getGameModeManager().getBaseParameters().wallsCount);
+        this.model.setWallCount(this.model.getGameModeManager().getBaseParameters().wallsPerPlayer);
 
         this.model.setBoard(this.model.getGameModeManager().getBaseParameters().boardWidth, this.model.getGameModeManager().getBaseParameters().boardHeight);
 
@@ -40,6 +40,8 @@ public final class GameController {
     }
 
     private void setPlayers() {
+        final int allowedWallsPerPlayer = this.model.getGameModeManager().getBaseParameters().wallsPerPlayer;
+
         final int width = this.model.getBoard().getWidth();
         final int height = this.model.getBoard().getHeight();
 
@@ -50,12 +52,12 @@ public final class GameController {
         final int heightCenterPosition = heightIsEven ? (height / 2) : (height / 2) + 1;
 
 
-        this.model.addPlayer(new Player(new Point(widthCenterPosition, 0), "Player 1"));
-        this.model.addPlayer(new Player(new Point(widthCenterPosition, height), "Player 2"));
+        this.model.addPlayer(new Player(new Point(widthCenterPosition, 0), "Player 1", allowedWallsPerPlayer));
+        this.model.addPlayer(new Player(new Point(widthCenterPosition, height), "Player 2", allowedWallsPerPlayer));
 
         if (this.model.getPlayerCount() == 4) {
-            this.model.addPlayer(new Player(new Point(0, heightCenterPosition), "Player 3"));
-            this.model.addPlayer(new Player(new Point(width, heightCenterPosition), "Player 4"));
+            this.model.addPlayer(new Player(new Point(0, heightCenterPosition), "Player 3", allowedWallsPerPlayer));
+            this.model.addPlayer(new Player(new Point(width, heightCenterPosition), "Player 4", allowedWallsPerPlayer));
         }
     }
 
@@ -74,13 +76,17 @@ public final class GameController {
         return new SuccessResponse<>(null, "Ok");
     }
 
-    public ServiceResponse<Void> setInitialCustomParameters(final int width, final int height, final int playerCount, final int wallCount) {
+    public ServiceResponse<Void> setInitialCustomParameters(final int width, final int height, final int playerCount, final int wallsPerPlayer) {
         //TODO : Error handler for invalid initial parameters
-        this.model.getGameModeManager().setCurrentGameMode(GameModes.CUSTOM, width, height, playerCount, wallCount);
+        this.model.getGameModeManager().setCurrentGameMode(GameModes.CUSTOM, width, height, playerCount, wallsPerPlayer);
         return new SuccessResponse<>(null, "Custom initial parameters were established");
     }
 
     public ServiceResponse<Void> startGame() {
+        if (this.model.getMatchState() == GameModel.MatchState.PLAYING) {
+            return new ErrorResponse<>("The game already started");
+        }
+
         this.model.getGameModeManager().setCurrentParameters();
         this.model.setMatchState(GameModel.MatchState.STARTED);
         this.builtGame();
