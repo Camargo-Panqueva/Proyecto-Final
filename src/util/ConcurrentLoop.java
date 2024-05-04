@@ -140,4 +140,13 @@ public final class ConcurrentLoop implements Runnable {
     public int getCurrentTPS() {
         return currentTPS;
     }
+
+    /**
+     * Gets the thread of the loop.
+     *
+     * @return the thread of the loop.
+     */
+    public Thread getThread() {
+        return thread;
+    }
 }
