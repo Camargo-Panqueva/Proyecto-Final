@@ -1,11 +1,10 @@
 package view.scene;
 
-import controller.serviceResponse.ServiceResponse;
+import controller.dto.BoardTransferObject;
+import controller.dto.ServiceResponse;
 import model.cell.CellType;
 import view.components.match.Board;
 import view.context.ContextProvider;
-
-import java.util.ArrayList;
 
 public final class PlayingScene extends Scene {
 
@@ -27,8 +26,8 @@ public final class PlayingScene extends Scene {
 
     @Override
     protected void setupComponents() {
-        ServiceResponse<CellType[][]> cellsResponse = this.contextProvider.controller().getBoardCells();
-        CellType[][] cells = cellsResponse.payload;
+        ServiceResponse<BoardTransferObject> cellsResponse = this.contextProvider.controller().getBoardState();
+        CellType[][] cells = cellsResponse.payload.cells();
 
         if (!cellsResponse.ok) {
             //TODO: Handle error

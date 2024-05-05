@@ -1,7 +1,7 @@
 package view.scene;
 
-import controller.serviceResponse.ServiceResponse;
-import view.components.*;
+import controller.dto.ServiceResponse;
+import view.components.GameComponent;
 import view.components.ui.BackgroundSeparator;
 import view.components.ui.Button;
 import view.components.ui.Selector;

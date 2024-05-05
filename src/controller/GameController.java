@@ -18,8 +18,8 @@ import java.util.Optional;
 public final class GameController {
 
     private final GameModel model;
-    private MatchManager matchManager;
     private final GlobalStateManager globalStateManager;
+    private MatchManager matchManager;
 
     public GameController(GameModel model) {
         this.model = model;
@@ -115,7 +115,7 @@ public final class GameController {
             cellTypesCopy[i] = Arrays.copyOf(this.model.getBoard().getBoardCells()[i], this.model.getBoard().getHeight());
         }
 
-        for (int i = 0; i < width * 2 + 1; i++) {
+        for (int i = 0; i < width * 2 - 1; i++) {
             wallTypesCopy[i] = Arrays.copyOf(this.model.getBoard().getBoardWalls()[i], height * 2 - 1);
         }
 

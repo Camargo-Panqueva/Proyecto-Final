@@ -1,6 +1,6 @@
 package view.context;
 
-import controller.main.GameController;
+import controller.GameController;
 import view.input.Mouse;
 import view.themes.ThemeManager;
 import view.window.Window;

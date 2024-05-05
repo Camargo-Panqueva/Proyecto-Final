@@ -1,7 +1,7 @@
 package view;
 
 import com.sun.management.OperatingSystemMXBean;
-import controller.main.GameController;
+import controller.GameController;
 import util.ConcurrentLoop;
 import view.context.ContextProvider;
 import view.input.Mouse;
