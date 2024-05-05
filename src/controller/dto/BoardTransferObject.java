@@ -6,6 +6,6 @@ import model.wall.WallType;
 import java.util.ArrayList;
 
 public record BoardTransferObject(CellType[][] cells, WallType[][] walls,
-                                  ArrayList<PlayerTransferObject> players) {
+                                  ArrayList<PlayerTransferObject> players, int playerInTurn) {
 
 }

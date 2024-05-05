@@ -126,7 +126,22 @@ public final class GameController {
                     this.model.getPlayerInTurn() == id, this.matchManager.getPossibleMovements(player)));
         }));
 
-        return new SuccessResponse<>(new BoardTransferObject(cellTypesCopy, wallTypesCopy, playerTransferObjectArrayList), "Ok");
+        return new SuccessResponse<>(new BoardTransferObject(cellTypesCopy, wallTypesCopy, playerTransferObjectArrayList, this.model.getPlayerInTurn()), "Ok");
+    }
+
+    public ServiceResponse<Void> processPlayerMove(int playerId, Point point){
+        if (!this.model.getMatchState().equals(GameModel.MatchState.PLAYING)) {
+            return new ErrorResponse<>("There is not a match, call startGame");
+        }
+        if (!this.model.getPlayers().containsKey(playerId)){
+            return new ErrorResponse<>("Player doesn't exist");
+        }
+        if (!this.matchManager.getPossibleMovements(this.model.getPlayers().get(playerId)).contains(point)){
+            return new ErrorResponse<>("Illegal Movement for " + this.model.getPlayers().get(playerId).getName());
+        }
+
+        this.matchManager.executeMove(this.model.getPlayers().get(playerId), point);
+        return new SuccessResponse<>(null, "Updated position in the model");
     }
 
     public GlobalState getGlobalCurrentState() {

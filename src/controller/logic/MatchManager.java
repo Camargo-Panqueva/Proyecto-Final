@@ -8,10 +8,12 @@ import java.util.ArrayList;
 
 public class MatchManager {
     private final GameModel gameModel;
+    private int indexCurrentIndex;
 
     public MatchManager(final GameModel gameModel) {
         this.gameModel = gameModel;
         this.gameModel.setPlayerInTurn(0);
+        this.indexCurrentIndex = 0;
     }
 
     public ArrayList<Point> getPossibleMovements(final Player player) {
@@ -39,11 +41,25 @@ public class MatchManager {
         return possibleMovements;
     }
 
-    private boolean isOccupiedPoint(Point point) {
-        return false;
+    public void executeMove(Player player, Point moveTo){
+        player.setPosition(moveTo);
+        this.nextTurn();
     }
 
-    private void movePlayer(Player player) {
+    private void nextTurn() {
 
+        this.indexCurrentIndex++;
+
+        if (!this.gameModel.getPlayers().containsKey(this.indexCurrentIndex)){
+            this.indexCurrentIndex = 0;
+            this.gameModel.setPlayerInTurn(0);
+            return;
+        }
+
+        this.gameModel.setPlayerInTurn(this.indexCurrentIndex);
+    }
+
+    private boolean isOccupiedPoint(Point point) {
+        return false;
     }
 }
