@@ -20,20 +20,20 @@ public class MatchManager {
 
         final Point basePoint = new Point(player.getPosition());
 
-        final int wight = this.gameModel.getBoard().getWidth();
+        final int width = this.gameModel.getBoard().getWidth();
         final int height = this.gameModel.getBoard().getHeight();
 
         if (basePoint.y != height - 1) {
-            possibleMovements.add(new Point(basePoint.x, basePoint.y - 1));
-        }
-        if (basePoint.x != wight - 1) {
-            possibleMovements.add(new Point(basePoint.x - 1, basePoint.y));
-        }
-        if (basePoint.y != 0) {
             possibleMovements.add(new Point(basePoint.x, basePoint.y + 1));
         }
-        if (basePoint.x != 0) {
+        if (basePoint.x != width - 1) {
             possibleMovements.add(new Point(basePoint.x + 1, basePoint.y));
+        }
+        if (basePoint.y != 0) {
+            possibleMovements.add(new Point(basePoint.x, basePoint.y - 1));
+        }
+        if (basePoint.x != 0) {
+            possibleMovements.add(new Point(basePoint.x - 1, basePoint.y));
         }
 
         return possibleMovements;

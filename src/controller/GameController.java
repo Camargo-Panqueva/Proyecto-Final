@@ -35,16 +35,16 @@ public final class GameController {
 
         this.model.setBoard(this.model.getGameModeManager().getBaseParameters().boardWidth, this.model.getGameModeManager().getBaseParameters().boardHeight);
 
-        this.setPlayers();
+        this.setupPlayers();
 
         this.model.setMatchState(GameModel.MatchState.STARTED);
     }
 
-    private void setPlayers() {
+    private void setupPlayers() {
         final int allowedWallsPerPlayer = this.model.getGameModeManager().getBaseParameters().wallsPerPlayer;
 
-        final int width = this.model.getBoard().getWidth();
-        final int height = this.model.getBoard().getHeight();
+        final int width = this.model.getBoard().getWidth() - 1;
+        final int height = this.model.getBoard().getHeight() - 1;
 
         final boolean widthIsEven = this.model.getBoard().getWidth() % 2 == 0;
         final boolean heightIsEven = this.model.getBoard().getHeight() % 2 == 0;

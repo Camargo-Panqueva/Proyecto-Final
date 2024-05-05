@@ -6,6 +6,7 @@ import util.ConcurrentLoop;
 import view.context.ContextProvider;
 import view.input.Mouse;
 import view.scene.SceneManager;
+import view.themes.DarkTheme;
 import view.themes.ThemeManager;
 import view.window.Window;
 
@@ -37,7 +38,7 @@ public final class GameView {
 
         this.controller = controller;
         this.mouse = new Mouse();
-        this.themeManager = new ThemeManager();
+        this.themeManager = new ThemeManager(new DarkTheme());
         this.window = new Window(600, "Quoridor"); // TODO: Set window size from controller data
         this.window.getCanvas().addMouseListener(this.mouse);
         this.window.getCanvas().setFont(new Font("Yoster Island Regular", Font.PLAIN, 16));
