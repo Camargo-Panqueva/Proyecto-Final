@@ -1,4 +1,4 @@
-package controller.serviceResponse;
+package controller.dto;
 
 public abstract class ServiceResponse<T> {
 
