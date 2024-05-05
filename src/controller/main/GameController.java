@@ -106,11 +106,10 @@ public final class GameController {
 
         CellType[][] cellTypesCopy = new CellType[width][height];
 
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                cellTypesCopy[x][y] = this.model.getBoard().getCell(x, y);
-            }
+        for (int i = 0; i < this.model.getBoard().getHeight(); i++) {
+            cellTypesCopy[i] = Arrays.copyOf(this.model.getBoard().getBoardCells()[i], this.model.getBoard().getHeight());
         }
+
         return new SuccessResponse<>(cellTypesCopy, "Ok");
     }
 

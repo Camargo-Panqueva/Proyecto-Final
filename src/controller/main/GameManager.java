@@ -13,7 +13,7 @@ public class GameManager {
     public GameManager(GameModel gameModel){
         this.gameModel = gameModel;
 
-        this.players = new ArrayList<>(this.gameModel.getPlayerCount());
-
+        this.players = new ArrayList<>(this.gameModel.getPlayers());
+        this.playerInTurn = this.players.get(0);
     }
 }
