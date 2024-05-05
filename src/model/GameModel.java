@@ -77,7 +77,7 @@ public final class GameModel {
         return gameModeManager.getCurrentGameMode();
     }
 
-    public int getPlayerInTurn() {
+    public int getPlayerInTurnId() {
         return playerInTurn;
     }
 

@@ -20,7 +20,7 @@ public final class DarkTheme extends Theme {
     /**
      * See {@link Theme#secondaryColor}.
      */
-    private final static Color secondaryColor = new Color(0x642332);
+    private final static Color secondaryColor = new Color(0x59D75A70, true);
 
     /**
      * See {@link Theme#backgroundColor}.

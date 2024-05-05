@@ -2,6 +2,7 @@ package view.components.match;
 
 import controller.dto.BoardTransferObject;
 import controller.dto.PlayerTransferObject;
+import controller.dto.ServiceResponse;
 import model.cell.CellType;
 import model.wall.WallType;
 import view.components.GameComponent;
@@ -13,29 +14,47 @@ import java.util.ArrayList;
 
 public final class Board extends GameComponent {
 
-    private final static int CELL_SIZE = 42;
+    private final static int CELL_SIZE = 54;
     private final static int WALL_SIZE = 14;
-
-    private final CellType[][] cells;
-    private final WallType[][] walls;
-    private final ArrayList<PlayerTransferObject> players;
     private final int widthCells;
     private final int heightCells;
+    private final Point parsedMousePosition;
+    private CellType[][] cells;
+    private WallType[][] walls;
+    private ArrayList<PlayerTransferObject> players;
+    private PlayerTransferObject playerInTurn;
 
     /**
      * Creates a new Board component with the given context provider.
      *
      * @param contextProvider the context provider for the component.
      */
-    public Board(BoardTransferObject boardState, ContextProvider contextProvider) {
+    public Board(ContextProvider contextProvider) {
         super(contextProvider);
+
+        this.updateBoardState();
+
+        this.widthCells = cells.length;
+        this.heightCells = cells[0].length;
+
+        this.parsedMousePosition = new Point();
+    }
+
+    private void updateBoardState() {
+        ServiceResponse<BoardTransferObject> boardStateResponse = this.contextProvider.controller().getBoardState();
+
+        if (!boardStateResponse.ok) {
+            //TODO: Handle error
+            throw new RuntimeException("Failed to get board state: " + boardStateResponse.message);
+        }
+
+        BoardTransferObject boardState = boardStateResponse.payload;
 
         this.cells = boardState.cells();
         this.players = boardState.players();
         this.walls = boardState.walls();
 
-        this.widthCells = cells.length;
-        this.heightCells = cells[0].length;
+        this.playerInTurn = boardState.playerInTurn();
     }
 
     private void renderCells(Graphics2D graphics) {
@@ -54,16 +73,18 @@ public final class Board extends GameComponent {
     private void renderPlayers(Graphics2D graphics) {
 
         for (PlayerTransferObject player : this.players) {
-            graphics.setColor(this.contextProvider.themeManager().getCurrentTheme().primaryColor);
+
+            if (player.isInTurn()) {
+                graphics.setColor(this.contextProvider.themeManager().getCurrentTheme().primaryColor);
+            } else {
+                graphics.setColor(this.contextProvider.themeManager().getCurrentTheme().secondaryColor);
+            }
 
             int x = player.position().x * (CELL_SIZE + WALL_SIZE) + this.style.x + this.style.paddingX;
             int y = player.position().y * (CELL_SIZE + WALL_SIZE) + this.style.y + this.style.paddingY;
 
             graphics.fillOval(x, y, CELL_SIZE, CELL_SIZE);
-
-            graphics.setColor(this.contextProvider.themeManager().getCurrentTheme().primaryColor);
-            graphics.drawString(player.name(), x + CELL_SIZE, y - 5);
-
+            graphics.drawString(player.name(), x + CELL_SIZE, y - 3);
             this.renderAllowedMoves(graphics, player);
         }
     }
@@ -81,9 +102,24 @@ public final class Board extends GameComponent {
 
     }
 
+    private void updateParsedMousePosition() {
+        this.parsedMousePosition.x = this.contextProvider.mouse().getMouseRelativePosition(this.getBounds()).x / (CELL_SIZE + WALL_SIZE);
+        this.parsedMousePosition.y = this.contextProvider.mouse().getMouseRelativePosition(this.getBounds()).y / (CELL_SIZE + WALL_SIZE);
+    }
+
+    private void updateCursor() {
+        if (this.playerInTurn.allowedMoves().contains(this.parsedMousePosition)) {
+            this.contextProvider.window().getCanvas().setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        } else {
+            this.contextProvider.window().getCanvas().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        }
+    }
+
     @Override
     public void update() {
         this.pollMouseEvents();
+        this.updateParsedMousePosition();
+        this.updateCursor();
     }
 
     @Override
@@ -93,6 +129,7 @@ public final class Board extends GameComponent {
 
         this.renderCells(graphics);
         this.renderPlayers(graphics);
+        this.renderWalls(graphics);
     }
 
     @Override
@@ -127,13 +164,19 @@ public final class Board extends GameComponent {
         super.setupDefaultEventListeners();
 
         this.addEventListener(MouseEventType.RELEASED, event -> {
-            int x = event.relativeMousePosition.x;
-            int y = event.relativeMousePosition.y;
+            if (!playerInTurn.allowedMoves().contains(this.parsedMousePosition)) {
+                return;
+            }
 
-            int cellX = x / (CELL_SIZE + WALL_SIZE);
-            int cellY = y / (CELL_SIZE + WALL_SIZE);
+            ServiceResponse<Void> movementResponse =
+                    this.contextProvider.controller().processPlayerMove(this.playerInTurn.id(), new Point(this.parsedMousePosition));
 
-            System.out.println("Clicked on cell: " + cellX + ", " + cellY);
+            if (!movementResponse.ok) {
+                //TODO: Handle error
+                throw new RuntimeException("Failed to process player move: " + movementResponse.message);
+            }
+
+            this.updateBoardState();
         });
     }
 }

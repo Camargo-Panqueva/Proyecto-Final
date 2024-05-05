@@ -23,6 +23,7 @@ public final class GameController {
 
     public GameController(GameModel model) {
         this.model = model;
+        this.model.setMatchState(GameModel.MatchState.INITIALIZED);
         this.globalStateManager = new GlobalStateManager();
     }
 
@@ -30,9 +31,8 @@ public final class GameController {
         return new SuccessResponse<>(GameModes.getModes(), "Game Mode List Obtained Successfully");
     }
 
-    private void builtGame() {
+    private void buildGame() {
         this.model.setWallCount(this.model.getGameModeManager().getBaseParameters().wallsPerPlayer);
-
         this.model.setBoard(this.model.getGameModeManager().getBaseParameters().boardWidth, this.model.getGameModeManager().getBaseParameters().boardHeight);
 
         this.setupPlayers();
@@ -90,13 +90,11 @@ public final class GameController {
         }
 
         this.model.getGameModeManager().setCurrentParameters();
-        this.model.setMatchState(GameModel.MatchState.STARTED);
-        this.builtGame();
-
-        this.globalStateManager.setCurrentState(GlobalState.PLAYING);
-
+        this.buildGame();
         this.matchManager = new MatchManager(this.model);
 
+        this.globalStateManager.setCurrentState(GlobalState.PLAYING);
+        this.model.setMatchState(GameModel.MatchState.PLAYING);
         return new SuccessResponse<>(null, "Game Started");
     }
 
@@ -123,20 +121,26 @@ public final class GameController {
 
         this.model.getPlayers().forEach(((id, player) -> {
             playerTransferObjectArrayList.add(new PlayerTransferObject(id, player.getName(), player.getPosition(),
-                    this.model.getPlayerInTurn() == id, this.matchManager.getPossibleMovements(player)));
+                    this.model.getPlayerInTurnId() == id, this.matchManager.getPossibleMovements(player)));
         }));
 
-        return new SuccessResponse<>(new BoardTransferObject(cellTypesCopy, wallTypesCopy, playerTransferObjectArrayList, this.model.getPlayerInTurn()), "Ok");
+        return new SuccessResponse<>(
+                new BoardTransferObject(
+                        cellTypesCopy,
+                        wallTypesCopy,
+                        playerTransferObjectArrayList,
+                        playerTransferObjectArrayList.stream().filter(PlayerTransferObject::isInTurn).findFirst().orElse(null) //TODO : check if this is correct
+                ), "Ok");
     }
 
-    public ServiceResponse<Void> processPlayerMove(int playerId, Point point){
+    public ServiceResponse<Void> processPlayerMove(int playerId, Point point) {
         if (!this.model.getMatchState().equals(GameModel.MatchState.PLAYING)) {
             return new ErrorResponse<>("There is not a match, call startGame");
         }
-        if (!this.model.getPlayers().containsKey(playerId)){
+        if (!this.model.getPlayers().containsKey(playerId)) {
             return new ErrorResponse<>("Player doesn't exist");
         }
-        if (!this.matchManager.getPossibleMovements(this.model.getPlayers().get(playerId)).contains(point)){
+        if (!this.matchManager.getPossibleMovements(this.model.getPlayers().get(playerId)).contains(point)) {
             return new ErrorResponse<>("Illegal Movement for " + this.model.getPlayers().get(playerId).getName());
         }
 

@@ -20,7 +20,7 @@ public final class LightTheme extends Theme {
     /**
      * See {@link Theme#secondaryColor}.
      */
-    private final static Color secondaryColor = new Color(0x642332);
+    private final static Color secondaryColor = new Color(0x59642332, true);
 
     /**
      * See {@link Theme#backgroundColor}.
