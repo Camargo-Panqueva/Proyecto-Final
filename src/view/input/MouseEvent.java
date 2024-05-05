@@ -31,9 +31,6 @@ public final class MouseEvent {
         this.target = target;
 
         this.absoluteMousePosition = new Point(mouse.getMousePosition());
-        this.relativeMousePosition = new Point(
-                this.absoluteMousePosition.x - target.getStyle().x,
-                this.absoluteMousePosition.y - target.getStyle().y
-        );
+        this.relativeMousePosition = new Point(mouse.getMouseRelativePosition(target.getBounds()));
     }
 }

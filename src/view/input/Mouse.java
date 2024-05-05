@@ -94,6 +94,21 @@ public final class Mouse extends MouseAdapter {
     }
 
     /**
+     * Gets the current mouse position relative to a component's bounds.
+     * <p>
+     * This method gets the current mouse position relative to a component's bounds.
+     * It returns the mouse position relative to the component's bounds.
+     * The bounds are used to calculate the relative mouse position.
+     * </p>
+     *
+     * @param bounds the bounds to calculate the relative mouse position for.
+     * @return the mouse position relative to the component's bounds.
+     */
+    public Point getMouseRelativePosition(Rectangle bounds) {
+        return new Point(this.mousePosition.x - bounds.x, this.mousePosition.y - bounds.y);
+    }
+
+    /**
      * Checks if a button is pressed.
      * <p>
      * This method checks if a button is currently pressed.

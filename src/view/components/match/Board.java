@@ -9,8 +9,8 @@ import java.awt.*;
 
 public final class Board extends GameComponent {
 
-    private final static int CELL_SIZE = 64;
-    private final static int WALL_SIZE = 16;
+    private final static int CELL_SIZE = 42;
+    private final static int WALL_SIZE = 14;
 
     private final CellType[][] cells;
     private final int widthCells;
@@ -45,7 +45,7 @@ public final class Board extends GameComponent {
                 int y = this.style.y + this.style.paddingY + j * (CELL_SIZE + WALL_SIZE);
 
                 graphics.setColor(this.contextProvider.themeManager().getCurrentTheme().backgroundColor);
-                graphics.fillRoundRect(x, y, CELL_SIZE, CELL_SIZE, 12, 12);
+                graphics.fillRoundRect(x, y, CELL_SIZE, CELL_SIZE, 8, 8);
 
                 CellType cell = this.cells[i][j];
             }
@@ -77,5 +77,20 @@ public final class Board extends GameComponent {
         this.style.width = this.contextProvider.window().getCanvasSize();
         this.style.height = this.contextProvider.window().getCanvasSize();
         this.style.backgroundColor = this.contextProvider.themeManager().getCurrentTheme().backgroundContrastColor;
+    }
+
+    @Override
+    protected void setupDefaultEventListeners() {
+        super.setupDefaultEventListeners();
+
+        this.addEventListener(MouseEventType.RELEASED, event -> {
+            int x = event.relativeMousePosition.x;
+            int y = event.relativeMousePosition.y;
+
+            int cellX = x / (CELL_SIZE + WALL_SIZE);
+            int cellY = y / (CELL_SIZE + WALL_SIZE);
+
+            System.out.println("Clicked on cell: " + cellX + ", " + cellY);
+        });
     }
 }
