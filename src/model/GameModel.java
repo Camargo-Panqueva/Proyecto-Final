@@ -6,7 +6,7 @@ import model.modes.GameModes;
 import model.player.Player;
 
 import java.awt.*;
-import java.util.ArrayList;
+import java.util.HashMap;
 
 public final class GameModel {
 
@@ -16,13 +16,15 @@ public final class GameModel {
 
     private MatchState matchState;
 
-    private final ArrayList<Player> players;
+    private final HashMap<Integer, Player> players;
+
+    private int playerInTurn;
 
     private final GameModeManager gameModeManager;
 
     public GameModel() {
         this.gameModeManager = new GameModeManager();
-        this.players = new ArrayList<>();
+        this.players = new HashMap<>();
         this.matchState = MatchState.INITIALIZED;
     }
 
@@ -43,22 +45,22 @@ public final class GameModel {
     }
 
     public void setPlayer(int playerIndex, Player newPlayer) {
-        this.players.set(playerIndex, newPlayer);
+        this.players.put(playerIndex, newPlayer);
     }
 
     public void setPlayerPosition(int indexPlayer, Point newPoint) {
         this.players.get(indexPlayer).setPosition(newPoint);
     }
 
-    public void addPlayer(Player newPlayer) {
-        this.players.add(newPlayer);
+    public void addPlayer(int playerId, Player newPlayer) {
+        this.players.put(playerId, newPlayer);
     }
 
     public int getPlayerCount() {
         return this.gameModeManager.getBaseParameters().playersCount;
     }
 
-    public ArrayList<Player> getPlayers() {
+    public HashMap<Integer, Player> getPlayers() {
         return this.players;
     }
 
@@ -66,9 +68,6 @@ public final class GameModel {
         return wallCount;
     }
 
-    public void setWallCount(int wallCount) {
-        this.wallCount = wallCount;
-    }
 
     public GameModeManager getGameModeManager() {
         return gameModeManager;
@@ -76,6 +75,18 @@ public final class GameModel {
 
     public GameModes getGameMode() {
         return gameModeManager.getCurrentGameMode();
+    }
+
+    public int getPlayerInTurn() {
+        return playerInTurn;
+    }
+
+    public void setWallCount(int wallCount) {
+        this.wallCount = wallCount;
+    }
+
+    public void setPlayerInTurn(int playerInTurn) {
+        this.playerInTurn = playerInTurn;
     }
 
     public enum MatchState {

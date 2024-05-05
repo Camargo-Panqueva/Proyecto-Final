@@ -3,25 +3,25 @@ package controller.wall;
 import model.GameModel;
 import model.wall.WallType;
 
-import java.awt.*;
 import java.util.ArrayList;
-import java.util.LinkedList;
 
-public class NormalWall extends Wall{
-    private LinkedList<Character> courses;
-    private char course;
+public class NormalWall extends Wall {
 
     public NormalWall() {
-        super.wallType = WallType.NORMAL;
-        super.wallShape = new ArrayList<>(super.length * super.length);
-        super.length = 3;
 
-        for (int i = 0; i < super.length * super.length; i++) {
-            super.wallShape.add(null);
+        super.wallData.setLength(3);
+
+        int length = super.wallData.getLength();
+
+        super.wallData.setWallType(WallType.NORMAL);
+        super.wallData.setWallShape(new ArrayList<>(length * length));
+
+        for (int i = 0; i < length * length; i++) {
+            super.wallData.getWallShape().add(null);
         }
 
-        super.wallShape.set(super.convertToLinePosition(0, 1), WallType.NORMAL);
-        super.wallShape.set(super.convertToLinePosition(1, 1), WallType.NORMAL);
+        super.wallData.getWallShape().set(super.convertToLinePosition(0, 1), WallType.NORMAL);
+        super.wallData.getWallShape().set(super.convertToLinePosition(1, 1), WallType.NORMAL);
 
     }
 
