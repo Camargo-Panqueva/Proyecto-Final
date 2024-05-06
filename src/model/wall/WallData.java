@@ -1,14 +1,14 @@
 package model.wall;
 
 import java.awt.*;
-import java.util.ArrayList;
 
 public class WallData {
-    private int length;
+    private int width;
+    private int height;
     private char course;
     private Point position;
     private WallType wallType;
-    private ArrayList<WallType> wallShape;
+    private WallType[][] wallShape;
 
 
     public Point getPosition() {
@@ -19,7 +19,7 @@ public class WallData {
         return course;
     }
 
-    public ArrayList<WallType> getWallShape() {
+    public WallType[][] getWallShape() {
         return wallShape;
     }
 
@@ -27,8 +27,11 @@ public class WallData {
         return wallType;
     }
 
-    public int getLength() {
-        return length;
+    public int getWidth() {
+        return width;
+    }
+    public int getHeight() {
+        return height;
     }
 
     public void setPosition(Point position) {
@@ -39,11 +42,15 @@ public class WallData {
         this.course = course;
     }
 
-    public void setLength(int length) {
-        this.length = length;
+    public void setWidth(int width) {
+        this.width = width;
     }
 
-    public void setWallShape(ArrayList<WallType> wallShape) {
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public void setWallShape(WallType[][] wallShape) {
         this.wallShape = wallShape;
     }
 

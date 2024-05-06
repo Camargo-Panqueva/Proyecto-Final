@@ -9,19 +9,20 @@ public class NormalWall extends Wall {
 
     public NormalWall() {
 
-        super.wallData.setLength(3);
+        super.wallData.setWidth(3);
 
-        int length = super.wallData.getLength();
+        int length = super.wallData.getWidth();
 
         super.wallData.setWallType(WallType.NORMAL);
-        super.wallData.setWallShape(new ArrayList<>(length * length));
 
-        for (int i = 0; i < length * length; i++) {
-            super.wallData.getWallShape().add(null);
-        }
+        super.wallData.setWidth(3);
+        super.wallData.setHeight(3);
+        super.wallData.setWallShape(new WallType[super.wallData.getWidth()][super.wallData.getHeight()]);
 
-        super.wallData.getWallShape().set(super.convertToLinePosition(0, 1), WallType.NORMAL);
-        super.wallData.getWallShape().set(super.convertToLinePosition(1, 1), WallType.NORMAL);
+
+        super.wallData.getWallShape()[1][0] =  WallType.NORMAL;
+        super.wallData.getWallShape()[1][1] = WallType.NORMAL;
+        super.wallData.getWallShape()[1][2] = WallType.NORMAL;
 
     }
 

@@ -4,7 +4,7 @@ import model.GameModel;
 import model.wall.WallData;
 import model.wall.WallType;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 
 public abstract class Wall {
 
@@ -16,44 +16,29 @@ public abstract class Wall {
 
     public abstract void action(GameModel gameModel);
 
-    protected int convertToLinePosition(final int x, final int y) {
-        //TODO : ERROR handler, x, y out of range
-        return x + y * this.wallData.getLength();
-    }
-
     public void rotate() {
-        int length = this.wallData.getLength();
-        int row = length - 1;
-        int col = length - 1;
+        int width = this.wallData.getWidth();
+        int height = this.wallData.getHeight();
 
-        ArrayList<WallType> shapeRotated = new ArrayList<>();
-        for (int i = 0; i < length * length; i++) {
-            shapeRotated.add(null);
+        WallType[][] shapeRotated = new WallType[height][width];
+
+        for (int i = 0; i < width; i++) {
+            shapeRotated[i] = Arrays.copyOf(this.wallData.getWallShape()[i], height);
         }
 
-        for (int x = 0; x < row; x++) {
-            for (int y = x; y < col; y++) {
-                WallType temp = this.wallData.getWallShape().get(this.convertToLinePosition(x, y));
-                shapeRotated.set(this.convertToLinePosition(x, y), this.wallData.getWallShape().get(this.convertToLinePosition(y, x)));
-                shapeRotated.set(this.convertToLinePosition(y, x), temp);
+        for (int x = 0; x < width - 1; x++) {
+            for (int y = 0; y < height - 1; y++) {
+                shapeRotated[y][x] = this.wallData.getWallShape()[x][y];
             }
-
         }
 
-        for (int i = 0; i < col; i++) {
-            int low = 0;
-            int high = col - 1;
-            while (low < high) {
-                WallType temp = shapeRotated.get(this.convertToLinePosition(i, low));
-                shapeRotated.set(this.convertToLinePosition(i, low), shapeRotated.get(this.convertToLinePosition(i, high)));
-                shapeRotated.set(this.convertToLinePosition(i, high), temp);
-                low++;
-                high--;
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                shapeRotated[i][j] = this.wallData.getWallShape()[width - 1 - j][i];
             }
-
-            this.wallData.setWallShape(shapeRotated);
-
         }
+
+        this.wallData.setWallShape(shapeRotated);
     }
 
     @Override
@@ -63,16 +48,21 @@ public abstract class Wall {
         }
         StringBuilder sb = new StringBuilder();
         int i = 1;
-        for (WallType wallType : this.wallData.getWallShape()) {
-            if (wallType == WallType.NORMAL) {
-                sb.append("Normal").append(" ");
-            } else {
-                sb.append("  0   ").append(" ");
+        for (int x = 0; x < this.wallData.getWidth(); x++) {
+            for (int y = 0; y < this.wallData.getHeight(); y++) {
+
+                if (this.wallData.getWallShape()[x][y] == WallType.NORMAL) {
+                    sb.append("Normal").append(" ");
+                } else {
+                    sb.append("  0   ").append(" ");
+                }
+                if (i % this.wallData.getWidth() == 0) {
+                    sb.append("\n");
+                }
+                i++;
+
             }
-            if (i % this.wallData.getLength() == 0) {
-                sb.append("\n");
-            }
-            i++;
+
         }
 
         return sb.toString();
