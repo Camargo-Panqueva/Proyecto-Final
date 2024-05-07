@@ -1,6 +1,6 @@
 package model.player;
 
-import model.wall.WallData;
+import controller.wall.Wall;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -11,7 +11,7 @@ public class Player {
     private int wallsInField;
     private final String name;
     private final int allowedWalls;
-    private final ArrayList<WallData> playerWalls;
+    private final ArrayList<Wall> playerWalls;
 
     public Player(final Point initialPosition, String name, int allowedWalls) {
         this.name = name;
@@ -32,7 +32,11 @@ public class Player {
         this.position = position;
     }
 
-    public ArrayList<WallData> getPlayerWalls() {
-        return playerWalls;
+    public ArrayList<Wall> getPlayerWalls() {
+        return new ArrayList<>(playerWalls);
+    }
+
+    public void addWallPlaced(Wall newAddedWall) {
+        this.playerWalls.add(newAddedWall);
     }
 }

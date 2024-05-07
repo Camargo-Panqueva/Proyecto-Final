@@ -41,6 +41,10 @@ public abstract class Wall {
         this.wallData.setWallShape(shapeRotated);
     }
 
+    public WallData getWallData() {
+        return wallData;
+    }
+
     @Override
     public String toString() {
         if (this.wallData.getWallShape() == null) {
@@ -50,18 +54,19 @@ public abstract class Wall {
         int i = 1;
         for (int x = 0; x < this.wallData.getWidth(); x++) {
             for (int y = 0; y < this.wallData.getHeight(); y++) {
+                final WallType currWall = this.wallData.getWallShape()[x][y];
 
-                if (this.wallData.getWallShape()[x][y] == WallType.NORMAL) {
-                    sb.append("Normal").append(" ");
-                } else {
-                    sb.append("  0   ").append(" ");
+                switch (currWall) {
+                    case NORMAL -> sb.append("Normal").append(" ");
+                    case LARGE -> sb.append("Large").append(" ");
+                    default -> sb.append("  0   ").append(" ");
                 }
-                if (i % this.wallData.getWidth() == 0) {
-                    sb.append("\n");
-                }
-                i++;
 
             }
+            if (i % this.wallData.getWidth() == 0) {
+                sb.append("\n");
+            }
+            i++;
 
         }
 

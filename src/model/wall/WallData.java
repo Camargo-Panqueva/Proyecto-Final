@@ -1,20 +1,22 @@
 package model.wall;
 
+import model.player.Player;
+
 import java.awt.*;
 
 public class WallData {
     private int width;
     private int height;
     private char course;
-    private Point position;
+    private Player owner;
     private WallType wallType;
+    private Point positionOnBoard;
     private WallType[][] wallShape;
 
 
-    public Point getPosition() {
-        return position;
+    public Point getPositionOnBoard() {
+        return positionOnBoard;
     }
-
     public char getCourse() {
         return course;
     }
@@ -34,8 +36,8 @@ public class WallData {
         return height;
     }
 
-    public void setPosition(Point position) {
-        this.position = position;
+    public Player getOwner() {
+        return owner;
     }
 
     public void setCourse(char course) {
@@ -56,6 +58,14 @@ public class WallData {
 
     public void setWallType(WallType wallType) {
         this.wallType = wallType;
+    }
+
+    public void setOwner(Player owner) {
+        this.owner = owner;
+    }
+
+    public void setPositionOnBoard(Point positionOnBoard) {
+        this.positionOnBoard = positionOnBoard;
     }
 }
 

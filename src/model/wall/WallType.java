@@ -1,5 +1,6 @@
 package model.wall;
 
 public enum WallType {
-    NORMAL;
+    NORMAL,
+    LARGE;
 }

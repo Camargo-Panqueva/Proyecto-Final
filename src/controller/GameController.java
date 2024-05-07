@@ -4,6 +4,7 @@ import controller.dto.*;
 import controller.logic.MatchManager;
 import controller.states.GlobalState;
 import controller.states.GlobalStateManager;
+import controller.wall.Wall;
 import model.GameModel;
 import model.cell.CellType;
 import model.modes.GameModes;
@@ -120,7 +121,7 @@ public final class GameController {
         final ArrayList<PlayerTransferObject> playerTransferObjectArrayList = new ArrayList<>(this.model.getPlayerCount());
 
         this.model.getPlayers().forEach(((id, player) -> {
-            playerTransferObjectArrayList.add(new PlayerTransferObject(id, player.getName(), player.getPosition(),
+            playerTransferObjectArrayList.add(new PlayerTransferObject(id, new String(player.getName()), new Point(player.getPosition()),
                     this.model.getPlayerInTurnId() == id, this.matchManager.getPossibleMovements(player)));
         }));
 
@@ -134,12 +135,12 @@ public final class GameController {
     }
 
     public ServiceResponse<Void> processPlayerMove(int playerId, Point point) {
-        if (!this.model.getMatchState().equals(GameModel.MatchState.PLAYING)) {
-            return new ErrorResponse<>("There is not a match, call startGame");
+
+        final ServiceResponse<Void> assertion = this.validBasicParameters(playerId);
+        if (this.validBasicParameters(playerId) != null) {
+            return assertion;
         }
-        if (!this.model.getPlayers().containsKey(playerId)) {
-            return new ErrorResponse<>("Player doesn't exist");
-        }
+
         if (!this.matchManager.getPossibleMovements(this.model.getPlayers().get(playerId)).contains(point)) {
             return new ErrorResponse<>("Illegal Movement for " + this.model.getPlayers().get(playerId).getName());
         }
@@ -147,6 +148,74 @@ public final class GameController {
         this.matchManager.executeMove(this.model.getPlayers().get(playerId), point);
         return new SuccessResponse<>(null, "Updated position in the model");
     }
+
+    public ServiceResponse<Void> processPlaceWall(int playerId, Wall wall) {
+        final ServiceResponse<Void> assertion = this.validBasicParameters(playerId);
+        if (this.validBasicParameters(playerId) != null) {
+            return assertion;
+        }
+        if (wall.getWallData().getWallType() == null || wall.getWallData().getPositionOnBoard() == null) {
+            return new ErrorResponse<>("Walls passed as parameter must have defined its position, use wall.getDataWall().setPositionOnBoard()");
+        }
+
+        final int height = this.model.getBoard().getHeight() * 2 - 1;
+        final int width = this.model.getBoard().getWidth() * 2 - 1;
+
+        final ArrayList<Point> newWalls = new ArrayList<>();
+
+        int boardWallX;
+        int boardWallY;
+        for (int x = 0; x < wall.getWallData().getWidth(); x++) {
+            for (int y = 0; y < wall.getWallData().getHeight(); y++) {
+
+                boardWallX = wall.getWallData().getPositionOnBoard().x + x;
+                boardWallY = wall.getWallData().getPositionOnBoard().y + y;
+
+                final boolean isPositionInBoard = boardWallX <= width - 1 && boardWallY <= height - 1 && boardWallX >= 0 && boardWallY >= 0;
+
+                if (!isPositionInBoard) {
+
+                    if (wall.getWallData().getWallShape()[y][x] != null) {
+                        return new ErrorResponse<>("Wall placed in a invalid position. The Wall is off the board");
+                    }
+                    continue;
+                }
+
+                final boolean isNullPosition = this.model.getBoard().getBoardWalls()[boardWallY][boardWallX] == null;
+
+                if (!isNullPosition) {
+                    return new ErrorResponse<>("Wall placed in a invalid position. Already there is a wall");
+                }
+
+                if (boardWallX % 2 == 0 && boardWallY % 2 == 0 && null != wall.getWallData().getWallShape()[y][x]) {
+                    return new ErrorResponse<>("Wall placed in a invalid position. That position is Illegal! there should be a cell");
+                }
+
+
+                if (this.model.getBoard().getBoardWalls()[boardWallY][boardWallX] != wall.getWallData().getWallShape()[y][x]) {
+                    newWalls.add(new Point(boardWallX, boardWallY));
+                }
+            }
+        }
+
+        this.matchManager.executePlaceWall(this.model.getPlayers().get(playerId), wall, newWalls);
+
+        return new SuccessResponse<>(null, "Ok, The Wall was placed");
+    }
+
+    private ServiceResponse<Void> validBasicParameters(int playerId) {
+        if (!this.model.getMatchState().equals(GameModel.MatchState.PLAYING)) {
+            return new ErrorResponse<>("There is not a match, call startGame");
+        }
+        if (!this.model.getPlayers().containsKey(playerId)) {
+            return new ErrorResponse<>("Player doesn't exist");
+        }
+        if (!this.model.getPlayers().get(playerId).equals(this.model.getPlayers().get(this.model.getPlayerInTurnId()))) {
+            return new ErrorResponse<>("Its not " + this.model.getPlayers().get(playerId).getName() + " turn");
+        }
+        return null;
+    }
+
 
     public GlobalState getGlobalCurrentState() {
         return this.globalStateManager.getCurrentState();

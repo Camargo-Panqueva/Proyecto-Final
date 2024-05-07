@@ -1,5 +1,6 @@
 package controller.logic;
 
+import controller.wall.Wall;
 import model.GameModel;
 import model.player.Player;
 
@@ -41,16 +42,23 @@ public class MatchManager {
         return possibleMovements;
     }
 
-    public void executeMove(Player player, Point moveTo){
+    public void executeMove(Player player, Point moveTo) {
         player.setPosition(moveTo);
         this.nextTurn();
+    }
+
+    public void executePlaceWall(final Player player, final Wall wall, final ArrayList<Point> newWalls) {
+        for (Point point : newWalls) {
+            this.gameModel.getBoard().getBoardWalls()[point.y][point.x] = wall.getWallData().getWallType();
+        }
+        player.addWallPlaced(wall);
     }
 
     private void nextTurn() {
 
         this.indexCurrentIndex++;
 
-        if (!this.gameModel.getPlayers().containsKey(this.indexCurrentIndex)){
+        if (!this.gameModel.getPlayers().containsKey(this.indexCurrentIndex)) {
             this.indexCurrentIndex = 0;
             this.gameModel.setPlayerInTurn(0);
             return;
