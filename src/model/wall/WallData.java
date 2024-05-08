@@ -3,11 +3,13 @@ package model.wall;
 import model.player.Player;
 
 import java.awt.*;
+import java.util.UUID;
 
 public class WallData {
     private int width;
     private int height;
     private char course;
+    private UUID wallId;
     private Player owner;
     private WallType wallType;
     private Point positionOnBoard;
@@ -17,6 +19,7 @@ public class WallData {
     public Point getPositionOnBoard() {
         return positionOnBoard;
     }
+
     public char getCourse() {
         return course;
     }
@@ -32,12 +35,17 @@ public class WallData {
     public int getWidth() {
         return width;
     }
+
     public int getHeight() {
         return height;
     }
 
     public Player getOwner() {
         return owner;
+    }
+
+    public UUID getWallId() {
+        return wallId;
     }
 
     public void setCourse(char course) {
@@ -66,6 +74,10 @@ public class WallData {
 
     public void setPositionOnBoard(Point positionOnBoard) {
         this.positionOnBoard = positionOnBoard;
+    }
+
+    public void setWallId(UUID wallId) {
+        this.wallId = wallId;
     }
 }
 

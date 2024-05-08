@@ -13,6 +13,9 @@ public abstract class Wall {
     public Wall() {
         this.wallData = new WallData();
     }
+    public Wall(WallData wallData) {
+        this.wallData = wallData;
+    }
 
     public abstract void action(GameModel gameModel);
 

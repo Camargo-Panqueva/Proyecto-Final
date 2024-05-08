@@ -9,12 +9,14 @@ import model.GameModel;
 import model.cell.CellType;
 import model.modes.GameModes;
 import model.player.Player;
+import model.wall.WallData;
 import model.wall.WallType;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
+import java.util.UUID;
 
 public final class GameController {
 
@@ -115,13 +117,15 @@ public final class GameController {
         }
 
         for (int i = 0; i < width * 2 - 1; i++) {
-            wallTypesCopy[i] = Arrays.copyOf(this.model.getBoard().getBoardWalls()[i], height * 2 - 1);
+            for (int j = 0; j < height; j++) {
+                wallTypesCopy[j][i] = this.model.getBoard().getBoardWalls()[j][i] == null ? null : this.model.getBoard().getBoardWalls()[j][i].getWallType();
+            }
         }
 
         final ArrayList<PlayerTransferObject> playerTransferObjectArrayList = new ArrayList<>(this.model.getPlayerCount());
 
         this.model.getPlayers().forEach(((id, player) -> {
-            playerTransferObjectArrayList.add(new PlayerTransferObject(id, new String(player.getName()), new Point(player.getPosition()),
+            playerTransferObjectArrayList.add(new PlayerTransferObject(id, player.getName(), new Point(player.getPosition()),
                     this.model.getPlayerInTurnId() == id, this.matchManager.getPossibleMovements(player)));
         }));
 
@@ -149,7 +153,7 @@ public final class GameController {
         return new SuccessResponse<>(null, "Updated position in the model");
     }
 
-    public ServiceResponse<Void> processPlaceWall(int playerId, Wall wall) {
+    private ServiceResponse<Void> placeWallProcess(final int playerId, final Wall wall, final boolean placeIt) {
         final ServiceResponse<Void> assertion = this.validBasicParameters(playerId);
         if (this.validBasicParameters(playerId) != null) {
             return assertion;
@@ -171,17 +175,18 @@ public final class GameController {
                 boardWallX = wall.getWallData().getPositionOnBoard().x + x;
                 boardWallY = wall.getWallData().getPositionOnBoard().y + y;
 
-                final boolean isPositionInBoard = boardWallX <= width - 1 && boardWallY <= height - 1 && boardWallX >= 0 && boardWallY >= 0;
+                final boolean isPositionInBoard = this.isPointInsideBoard(boardWallX, boardWallY);
 
                 if (!isPositionInBoard) {
-
                     if (wall.getWallData().getWallShape()[y][x] != null) {
                         return new ErrorResponse<>("Wall placed in a invalid position. The Wall is off the board");
                     }
                     continue;
                 }
 
-                final boolean isNullPosition = this.model.getBoard().getBoardWalls()[boardWallY][boardWallX] == null;
+                final WallData wallDataPosition = this.model.getBoard().getBoardWalls()[boardWallY][boardWallX];
+
+                final boolean isNullPosition = wallDataPosition == null;
 
                 if (!isNullPosition) {
                     return new ErrorResponse<>("Wall placed in a invalid position. Already there is a wall");
@@ -191,16 +196,30 @@ public final class GameController {
                     return new ErrorResponse<>("Wall placed in a invalid position. That position is Illegal! there should be a cell");
                 }
 
-
-                if (this.model.getBoard().getBoardWalls()[boardWallY][boardWallX] != wall.getWallData().getWallShape()[y][x]) {
+                if (wall.getWallData().getWallShape()[y][x] != null) {
                     newWalls.add(new Point(boardWallX, boardWallY));
                 }
+
             }
         }
 
-        this.matchManager.executePlaceWall(this.model.getPlayers().get(playerId), wall, newWalls);
+        if (placeIt) {
+            this.matchManager.executePlaceWall(this.model.getPlayers().get(playerId), wall, newWalls);
+            return new SuccessResponse<>(null, "Ok, The Wall was placed");
+        }
+        return new SuccessResponse<>(null, "Can place the Wall");
+    }
 
-        return new SuccessResponse<>(null, "Ok, The Wall was placed");
+    public ServiceResponse<Void> canPlaceWall(final int playerId, final Wall wall) {
+        return this.placeWallProcess(playerId, wall, false);
+    }
+
+    public ServiceResponse<Void> placeWall(final int playerId, final Wall wall) {
+        return this.placeWallProcess(playerId, wall, true);
+    }
+
+    private boolean isPointInsideBoard(final int x, final int y) {
+        return x <= this.model.getBoard().getWidth() * 2 - 2 && y <= this.model.getBoard().getHeight() * 2 - 2 && x >= 0 && y >= 0;
     }
 
     private ServiceResponse<Void> validBasicParameters(int playerId) {
@@ -214,6 +233,21 @@ public final class GameController {
             return new ErrorResponse<>("Its not " + this.model.getPlayers().get(playerId).getName() + " turn");
         }
         return null;
+    }
+
+    public ServiceResponse<UUID> getWallId(Point point) {
+        if (!this.isPointInsideBoard(point.x, point.y)) {
+            return new ErrorResponse<>("Point off the board");
+        }
+        if (point.x % 2 == 0 && point.y % 2 == 0) {
+            return new ErrorResponse<>("A cell was selected, select a Wall");
+        }
+        WallData positionRequested = this.model.getBoard().getWallData(point.x, point.y);
+        if (positionRequested == null) {
+            return new ErrorResponse<>("There is no a Wall in: " + point);
+        }
+
+        return new SuccessResponse<>(this.model.getBoard().getWallId(point), "Ok");
     }
 
 

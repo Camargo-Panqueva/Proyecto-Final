@@ -1,6 +1,7 @@
 package controller.wall;
 
 import model.GameModel;
+import model.wall.WallData;
 import model.wall.WallType;
 
 public class LargeWall extends  Wall{
@@ -14,6 +15,10 @@ public class LargeWall extends  Wall{
         super.wallData.getWallShape()[1][0] = WallType.LARGE;
         super.wallData.getWallShape()[1][1] = WallType.LARGE;
         super.wallData.getWallShape()[1][2] = WallType.LARGE;
+    }
+
+    public LargeWall(WallData wallData){
+        super(wallData);
     }
 
     @Override
