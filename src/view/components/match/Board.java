@@ -30,6 +30,8 @@ public final class Board extends GameComponent {
      * @param contextProvider the context provider for the component.
      */
     public Board(ContextProvider contextProvider) {
+
+        //TODO : fit canvas size for the height
         super(contextProvider);
 
         this.updateBoardState();

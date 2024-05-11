@@ -56,14 +56,32 @@ public final class GameController {
         final int widthCenterPosition = widthIsEven ? (width / 2) - 1 : (width / 2);
         final int heightCenterPosition = heightIsEven ? (height / 2) - 1 : (height / 2);
 
-
-        this.model.addPlayer(0, new Player(new Point(widthCenterPosition, 0), "Player 1", allowedWallsPerPlayer));
-        this.model.addPlayer(1, new Player(new Point(widthCenterPosition, height), "Player 2", allowedWallsPerPlayer));
-
-        if (this.model.getPlayerCount() == 4) {
-            this.model.addPlayer(2, new Player(new Point(0, heightCenterPosition), "Player 3", allowedWallsPerPlayer));
-            this.model.addPlayer(3, new Player(new Point(width, heightCenterPosition), "Player 4", allowedWallsPerPlayer));
+        if (widthIsEven) {
+            this.model.addPlayer(0, new Player(new Point(widthCenterPosition + 1, 0), "Player 1", allowedWallsPerPlayer));
+            this.model.addPlayer(1, new Player(new Point(widthCenterPosition + 2, height), "Player 2", allowedWallsPerPlayer));
+        } else {
+            this.model.addPlayer(0, new Player(new Point(widthCenterPosition, 0), "Player 1", allowedWallsPerPlayer));
+            this.model.addPlayer(1, new Player(new Point(widthCenterPosition, height), "Player 2", allowedWallsPerPlayer));
         }
+
+        if (heightIsEven) {
+            if (this.model.getPlayerCount() > 2) {
+                this.model.addPlayer(2, new Player(new Point(0, heightCenterPosition + 2), "Player 3", allowedWallsPerPlayer));
+            }
+            if (this.model.getPlayerCount() > 3) {
+                this.model.addPlayer(3, new Player(new Point(width, heightCenterPosition + 1), "Player 4", allowedWallsPerPlayer));
+            }
+        } else {
+
+            if (this.model.getPlayerCount() > 2) {
+                this.model.addPlayer(2, new Player(new Point(0, heightCenterPosition), "Player 3", allowedWallsPerPlayer));
+            }
+            if (this.model.getPlayerCount() > 3) {
+                this.model.addPlayer(3, new Player(new Point(width, heightCenterPosition), "Player 4", allowedWallsPerPlayer));
+
+            }
+        }
+
     }
 
     public ServiceResponse<Void> setGameMode(String selection) {
@@ -82,7 +100,12 @@ public final class GameController {
     }
 
     public ServiceResponse<Void> setInitialCustomParameters(final int width, final int height, final int playerCount, final int wallsPerPlayer) {
-        //TODO : Error handler for invalid initial parameters
+        if (playerCount < 2 || playerCount > 4) {
+            return new ErrorResponse<>("Our Quoridor accept just 2, 3 and 4 players");
+        }
+        if (width < 0 || height < 0 || width > 21 || height > 21){
+            return new ErrorResponse<>("Out of limits, the size must be between 0 and 21");
+        }
         this.model.getGameModeManager().setCurrentGameMode(GameModes.CUSTOM, width, height, playerCount, wallsPerPlayer);
         return new SuccessResponse<>(null, "Custom initial parameters were established");
     }
@@ -118,7 +141,7 @@ public final class GameController {
 
         for (int i = 0; i < width * 2 - 1; i++) {
             for (int j = 0; j < height; j++) {
-                wallTypesCopy[j][i] = this.model.getBoard().getBoardWalls()[j][i] == null ? null : this.model.getBoard().getBoardWalls()[j][i].getWallType();
+                wallTypesCopy[i][j] = this.model.getBoard().getBoardWalls()[i][j] == null ? null : this.model.getBoard().getBoardWalls()[i][j].getWallType();
             }
         }
 
@@ -161,9 +184,6 @@ public final class GameController {
         if (wall.getWallData().getWallType() == null || wall.getWallData().getPositionOnBoard() == null) {
             return new ErrorResponse<>("Walls passed as parameter must have defined its position, use wall.getDataWall().setPositionOnBoard()");
         }
-
-        final int height = this.model.getBoard().getHeight() * 2 - 1;
-        final int width = this.model.getBoard().getWidth() * 2 - 1;
 
         final ArrayList<Point> newWalls = new ArrayList<>();
 
