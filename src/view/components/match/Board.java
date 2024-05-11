@@ -7,6 +7,8 @@ import model.cell.CellType;
 import model.wall.WallType;
 import view.components.GameComponent;
 import view.context.ContextProvider;
+import view.input.KeyboardEvent;
+import view.input.MouseEvent;
 import view.themes.Theme;
 
 import java.awt.*;
@@ -14,15 +16,19 @@ import java.util.ArrayList;
 
 public final class Board extends GameComponent {
 
-    private final static int CELL_SIZE = 54;
-    private final static int WALL_SIZE = 14;
+    private final static int CELL_SIZE = 40;
+    private final static int WALL_SIZE = CELL_SIZE / 4;
     private final int widthCells;
     private final int heightCells;
     private final Point parsedMousePosition;
+
     private CellType[][] cells;
     private WallType[][] walls;
     private ArrayList<PlayerTransferObject> players;
     private PlayerTransferObject playerInTurn;
+
+    private boolean isMouseOnCell;
+    private boolean isMouseOnWall;
 
     /**
      * Creates a new Board component with the given context provider.
@@ -34,7 +40,7 @@ public final class Board extends GameComponent {
         //TODO : fit canvas size for the height
         super(contextProvider);
 
-        this.updateBoardState();
+        this.fetchBoardState();
 
         this.widthCells = cells.length;
         this.heightCells = cells[0].length;
@@ -42,7 +48,7 @@ public final class Board extends GameComponent {
         this.parsedMousePosition = new Point();
     }
 
-    private void updateBoardState() {
+    private void fetchBoardState() {
         ServiceResponse<BoardTransferObject> boardStateResponse = this.contextProvider.controller().getBoardState();
 
         if (!boardStateResponse.ok) {
@@ -70,6 +76,10 @@ public final class Board extends GameComponent {
                 graphics.fillRoundRect(x, y, CELL_SIZE, CELL_SIZE, 8, 8);
             }
         }
+
+        graphics.setFont(new Font("Arial", Font.PLAIN, 12));
+        graphics.setColor(this.contextProvider.themeManager().getCurrentTheme().foregroundColor);
+        graphics.drawString(String.format("Relative Mouse Position: [%d, %d, %s]", this.parsedMousePosition.x, this.parsedMousePosition.y, this.isMouseOnWall), 6, 86);
     }
 
     private void renderPlayers(Graphics2D graphics) {
@@ -105,11 +115,25 @@ public final class Board extends GameComponent {
     }
 
     private void updateParsedMousePosition() {
-        this.parsedMousePosition.x = this.contextProvider.mouse().getMouseRelativePosition(this.getBounds()).x / (CELL_SIZE + WALL_SIZE);
-        this.parsedMousePosition.y = this.contextProvider.mouse().getMouseRelativePosition(this.getBounds()).y / (CELL_SIZE + WALL_SIZE);
+        this.isMouseOnWall =
+                (this.contextProvider.mouse().getMouseRelativePosition(this.getBounds()).x - this.style.paddingX) % (CELL_SIZE + WALL_SIZE) > CELL_SIZE ||
+                        (this.contextProvider.mouse().getMouseRelativePosition(this.getBounds()).y - this.style.paddingY) % (CELL_SIZE + WALL_SIZE) > CELL_SIZE;
+
+        this.isMouseOnCell = !this.isMouseOnWall;
+
+        if (this.isMouseOnWall) {
+            this.parsedMousePosition.x = -1;
+            this.parsedMousePosition.y = -1;
+
+            return;
+        }
+
+        this.parsedMousePosition.x = (this.contextProvider.mouse().getMouseRelativePosition(this.getBounds()).x - this.style.paddingX) / (CELL_SIZE + WALL_SIZE);
+        this.parsedMousePosition.y = (this.contextProvider.mouse().getMouseRelativePosition(this.getBounds()).y - this.style.paddingY) / (CELL_SIZE + WALL_SIZE);
     }
 
     private void updateCursor() {
+
         if (this.playerInTurn.allowedMoves().contains(this.parsedMousePosition)) {
             this.contextProvider.window().getCanvas().setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         } else {
@@ -122,6 +146,7 @@ public final class Board extends GameComponent {
         this.pollMouseEvents();
         this.updateParsedMousePosition();
         this.updateCursor();
+        this.fetchBoardState();
     }
 
     @Override
@@ -165,20 +190,63 @@ public final class Board extends GameComponent {
     protected void setupDefaultEventListeners() {
         super.setupDefaultEventListeners();
 
-        this.addEventListener(MouseEventType.RELEASED, event -> {
-            if (!playerInTurn.allowedMoves().contains(this.parsedMousePosition)) {
-                return;
-            }
-
-            ServiceResponse<Void> movementResponse =
-                    this.contextProvider.controller().processPlayerMove(this.playerInTurn.id(), new Point(this.parsedMousePosition));
-
-            if (!movementResponse.ok) {
-                //TODO: Handle error
-                throw new RuntimeException("Failed to process player move: " + movementResponse.message);
-            }
-
-            this.updateBoardState();
+        this.addMouseListener(MouseEvent.EventType.RELEASED, event -> {
+            this.handlePlayerMouseMovement();
         });
+
+        this.addKeyListener(KeyboardEvent.EventType.PRESSED, event -> {
+            this.handlePlayerKeyboardMovement(event);
+        });
+    }
+
+    private void handlePlayerMouseMovement() {
+        if (!this.playerInTurn.allowedMoves().contains(this.parsedMousePosition)) {
+            return;
+        }
+
+        ServiceResponse<Void> movementResponse =
+                this.contextProvider.controller().processPlayerMove(this.playerInTurn.id(), new Point(this.parsedMousePosition));
+
+        if (!movementResponse.ok) {
+            //TODO: Handle error
+            throw new RuntimeException("Failed to process player move: " + movementResponse.message);
+        }
+    }
+
+    private void handlePlayerKeyboardMovement(KeyboardEvent event) {
+        Point newPosition = new Point(this.playerInTurn.position());
+
+        switch (event.keyCode) {
+            case KeyboardEvent.VK_UP:
+            case KeyboardEvent.VK_W:
+                newPosition.y--;
+                break;
+            case KeyboardEvent.VK_DOWN:
+            case KeyboardEvent.VK_S:
+                newPosition.y++;
+                break;
+            case KeyboardEvent.VK_LEFT:
+            case KeyboardEvent.VK_A:
+                newPosition.x--;
+                break;
+            case KeyboardEvent.VK_RIGHT:
+            case KeyboardEvent.VK_D:
+                newPosition.x++;
+                break;
+            default:
+                return;
+        }
+
+        if (!this.playerInTurn.allowedMoves().contains(newPosition)) {
+            return;
+        }
+
+        ServiceResponse<Void> movementResponse =
+                this.contextProvider.controller().processPlayerMove(this.playerInTurn.id(), newPosition);
+
+        if (!movementResponse.ok) {
+            //TODO: Handle error
+            throw new RuntimeException("Failed to process player move: " + movementResponse.message);
+        }
     }
 }

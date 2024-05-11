@@ -1,6 +1,7 @@
 package view.context;
 
 import controller.GameController;
+import view.input.Keyboard;
 import view.input.Mouse;
 import view.themes.ThemeManager;
 import view.window.Window;
@@ -20,5 +21,6 @@ import view.window.Window;
  * @param mouse
  * @param themeManager
  */
-public record ContextProvider(Window window, GameController controller, Mouse mouse, ThemeManager themeManager) {
+public record ContextProvider(Window window, GameController controller, Mouse mouse, Keyboard keyboard,
+                              ThemeManager themeManager) {
 }

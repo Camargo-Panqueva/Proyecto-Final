@@ -2,6 +2,7 @@ package view.components.ui;
 
 import view.components.GameComponent;
 import view.context.ContextProvider;
+import view.input.MouseEvent;
 import view.themes.Theme;
 
 import java.awt.*;
@@ -138,7 +139,7 @@ public final class Selector extends GameComponent {
     protected void setupDefaultEventListeners() {
         super.setupDefaultEventListeners();
 
-        this.addEventListener(MouseEventType.RELEASED, event -> {
+        this.addMouseListener(MouseEvent.EventType.RELEASED, event -> {
             Point relativePoint = event.relativeMousePosition;
             if (relativePoint.x < this.style.width / 2) {
                 this.selectedOption = (this.selectedOption - 1 + this.options.size()) % this.options.size();

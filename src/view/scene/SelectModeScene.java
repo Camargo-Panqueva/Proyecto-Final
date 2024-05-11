@@ -1,12 +1,12 @@
 package view.scene;
 
 import controller.dto.ServiceResponse;
-import view.components.GameComponent;
 import view.components.ui.BackgroundSeparator;
 import view.components.ui.Button;
 import view.components.ui.Selector;
 import view.components.ui.Text;
 import view.context.ContextProvider;
+import view.input.MouseEvent;
 
 import java.util.ArrayList;
 
@@ -105,7 +105,7 @@ public final class SelectModeScene extends Scene {
     @Override
     protected void setupEvents() {
         //TODO: Implement event handling for the scene
-        this.startButton.addEventListener(GameComponent.MouseEventType.RELEASED, _event -> {
+        this.startButton.addMouseListener(MouseEvent.EventType.RELEASED, _event -> {
             ServiceResponse<Void> gameModeResponse = this.contextProvider.controller().setGameMode(this.gameModeSelect.getSelectedOption());
             ServiceResponse<Void> startGameResponse = this.contextProvider.controller().startGame();
 

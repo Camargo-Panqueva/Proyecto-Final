@@ -2,9 +2,9 @@ package view.scene;
 
 import controller.states.GlobalState;
 import view.components.ui.Button;
-import view.components.GameComponent;
 import view.components.ui.Text;
 import view.context.ContextProvider;
+import view.input.MouseEvent;
 
 //TODO: Update docs when different modes are implemented
 
@@ -86,7 +86,7 @@ public final class WelcomeScene extends Scene {
      */
     @Override
     protected void setupEvents() {
-        this.startButton.addEventListener(GameComponent.MouseEventType.RELEASED, _event -> this.contextProvider.controller().setGlobalState(GlobalState.SELECTING_GAME_MODE));
-        this.themeButton.addEventListener(GameComponent.MouseEventType.RELEASED, _event -> this.contextProvider.themeManager().toggleTheme());
+        this.startButton.addMouseListener(MouseEvent.EventType.RELEASED, _event -> this.contextProvider.controller().setGlobalState(GlobalState.SELECTING_GAME_MODE));
+        this.themeButton.addMouseListener(MouseEvent.EventType.RELEASED, _event -> this.contextProvider.themeManager().toggleTheme());
     }
 }

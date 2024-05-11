@@ -33,4 +33,17 @@ public final class MouseEvent {
         this.absoluteMousePosition = new Point(mouse.getMousePosition());
         this.relativeMousePosition = new Point(mouse.getMouseRelativePosition(target.getBounds()));
     }
+
+    /**
+     * Represents a mouse event that can be dispatched to the event handlers.
+     */
+    public enum EventType {
+        HOVER,
+        ENTER,
+        LEAVE,
+        PRESSED,
+        RELEASED,
+        GET_FOCUS,
+        LOSE_FOCUS
+    }
 }

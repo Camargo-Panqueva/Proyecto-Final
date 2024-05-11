@@ -4,6 +4,7 @@ import com.sun.management.OperatingSystemMXBean;
 import controller.GameController;
 import util.ConcurrentLoop;
 import view.context.ContextProvider;
+import view.input.Keyboard;
 import view.input.Mouse;
 import view.scene.SceneManager;
 import view.themes.DarkTheme;
@@ -28,6 +29,7 @@ public final class GameView {
     private final ThemeManager themeManager;
     private final Window window;
     private final Mouse mouse;
+    private final Keyboard keyboard;
 
     private ConcurrentLoop renderLoop;
     private ConcurrentLoop updateLoop;
@@ -38,12 +40,14 @@ public final class GameView {
 
         this.controller = controller;
         this.mouse = new Mouse();
+        this.keyboard = new Keyboard();
         this.themeManager = new ThemeManager(new DarkTheme());
         this.window = new Window(600, "Quoridor"); // TODO: Set window size from controller data
         this.window.getCanvas().addMouseListener(this.mouse);
+        this.window.getCanvas().addKeyListener(this.keyboard);
         this.window.getCanvas().setFont(new Font("Yoster Island Regular", Font.PLAIN, 16));
 
-        this.contextProvider = new ContextProvider(this.window, this.controller, this.mouse, this.themeManager);
+        this.contextProvider = new ContextProvider(this.window, this.controller, this.mouse, this.keyboard, this.themeManager);
         this.sceneManager = new SceneManager(this.contextProvider);
     }
 
