@@ -49,17 +49,13 @@ public class MatchManager {
             wall = this.isBlockedPoint(player.getPosition(), objetivePoint);
             if (wall == null) {
                 possibleMovements.add(new Point(objetivePoint));
-            } else if (wall.getWallData().getOwner() != player) {//TODO : ally walls
-                possibleMovements.add(new Point(objetivePoint));
-            }
+            }//TODO : ally walls
         }
         if (basePoint.x != width - 1) {
             objetivePoint.move(basePoint.x + 1, basePoint.y);
 
             wall = this.isBlockedPoint(player.getPosition(), objetivePoint);
             if (wall == null) {
-                possibleMovements.add(new Point(objetivePoint));
-            } else if (wall.getWallData().getOwner() != player) {//TODO : ally walls
                 possibleMovements.add(new Point(objetivePoint));
             }
         }
@@ -70,8 +66,6 @@ public class MatchManager {
             wall = this.isBlockedPoint(player.getPosition(), objetivePoint);
             if (wall == null) {
                 possibleMovements.add(new Point(objetivePoint));
-            } else if (wall.getWallData().getOwner() != player) {//TODO : ally walls
-                possibleMovements.add(new Point(objetivePoint));
             }
         }
 
@@ -80,8 +74,6 @@ public class MatchManager {
 
             wall = this.isBlockedPoint(player.getPosition(), objetivePoint);
             if (wall == null) {
-                possibleMovements.add(new Point(objetivePoint));
-            } else if (wall.getWallData().getOwner() != player) {//TODO : ally walls
                 possibleMovements.add(new Point(objetivePoint));
             }
         }
@@ -95,14 +87,12 @@ public class MatchManager {
 
     private Wall isBlockedPoint(final Point initialPoint, final Point finalPoint) {
 
-        final int xWall = initialPoint.x == finalPoint.x ? 2 * initialPoint.x - 1 : 2 * (initialPoint.x + (finalPoint.x - initialPoint.x)) - 1;
-        final int yWall = initialPoint.y == finalPoint.y ? 2 * initialPoint.y - 1 : 2 * (initialPoint.y + (finalPoint.y - initialPoint.y)) - 1;
+        final int xWall = initialPoint.x == finalPoint.x ? 2 * initialPoint.x : (2 * initialPoint.x) + (finalPoint.x - initialPoint.x);
+        final int yWall = initialPoint.y == finalPoint.y ? 2 * initialPoint.y : (2 * initialPoint.y) + (finalPoint.y - initialPoint.y);
 
-        if(!(yWall <= this.gameModel.getBoard().getWidth() * 2 - 2 && yWall <= this.gameModel.getBoard().getHeight() * 2 - 2 && xWall >= 0 && yWall >= 0)){
+        if (!(yWall <= this.gameModel.getBoard().getWidth() * 2 - 2 && yWall <= this.gameModel.getBoard().getHeight() * 2 - 2 && xWall >= 0 && yWall >= 0)) {
             return null;
         }
-
-        System.out.println(xWall + " " + yWall);
 
         final WallData wallData = gameModel.getBoard().getWallData(xWall, yWall);
 
@@ -122,13 +112,14 @@ public class MatchManager {
 
     public void executePlaceWall(final Player player, final Wall wall, final ArrayList<Point> newWalls) {
         final UUID wallUuid = UUID.randomUUID();
-        wall.getWallData().setWallId(wallUuid);
+        wall.setWallId(wallUuid);
 
         for (Point point : newWalls) {
             this.gameModel.getBoard().getBoardWalls()[point.y][point.x] = wall.getWallData();
         }
         player.addWallPlaced(wall.getWallData());
         this.walls.put(wallUuid, wall);
+        this.gameModel.addWall(wallUuid, wall.getWallData());
         this.nextTurn();
     }
 

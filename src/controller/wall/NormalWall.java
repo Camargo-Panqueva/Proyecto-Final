@@ -4,8 +4,6 @@ import model.GameModel;
 import model.wall.WallData;
 import model.wall.WallType;
 
-import java.util.ArrayList;
-
 public class NormalWall extends Wall {
 
     public NormalWall() {
@@ -13,12 +11,12 @@ public class NormalWall extends Wall {
         super.wallData.setHeight(1);
         super.wallData.setWallShape(new WallType[super.wallData.getWidth()][super.wallData.getHeight()]);
 
-        super.getWallData().setWallType(WallType.NORMAL);
+        super.setWallType(WallType.NORMAL);
 
-        super.wallData.getWallShape()[0][0] =  WallType.NORMAL;
+        super.wallData.getWallShape()[0][0] = WallType.NORMAL;
     }
 
-    public NormalWall(WallData wallData){
+    public NormalWall(WallData wallData) {
         super(wallData);
     }
 

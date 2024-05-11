@@ -103,7 +103,7 @@ public final class GameController {
         if (playerCount < 2 || playerCount > 4) {
             return new ErrorResponse<>("Our Quoridor accept just 2, 3 and 4 players");
         }
-        if (width < 0 || height < 0 || width > 21 || height > 21){
+        if (width < 0 || height < 0 || width > 21 || height > 21) {
             return new ErrorResponse<>("Out of limits, the size must be between 0 and 21");
         }
         this.model.getGameModeManager().setCurrentGameMode(GameModes.CUSTOM, width, height, playerCount, wallsPerPlayer);
@@ -181,7 +181,7 @@ public final class GameController {
         if (this.validBasicParameters(playerId) != null) {
             return assertion;
         }
-        if (wall.getWallData().getWallType() == null || wall.getWallData().getPositionOnBoard() == null) {
+        if (wall.getWallType() == null || wall.getPositionOnBoard() == null) {
             return new ErrorResponse<>("Walls passed as parameter must have defined its position, use wall.getDataWall().setPositionOnBoard()");
         }
 
@@ -189,16 +189,16 @@ public final class GameController {
 
         int boardWallX;
         int boardWallY;
-        for (int x = 0; x < wall.getWallData().getWidth(); x++) {
-            for (int y = 0; y < wall.getWallData().getHeight(); y++) {
+        for (int x = 0; x < wall.getWidth(); x++) {
+            for (int y = 0; y < wall.getHeight(); y++) {
 
-                boardWallX = wall.getWallData().getPositionOnBoard().x + x;
-                boardWallY = wall.getWallData().getPositionOnBoard().y + y;
+                boardWallX = wall.getPositionOnBoard().x + x;
+                boardWallY = wall.getPositionOnBoard().y + y;
 
                 final boolean isPositionInBoard = this.isPointInsideBoard(boardWallX, boardWallY);
 
                 if (!isPositionInBoard) {
-                    if (wall.getWallData().getWallShape()[y][x] != null) {
+                    if (wall.getWallShape()[y][x] != null) {
                         return new ErrorResponse<>("Wall placed in a invalid position. The Wall is off the board");
                     }
                     continue;
@@ -212,11 +212,11 @@ public final class GameController {
                     return new ErrorResponse<>("Wall placed in a invalid position. Already there is a wall");
                 }
 
-                if (boardWallX % 2 == 0 && boardWallY % 2 == 0 && null != wall.getWallData().getWallShape()[y][x]) {
+                if (boardWallX % 2 == 0 && boardWallY % 2 == 0 && null != wall.getWallShape()[y][x]) {
                     return new ErrorResponse<>("Wall placed in a invalid position. That position is Illegal! there should be a cell");
                 }
 
-                if (wall.getWallData().getWallShape()[y][x] != null) {
+                if (wall.getWallShape()[y][x] != null) {
                     newWalls.add(new Point(boardWallX, boardWallY));
                 }
 

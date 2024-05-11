@@ -1,10 +1,13 @@
 package controller.wall;
 
 import model.GameModel;
+import model.player.Player;
 import model.wall.WallData;
 import model.wall.WallType;
 
+import java.awt.*;
 import java.util.Arrays;
+import java.util.UUID;
 
 public abstract class Wall {
 
@@ -13,6 +16,7 @@ public abstract class Wall {
     public Wall() {
         this.wallData = new WallData();
     }
+
     public Wall(WallData wallData) {
         this.wallData = wallData;
     }
@@ -77,5 +81,70 @@ public abstract class Wall {
 
         return sb.toString();
     }
+
+    public Point getPositionOnBoard() {
+        return this.wallData.getPositionOnBoard();
+    }
+
+    public char getCourse() {
+        return this.wallData.getCourse();
+    }
+
+    public WallType[][] getWallShape() {
+        return this.wallData.getWallShape();
+    }
+
+    public WallType getWallType() {
+        return this.wallData.getWallType();
+    }
+
+    public int getWidth() {
+        return this.wallData.getWidth();
+    }
+
+    public int getHeight() {
+        return this.wallData.getHeight();
+    }
+
+    public Player getOwner() {
+        return this.wallData.getOwner();
+    }
+
+    public UUID getWallId() {
+        return this.wallData.getWallId();
+    }
+
+    public void setCourse(char course) {
+        this.wallData.setCourse(course);
+    }
+
+    public void setWidth(int width) {
+        this.wallData.setWidth(width);
+    }
+
+    public void setHeight(int height) {
+        this.wallData.setHeight(height);
+    }
+
+    public void setWallShape(WallType[][] wallShape) {
+        this.wallData.setWallShape(wallShape);
+    }
+
+    public void setWallType(WallType wallType) {
+        this.wallData.setWallType(wallType);
+    }
+
+    public void setOwner(Player owner) {
+        this.wallData.setOwner(owner);
+    }
+
+    public void setPositionOnBoard(Point positionOnBoard) {
+        this.wallData.setPositionOnBoard(positionOnBoard);
+    }
+
+    public void setWallId(UUID wallId) {
+        this.wallData.setWallId(wallId);
+    }
+
 
 }

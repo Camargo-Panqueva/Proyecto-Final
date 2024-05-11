@@ -12,8 +12,8 @@ public final class Board {
     private final CellType[][] boardCells;
     private final WallData[][] boardWalls;
 
-    private int height;
-    private int width;
+    private final int height;
+    private final int width;
 
     public Board(final int width, final int height) {
         this.height = height;
@@ -37,7 +37,7 @@ public final class Board {
     }
 
     public WallData getWallData(final int x, final int y) {
-        return this.boardWalls[x][y];
+        return this.boardWalls[y][x];
     }
 
     public UUID getWallId(Point point) {
