@@ -12,6 +12,8 @@ public class KeyboardEvent {
     public static final int VK_D = 68;
     public static final int VK_ENTER = 10;
     public static final int VK_ESCAPE = 27;
+    public static final int VK_BACKSPACE = 8;
+    public static final int VK_SPACE = 32;
 
     public final Keyboard keyboard;
     public final int keyCode;
