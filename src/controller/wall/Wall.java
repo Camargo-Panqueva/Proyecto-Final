@@ -44,6 +44,8 @@ public abstract class Wall {
         this.wallData.setWallShape(shapeRotated);
     }
 
+    //TODO : getters & setters for WallData
+
     public WallData getWallData() {
         return wallData;
     }

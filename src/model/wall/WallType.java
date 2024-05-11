@@ -2,5 +2,7 @@ package model.wall;
 
 public enum WallType {
     NORMAL,
-    LARGE;
+    NORMAL_ALLY,
+    LARGE,
+    LARGE_ALLY;
 }

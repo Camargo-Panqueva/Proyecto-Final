@@ -13,6 +13,7 @@ public class NormalWall extends Wall {
         super.wallData.setHeight(1);
         super.wallData.setWallShape(new WallType[super.wallData.getWidth()][super.wallData.getHeight()]);
 
+        super.getWallData().setWallType(WallType.NORMAL);
 
         super.wallData.getWallShape()[0][0] =  WallType.NORMAL;
     }

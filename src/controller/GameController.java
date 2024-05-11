@@ -238,7 +238,7 @@ public final class GameController {
         return this.placeWallProcess(playerId, wall, true);
     }
 
-    private boolean isPointInsideBoard(final int x, final int y) {
+    public boolean isPointInsideBoard(final int x, final int y) {
         return x <= this.model.getBoard().getWidth() * 2 - 2 && y <= this.model.getBoard().getHeight() * 2 - 2 && x >= 0 && y >= 0;
     }
 

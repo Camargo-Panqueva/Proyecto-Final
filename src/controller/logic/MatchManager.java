@@ -40,20 +40,79 @@ public class MatchManager {
         final int width = this.gameModel.getBoard().getWidth();
         final int height = this.gameModel.getBoard().getHeight();
 
+        final Point objetivePoint = new Point();
+        Wall wall;
+        //TODO : REFACTOR ME PLS
         if (basePoint.y != height - 1) {
-            possibleMovements.add(new Point(basePoint.x, basePoint.y + 1));
+            objetivePoint.move(basePoint.x, basePoint.y + 1);
+
+            wall = this.isBlockedPoint(player.getPosition(), objetivePoint);
+            if (wall == null) {
+                possibleMovements.add(new Point(objetivePoint));
+            } else if (wall.getWallData().getOwner() != player) {//TODO : ally walls
+                possibleMovements.add(new Point(objetivePoint));
+            }
         }
         if (basePoint.x != width - 1) {
-            possibleMovements.add(new Point(basePoint.x + 1, basePoint.y));
+            objetivePoint.move(basePoint.x + 1, basePoint.y);
+
+            wall = this.isBlockedPoint(player.getPosition(), objetivePoint);
+            if (wall == null) {
+                possibleMovements.add(new Point(objetivePoint));
+            } else if (wall.getWallData().getOwner() != player) {//TODO : ally walls
+                possibleMovements.add(new Point(objetivePoint));
+            }
         }
+
         if (basePoint.y != 0) {
-            possibleMovements.add(new Point(basePoint.x, basePoint.y - 1));
+            objetivePoint.move(basePoint.x, basePoint.y - 1);
+
+            wall = this.isBlockedPoint(player.getPosition(), objetivePoint);
+            if (wall == null) {
+                possibleMovements.add(new Point(objetivePoint));
+            } else if (wall.getWallData().getOwner() != player) {//TODO : ally walls
+                possibleMovements.add(new Point(objetivePoint));
+            }
         }
+
         if (basePoint.x != 0) {
-            possibleMovements.add(new Point(basePoint.x - 1, basePoint.y));
+            objetivePoint.move(basePoint.x - 1, basePoint.y);
+
+            wall = this.isBlockedPoint(player.getPosition(), objetivePoint);
+            if (wall == null) {
+                possibleMovements.add(new Point(objetivePoint));
+            } else if (wall.getWallData().getOwner() != player) {//TODO : ally walls
+                possibleMovements.add(new Point(objetivePoint));
+            }
         }
 
         return possibleMovements;
+    }
+
+    private boolean isOccupiedPoint(Point point) {
+        return false;
+    }
+
+    private Wall isBlockedPoint(final Point initialPoint, final Point finalPoint) {
+
+        final int xWall = initialPoint.x == finalPoint.x ? 2 * initialPoint.x - 1 : 2 * (initialPoint.x + (finalPoint.x - initialPoint.x)) - 1;
+        final int yWall = initialPoint.y == finalPoint.y ? 2 * initialPoint.y - 1 : 2 * (initialPoint.y + (finalPoint.y - initialPoint.y)) - 1;
+
+        if(!(yWall <= this.gameModel.getBoard().getWidth() * 2 - 2 && yWall <= this.gameModel.getBoard().getHeight() * 2 - 2 && xWall >= 0 && yWall >= 0)){
+            return null;
+        }
+
+        System.out.println(xWall + " " + yWall);
+
+        final WallData wallData = gameModel.getBoard().getWallData(xWall, yWall);
+
+        if (wallData == null) {
+            return null;
+        }
+
+        final UUID wallID = wallData.getWallId();
+
+        return this.walls.get(wallID);
     }
 
     public void executeMove(Player player, Point moveTo) {
@@ -86,7 +145,4 @@ public class MatchManager {
         this.gameModel.setPlayerInTurn(this.indexCurrentIndex);
     }
 
-    private boolean isOccupiedPoint(Point point) {
-        return false;
-    }
 }
