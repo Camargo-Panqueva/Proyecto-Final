@@ -13,8 +13,8 @@ import view.window.Window;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferStrategy;
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.util.Arrays;
@@ -145,10 +145,14 @@ public final class GameView {
         List<String> availableFontFamilyNames = Arrays.asList(GE.getAvailableFontFamilyNames());
 
         try {
-            File fontFile = new File("src/resources/fonts/yoster.ttf");
-            Font gameFont = Font.createFont(Font.TRUETYPE_FONT, fontFile);
-            if (!availableFontFamilyNames.contains(gameFont.getFontName())) {
-                GE.registerFont(gameFont);
+            InputStream inputStream = getClass().getResourceAsStream("/resources/fonts/yoster.ttf");
+            if (inputStream != null) {
+                Font gameFont = Font.createFont(Font.TRUETYPE_FONT, inputStream);
+                if (!availableFontFamilyNames.contains(gameFont.getFontName())) {
+                    GE.registerFont(gameFont);
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "No se pudo cargar la fuente.");
             }
         } catch (FontFormatException | IOException exception) {
             JOptionPane.showMessageDialog(null, exception.getMessage());
