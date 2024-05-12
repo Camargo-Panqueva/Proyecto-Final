@@ -184,6 +184,9 @@ public final class GameController {
         if (wall.getWallType() == null || wall.getPositionOnBoard() == null) {
             return new ErrorResponse<>("Walls passed as parameter must have defined its position, use wall.getDataWall().setPositionOnBoard()");
         }
+        if (wall.getPositionOnBoard().x % 2 == 1 && wall.getPositionOnBoard().y % 2 == 1){
+            return new ErrorResponse<>("Walls cannot be placed in corners");
+        }
 
         final ArrayList<Point> newWalls = new ArrayList<>();
 
@@ -208,7 +211,7 @@ public final class GameController {
 
                 final boolean isNullPosition = wallDataPosition == null;
 
-                if (!isNullPosition) {
+                if (!isNullPosition && null != wall.getWallShape()[x][y]) {
                     return new ErrorResponse<>("Wall placed in a invalid position. Already there is a wall");
                 }
 

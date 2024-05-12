@@ -20,6 +20,9 @@ public final class Board {
         this.width = width;
 
         this.boardWalls = new WallData[2 * width - 1][2 * height - 1];
+        WallData wallData = new WallData();
+        wallData.setWallType(WallType.NORMAL);
+        this.boardWalls[5][2] = wallData;
         this.boardCells = new CellType[width][height];
         this.createCells();
     }
@@ -37,7 +40,7 @@ public final class Board {
     }
 
     public WallData getWallData(final int x, final int y) {
-        return this.boardWalls[y][x];
+        return this.boardWalls[x][y];
     }
 
     public UUID getWallId(Point point) {
@@ -66,18 +69,14 @@ public final class Board {
             return "Null";
         }
         StringBuilder sb = new StringBuilder();
-        int i = 1;
-        for (int x = 0; x < this.width * 2 - 1; x++) {
-            for (int y = 0; y < this.height * 2 - 1; y++) {
+
+        for (int y = 0; y < this.width * 2 - 1; y++) {
+            for (int x = 0; x < this.height * 2 - 1; x++) {
 
                 final WallData currPosition = this.boardWalls[x][y];
 
                 if (currPosition == null) {
                     sb.append("   0   ").append(" ");
-                    if (i % (this.width * 2 - 1) == 0) {
-                        sb.append("\n");
-                    }
-                    i++;
                     continue;
                 }
                 if (currPosition.getWallType() == WallType.NORMAL) {
@@ -85,11 +84,9 @@ public final class Board {
                 } else if (currPosition.getWallType() == WallType.LARGE) {
                     sb.append("  Lar  ").append(" ");
                 }
-                if (i % (this.width * 2 - 1) == 0) {
-                    sb.append("\n");
-                }
-                i++;
+
             }
+            sb.append("\n");
         }
 
         return sb.toString();
