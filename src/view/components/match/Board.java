@@ -4,6 +4,7 @@ import controller.dto.BoardTransferObject;
 import controller.dto.PlayerTransferObject;
 import controller.dto.ServiceResponse;
 import controller.wall.LargeWall;
+import controller.wall.NormalWall;
 import controller.wall.Wall;
 import model.cell.CellType;
 import model.wall.WallType;
@@ -23,12 +24,11 @@ public final class Board extends GameComponent {
     private final int widthCells;
     private final int heightCells;
     private final Point parsedMousePosition;
-
+    private Wall currentWall;
     private CellType[][] cells;
     private WallType[][] walls;
     private ArrayList<PlayerTransferObject> players;
     private PlayerTransferObject playerInTurn;
-
     private boolean isMouseInvalid;
 
     /**
@@ -47,6 +47,8 @@ public final class Board extends GameComponent {
         this.heightCells = cells[0].length;
 
         this.parsedMousePosition = new Point();
+
+        this.currentWall = new NormalWall();
     }
 
     private void fetchBoardState() {
@@ -144,7 +146,7 @@ public final class Board extends GameComponent {
                     height = WALL_SIZE;
                 }
 
-                graphics.setColor(this.contextProvider.themeManager().getCurrentTheme().secondaryColor);
+                graphics.setColor(this.contextProvider.themeManager().getCurrentTheme().primaryColor);
 
                 graphics.fillRect(
                         this.style.x + this.style.paddingX + CELL_SIZE * cellsCountX + WALL_SIZE * wallsCountX,
@@ -154,6 +156,12 @@ public final class Board extends GameComponent {
                 );
             }
         }
+
+        if (this.isMouseInvalid) {
+            return;
+        }
+
+
     }
 
     private void updateParsedMousePosition() {
@@ -252,7 +260,21 @@ public final class Board extends GameComponent {
 
         this.addKeyListener(KeyboardEvent.EventType.PRESSED, event -> {
             this.handlePlayerKeyboardMovement(event);
+            this.handleWallDirectionChange(event);
+            this.handleWallTypeChange(event);
         });
+    }
+
+    private void handleWallDirectionChange(KeyboardEvent event) {
+        if (event.keyCode == KeyboardEvent.VK_R) {
+            this.currentWall.rotate();
+        }
+    }
+
+    private void handleWallTypeChange(KeyboardEvent event) {
+        if (event.keyCode == KeyboardEvent.VK_SPACE) {
+            this.currentWall = this.currentWall.getWallType() == WallType.NORMAL ? new LargeWall() : new NormalWall();
+        }
     }
 
     private void handlePlayerMouseMovement() {
@@ -297,10 +319,9 @@ public final class Board extends GameComponent {
             return;
         }
 
-        Wall wall = new LargeWall();
-        wall.getWallData().setPositionOnBoard(new Point(parsedMousePosition.x, parsedMousePosition.y));
+        this.currentWall.getWallData().setPositionOnBoard(new Point(parsedMousePosition.x, parsedMousePosition.y));
 
-        ServiceResponse<Void> response = this.contextProvider.controller().placeWall(this.playerInTurn.id(), wall);
+        ServiceResponse<Void> response = this.contextProvider.controller().placeWall(this.playerInTurn.id(), this.currentWall);
 
         if (!response.ok) {
             //TODO: Handle error
