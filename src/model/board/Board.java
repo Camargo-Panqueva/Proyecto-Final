@@ -20,9 +20,6 @@ public final class Board {
         this.width = width;
 
         this.boardWalls = new WallData[2 * width - 1][2 * height - 1];
-        WallData wallData = new WallData();
-        wallData.setWallType(WallType.NORMAL);
-        this.boardWalls[5][2] = wallData;
         this.boardCells = new CellType[width][height];
         this.createCells();
     }

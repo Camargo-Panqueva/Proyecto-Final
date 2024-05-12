@@ -32,56 +32,35 @@ public class MatchManager {
     }
 
     public ArrayList<Point> getPossibleMovements(final Player player) {
-
         final ArrayList<Point> possibleMovements = new ArrayList<>();
-
         final Point basePoint = new Point(player.getPosition());
 
-        final int width = this.gameModel.getBoard().getWidth();
-        final int height = this.gameModel.getBoard().getHeight();
+        final Point[] directions = { new Point(0, 1), new Point(1, 0), new Point(0, -1), new Point(-1, 0) };
 
-        final Point objetivePoint = new Point();
-        Wall wall;
-        //TODO : REFACTOR ME PLS
-        if (basePoint.y != height - 1) {
-            objetivePoint.move(basePoint.x, basePoint.y + 1);
-
-            wall = this.isBlockedPoint(player.getPosition(), objetivePoint);
-            if (wall == null) {
-                possibleMovements.add(new Point(objetivePoint));
-            }//TODO : ally walls
-        }
-        if (basePoint.x != width - 1) {
-            objetivePoint.move(basePoint.x + 1, basePoint.y);
-
-            wall = this.isBlockedPoint(player.getPosition(), objetivePoint);
-            if (wall == null) {
-                possibleMovements.add(new Point(objetivePoint));
-            }
-        }
-
-        if (basePoint.y != 0) {
-            objetivePoint.move(basePoint.x, basePoint.y - 1);
-
-            wall = this.isBlockedPoint(player.getPosition(), objetivePoint);
-            if (wall == null) {
-                possibleMovements.add(new Point(objetivePoint));
-            }
-        }
-
-        if (basePoint.x != 0) {
-            objetivePoint.move(basePoint.x - 1, basePoint.y);
-
-            wall = this.isBlockedPoint(player.getPosition(), objetivePoint);
-            if (wall == null) {
-                possibleMovements.add(new Point(objetivePoint));
+        for (Point direction : directions) {
+            Point objectivePoint = new Point(basePoint.x + direction.x, basePoint.y + direction.y);
+            if (isInsideBoard(objectivePoint) && !isOccupiedOrBlocked(player.getPosition(), objectivePoint)) {
+                possibleMovements.add(new Point(objectivePoint));
             }
         }
 
         return possibleMovements;
     }
 
+    private boolean isInsideBoard(Point point) {
+        return point.x >= 0 && point.x < this.gameModel.getBoard().getWidth() && point.y >= 0 && point.y < this.gameModel.getBoard().getHeight();
+    }
+
+    private boolean isOccupiedOrBlocked(Point playerPosition, Point objectivePoint) {
+        return isOccupiedPoint(objectivePoint) || isBlockedPoint(playerPosition, objectivePoint) != null;
+    }
+
     private boolean isOccupiedPoint(Point point) {
+        for (Player player : this.gameModel.getPlayers().values()) {
+            if (player.getPosition().equals(point)) {
+                return true;
+            }
+        }
         return false;
     }
 
