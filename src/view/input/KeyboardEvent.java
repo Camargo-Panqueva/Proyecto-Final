@@ -10,6 +10,7 @@ public class KeyboardEvent {
     public static final int VK_A = 65;
     public static final int VK_S = 83;
     public static final int VK_D = 68;
+    public static final int VK_R = 82;
     public static final int VK_ENTER = 10;
     public static final int VK_ESCAPE = 27;
     public static final int VK_BACKSPACE = 8;
