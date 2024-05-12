@@ -115,7 +115,7 @@ public class MatchManager {
         wall.setWallId(wallUuid);
 
         for (Point point : newWalls) {
-            this.gameModel.getBoard().getBoardWalls()[point.y][point.x] = wall.getWallData();
+            this.gameModel.getBoard().getBoardWalls()[point.x][point.y] = wall.getWallData();
         }
         player.addWallPlaced(wall.getWallData());
         this.walls.put(wallUuid, wall);

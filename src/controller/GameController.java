@@ -140,7 +140,7 @@ public final class GameController {
         }
 
         for (int i = 0; i < width * 2 - 1; i++) {
-            for (int j = 0; j < height; j++) {
+            for (int j = 0; j < height * 2 - 1; j++) {
                 wallTypesCopy[i][j] = this.model.getBoard().getBoardWalls()[i][j] == null ? null : this.model.getBoard().getBoardWalls()[i][j].getWallType();
             }
         }
@@ -198,13 +198,13 @@ public final class GameController {
                 final boolean isPositionInBoard = this.isPointInsideBoard(boardWallX, boardWallY);
 
                 if (!isPositionInBoard) {
-                    if (wall.getWallShape()[y][x] != null) {
+                    if (wall.getWallShape()[x][y] != null) {
                         return new ErrorResponse<>("Wall placed in a invalid position. The Wall is off the board");
                     }
                     continue;
                 }
 
-                final WallData wallDataPosition = this.model.getBoard().getBoardWalls()[boardWallY][boardWallX];
+                final WallData wallDataPosition = this.model.getBoard().getBoardWalls()[boardWallX][boardWallY];
 
                 final boolean isNullPosition = wallDataPosition == null;
 
@@ -212,14 +212,13 @@ public final class GameController {
                     return new ErrorResponse<>("Wall placed in a invalid position. Already there is a wall");
                 }
 
-                if (boardWallX % 2 == 0 && boardWallY % 2 == 0 && null != wall.getWallShape()[y][x]) {
+                if (boardWallX % 2 == 0 && boardWallY % 2 == 0 && null != wall.getWallShape()[x][y]) {
                     return new ErrorResponse<>("Wall placed in a invalid position. That position is Illegal! there should be a cell");
                 }
 
-                if (wall.getWallShape()[y][x] != null) {
+                if (wall.getWallShape()[x][y] != null) {
                     newWalls.add(new Point(boardWallX, boardWallY));
                 }
-
             }
         }
 

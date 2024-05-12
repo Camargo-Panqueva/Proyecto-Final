@@ -3,6 +3,8 @@ package view.components.match;
 import controller.dto.BoardTransferObject;
 import controller.dto.PlayerTransferObject;
 import controller.dto.ServiceResponse;
+import controller.wall.LargeWall;
+import controller.wall.Wall;
 import model.cell.CellType;
 import model.wall.WallType;
 import view.components.GameComponent;
@@ -16,7 +18,7 @@ import java.util.ArrayList;
 
 public final class Board extends GameComponent {
 
-    private final static int CELL_SIZE = 40;
+    private final static int CELL_SIZE = 48;
     private final static int WALL_SIZE = CELL_SIZE / 4;
     private final int widthCells;
     private final int heightCells;
@@ -27,8 +29,7 @@ public final class Board extends GameComponent {
     private ArrayList<PlayerTransferObject> players;
     private PlayerTransferObject playerInTurn;
 
-    private boolean isMouseOnCell;
-    private boolean isMouseOnWall;
+    private boolean isMouseInvalid;
 
     /**
      * Creates a new Board component with the given context provider.
@@ -79,7 +80,7 @@ public final class Board extends GameComponent {
 
         graphics.setFont(new Font("Arial", Font.PLAIN, 12));
         graphics.setColor(this.contextProvider.themeManager().getCurrentTheme().foregroundColor);
-        graphics.drawString(String.format("Relative Mouse Position: [%d, %d, %s]", this.parsedMousePosition.x, this.parsedMousePosition.y, this.isMouseOnWall), 6, 86);
+        graphics.drawString(String.format("Relative Mouse Position: [%d, %d]", this.parsedMousePosition.x, this.parsedMousePosition.y), 6, 86);
     }
 
     private void renderPlayers(Graphics2D graphics) {
@@ -112,29 +113,83 @@ public final class Board extends GameComponent {
 
     private void renderWalls(Graphics2D graphics) {
 
+        for (int x = 0; x < this.walls.length; x++) {
+            for (int y = 0; y < this.walls[0].length; y++) {
+                WallType wallType = this.walls[x][y];
+
+                if (wallType == null) {
+                    continue;
+                }
+
+                int cellsCountX = (int) Math.ceil(x / 2.0);
+                int cellsCountY = (int) Math.ceil(y / 2.0);
+
+                int wallsCountX = x / 2;
+                int wallsCountY = y / 2;
+
+                int width;
+                int height;
+
+                if (x % 2 == 0 && y % 2 == 0) {
+                    width = CELL_SIZE;
+                    height = CELL_SIZE;
+                } else if (x % 2 == 0) {
+                    width = CELL_SIZE;
+                    height = WALL_SIZE;
+                } else if (y % 2 == 0) {
+                    width = WALL_SIZE;
+                    height = CELL_SIZE;
+                } else {
+                    width = WALL_SIZE;
+                    height = WALL_SIZE;
+                }
+
+                graphics.setColor(this.contextProvider.themeManager().getCurrentTheme().secondaryColor);
+
+                graphics.fillRect(
+                        this.style.x + this.style.paddingX + CELL_SIZE * cellsCountX + WALL_SIZE * wallsCountX,
+                        this.style.y + this.style.paddingY + CELL_SIZE * cellsCountY + WALL_SIZE * wallsCountY,
+                        width,
+                        height
+                );
+            }
+        }
     }
 
     private void updateParsedMousePosition() {
-        this.isMouseOnWall =
-                (this.contextProvider.mouse().getMouseRelativePosition(this.getBounds()).x - this.style.paddingX) % (CELL_SIZE + WALL_SIZE) > CELL_SIZE ||
-                        (this.contextProvider.mouse().getMouseRelativePosition(this.getBounds()).y - this.style.paddingY) % (CELL_SIZE + WALL_SIZE) > CELL_SIZE;
 
-        this.isMouseOnCell = !this.isMouseOnWall;
+        Point relativePosition = this.contextProvider.mouse().getMouseRelativePosition(this.getBounds());
 
-        if (this.isMouseOnWall) {
-            this.parsedMousePosition.x = -1;
-            this.parsedMousePosition.y = -1;
+        relativePosition.x -= this.style.paddingX;
+        relativePosition.y -= this.style.paddingY;
 
+        int parsedX = ((relativePosition.x) / (CELL_SIZE + WALL_SIZE)) * 2;
+        int parsedY = ((relativePosition.y) / (CELL_SIZE + WALL_SIZE)) * 2;
+
+        if ((relativePosition.x) % (CELL_SIZE + WALL_SIZE) > CELL_SIZE) {
+            parsedX++;
+        }
+        if ((relativePosition.y) % (CELL_SIZE + WALL_SIZE) > CELL_SIZE) {
+            parsedY++;
+        }
+
+        boolean isOutOfBounds =
+                relativePosition.y < 0 || relativePosition.x < 0 || parsedY >= 2 * this.heightCells - 1 || parsedX >= 2 * this.widthCells - 1;
+
+        if (isOutOfBounds) {
+            this.parsedMousePosition.setLocation(-1, -1);
+            this.isMouseInvalid = true;
             return;
         }
 
-        this.parsedMousePosition.x = (this.contextProvider.mouse().getMouseRelativePosition(this.getBounds()).x - this.style.paddingX) / (CELL_SIZE + WALL_SIZE);
-        this.parsedMousePosition.y = (this.contextProvider.mouse().getMouseRelativePosition(this.getBounds()).y - this.style.paddingY) / (CELL_SIZE + WALL_SIZE);
+        this.isMouseInvalid = false;
+        this.parsedMousePosition.setLocation(parsedX, parsedY);
     }
 
     private void updateCursor() {
+        Point movementPoint = new Point((this.parsedMousePosition.x + 1) / 2, (this.parsedMousePosition.y + 1) / 2);
 
-        if (this.playerInTurn.allowedMoves().contains(this.parsedMousePosition)) {
+        if (this.playerInTurn.allowedMoves().contains(movementPoint)) {
             this.contextProvider.window().getCanvas().setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         } else {
             this.contextProvider.window().getCanvas().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
@@ -191,6 +246,7 @@ public final class Board extends GameComponent {
         super.setupDefaultEventListeners();
 
         this.addMouseListener(MouseEvent.EventType.RELEASED, event -> {
+            this.handleWallPlacement(event);
             this.handlePlayerMouseMovement();
         });
 
@@ -200,43 +256,59 @@ public final class Board extends GameComponent {
     }
 
     private void handlePlayerMouseMovement() {
-        if (!this.playerInTurn.allowedMoves().contains(this.parsedMousePosition)) {
+        if (this.isMouseInvalid) {
             return;
         }
 
-        ServiceResponse<Void> movementResponse =
-                this.contextProvider.controller().processPlayerMove(this.playerInTurn.id(), new Point(this.parsedMousePosition));
+        Point movementPoint = new Point((this.parsedMousePosition.x + 1) / 2, (this.parsedMousePosition.y + 1) / 2);
 
-        if (!movementResponse.ok) {
-            //TODO: Handle error
-            throw new RuntimeException("Failed to process player move: " + movementResponse.message);
-        }
+        this.tryMovePlayer(movementPoint);
     }
 
     private void handlePlayerKeyboardMovement(KeyboardEvent event) {
-        Point newPosition = new Point(this.playerInTurn.position());
+        Point movementPoint = new Point(this.playerInTurn.position());
 
         switch (event.keyCode) {
             case KeyboardEvent.VK_UP:
             case KeyboardEvent.VK_W:
-                newPosition.y--;
+                movementPoint.y--;
                 break;
             case KeyboardEvent.VK_DOWN:
             case KeyboardEvent.VK_S:
-                newPosition.y++;
+                movementPoint.y++;
                 break;
             case KeyboardEvent.VK_LEFT:
             case KeyboardEvent.VK_A:
-                newPosition.x--;
+                movementPoint.x--;
                 break;
             case KeyboardEvent.VK_RIGHT:
             case KeyboardEvent.VK_D:
-                newPosition.x++;
+                movementPoint.x++;
                 break;
             default:
                 return;
         }
 
+        this.tryMovePlayer(movementPoint);
+    }
+
+    private void handleWallPlacement(MouseEvent event) {
+        if (this.isMouseInvalid) {
+            return;
+        }
+
+        Wall wall = new LargeWall();
+        wall.getWallData().setPositionOnBoard(new Point(parsedMousePosition.x, parsedMousePosition.y));
+
+        ServiceResponse<Void> response = this.contextProvider.controller().placeWall(this.playerInTurn.id(), wall);
+
+        if (!response.ok) {
+            //TODO: Handle error
+            System.out.println("Failed to place wall: " + response.message);
+        }
+    }
+
+    private void tryMovePlayer(Point newPosition) {
         if (!this.playerInTurn.allowedMoves().contains(newPosition)) {
             return;
         }
