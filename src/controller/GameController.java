@@ -57,27 +57,27 @@ public final class GameController {
         final int heightCenterPosition = heightIsEven ? (height / 2) - 1 : (height / 2);
 
         if (widthIsEven) {
-            this.model.addPlayer(0, new Player(new Point(widthCenterPosition + 1, 0), "Player 1", allowedWallsPerPlayer));
-            this.model.addPlayer(1, new Player(new Point(widthCenterPosition + 2, height), "Player 2", allowedWallsPerPlayer));
+            this.model.addPlayer(0, new Player(new Point(widthCenterPosition + 1, 0), "Player 1", allowedWallsPerPlayer, -1, height));
+            this.model.addPlayer(1, new Player(new Point(widthCenterPosition + 2, height), "Player 2", allowedWallsPerPlayer, -1, 0));
         } else {
-            this.model.addPlayer(0, new Player(new Point(widthCenterPosition, 0), "Player 1", allowedWallsPerPlayer));
-            this.model.addPlayer(1, new Player(new Point(widthCenterPosition, height), "Player 2", allowedWallsPerPlayer));
+            this.model.addPlayer(0, new Player(new Point(widthCenterPosition, 0), "Player 1", allowedWallsPerPlayer , -1, height));
+            this.model.addPlayer(1, new Player(new Point(widthCenterPosition, height), "Player 2", allowedWallsPerPlayer , -1, 0));
         }
 
         if (heightIsEven) {
             if (this.model.getPlayerCount() > 2) {
-                this.model.addPlayer(2, new Player(new Point(0, heightCenterPosition + 2), "Player 3", allowedWallsPerPlayer));
+                this.model.addPlayer(2, new Player(new Point(0, heightCenterPosition + 2), "Player 3", allowedWallsPerPlayer, width, -1));
             }
             if (this.model.getPlayerCount() > 3) {
-                this.model.addPlayer(3, new Player(new Point(width, heightCenterPosition + 1), "Player 4", allowedWallsPerPlayer));
+                this.model.addPlayer(3, new Player(new Point(width, heightCenterPosition + 1), "Player 4", allowedWallsPerPlayer, 0, -1));
             }
         } else {
 
             if (this.model.getPlayerCount() > 2) {
-                this.model.addPlayer(2, new Player(new Point(0, heightCenterPosition), "Player 3", allowedWallsPerPlayer));
+                this.model.addPlayer(2, new Player(new Point(0, heightCenterPosition), "Player 3", allowedWallsPerPlayer, width, -1));
             }
             if (this.model.getPlayerCount() > 3) {
-                this.model.addPlayer(3, new Player(new Point(width, heightCenterPosition), "Player 4", allowedWallsPerPlayer));
+                this.model.addPlayer(3, new Player(new Point(width, heightCenterPosition), "Player 4", allowedWallsPerPlayer, 0, -1));
 
             }
         }
@@ -245,6 +245,9 @@ public final class GameController {
     }
 
     private ServiceResponse<Void> validBasicParameters(int playerId) {
+        if(this.model.getMatchState() == GameModel.MatchState.WINNER){
+            return new ErrorResponse<>("There is a WINNER!! Congratulations " + this.model.getWinningPlayer().getName());
+        }
         if (!this.model.getMatchState().equals(GameModel.MatchState.PLAYING)) {
             return new ErrorResponse<>("There is not a match, call startGame");
         }

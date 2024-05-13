@@ -86,6 +86,10 @@ public class MatchManager {
 
     public void executeMove(Player player, Point moveTo) {
         player.setPosition(moveTo);
+        if(player.getXWinPosition() == player.getPosition().x || player.getYWinPosition() == player.getPosition().y){
+            this.gameModel.setMatchState(GameModel.MatchState.WINNER);
+            this.gameModel.setWinningPlayer(player);
+        }
         this.nextTurn();
     }
 

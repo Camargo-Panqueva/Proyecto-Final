@@ -23,6 +23,8 @@ public final class GameModel {
 
     private int playerInTurn;
 
+    private Player winningPlayer;
+
     private final GameModeManager gameModeManager;
 
     public GameModel() {
@@ -89,6 +91,10 @@ public final class GameModel {
         return playerInTurn;
     }
 
+    public Player getWinningPlayer() {
+        return winningPlayer;
+    }
+
     public WallData getWall(UUID uuid) {
         return this.walls.get(uuid);
     }
@@ -103,6 +109,10 @@ public final class GameModel {
 
     public void setPlayerInTurn(int playerInTurn) {
         this.playerInTurn = playerInTurn;
+    }
+
+    public void setWinningPlayer(final Player winningPlayer) {
+        this.winningPlayer = winningPlayer;
     }
 
     public enum MatchState {
