@@ -130,44 +130,46 @@ public class MatchManager {
             wantedBoard[point.x][point.y] = 0;
         }
 
-        int islandCount = 0;
-
-        final boolean[][] visited = new boolean[width][height];
-
         final Point[] directions = {new Point(0, 1), new Point(1, 0), new Point(0, -1), new Point(-1, 0)};
 
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                if (islandCount > 1) {
-                    return true;
+        final HashSet<Player> playersThatGoalIsReachable = new HashSet<>();
+
+        for (Player player : this.model.getPlayers().values()) {
+
+            final boolean[][] visited = new boolean[width][height];
+
+
+            final int x = player.getPosition().x * 2;
+            final int y = player.getPosition().y * 2;
+
+            //bfs
+            visited[x][y] = true;
+
+            ArrayDeque<Point> deque = new ArrayDeque<>();
+
+            deque.add(new Point(x, y));
+
+            while (!deque.isEmpty()) {
+                final Point currPoint = new Point(deque.pop());
+
+                if ((player.getYWinPosition() != -1 && currPoint.y == player.getYWinPosition() * 2) || (player.getXWinPosition() != -1 && currPoint.x == player.getXWinPosition() * 2)) {
+                    playersThatGoalIsReachable.add(player); // the player reached his goal
+                    break;
                 }
 
-                if (wantedBoard[y][x] == 1 && !visited[y][x]) { //start the search from the first 1
-                    //bfs
-                    visited[y][x] = true;
-
-                    ArrayDeque<Point> deque = new ArrayDeque<>();
-
-                    deque.add(new Point(x, y));
-
-                    while (!deque.isEmpty()) {
-                        Point currPoint = new Point(deque.pop());
-
-                        for (Point direction : directions) {
-                            int dirY = currPoint.y + direction.y;
-                            int dirX = currPoint.x + direction.x;
-                            if (dirY < height && dirX < width && dirY >= 0 && dirX >= 0 && wantedBoard[dirY][dirX] == 1 && !visited[dirY][dirX]) {
-                                deque.add(new Point(dirX, dirY));
-                                visited[dirY][dirX] = true;
-                            }
-                        }
+                for (Point direction : directions) {
+                    final int dirY = currPoint.y + direction.y;
+                    final int dirX = currPoint.x + direction.x;
+                    if (dirY < height && dirX < width && dirY >= 0 && dirX >= 0 && wantedBoard[dirX][dirY] == 1 && !visited[dirX][dirY]) {
+                        deque.add(new Point(dirX, dirY)); // Save the point for searching here later
+                        visited[dirX][dirY] = true;
                     }
-
-                    islandCount++;
                 }
+
             }
         }
-        return false;
+
+        return playersThatGoalIsReachable.size() != this.model.getPlayerCount(); //if at least one player misses his goal -> true
     }
 
     private void AIMove() {
@@ -209,9 +211,8 @@ public class MatchManager {
 
             }
             sb.append("\n");
-            System.out.println(sb);
-            ;
         }
+        System.out.println(sb);
     }
 
 }
