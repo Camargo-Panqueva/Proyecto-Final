@@ -33,15 +33,9 @@ public abstract class Wall {
             shapeRotated[i] = Arrays.copyOf(this.wallData.getWallShape()[i], height);
         }
 
-        for (int x = 0; x < width - 1; x++) {
-            for (int y = 0; y < height - 1; y++) {
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
                 shapeRotated[y][x] = this.wallData.getWallShape()[x][y];
-            }
-        }
-
-        for (int i = 0; i < height; i++) {
-            for (int j = 0; j < width; j++) {
-                shapeRotated[i][j] = this.wallData.getWallShape()[width - 1 - j][i];
             }
         }
 
@@ -56,27 +50,27 @@ public abstract class Wall {
 
     @Override
     public String toString() {
-        if (this.wallData.getWallShape() == null) {
+        if (this.getWallShape() == null) {
             return "Null";
         }
         StringBuilder sb = new StringBuilder();
-        int i = 1;
-        for (int x = 0; x < this.wallData.getWidth(); x++) {
-            for (int y = 0; y < this.wallData.getHeight(); y++) {
-                final WallType currWall = this.wallData.getWallShape()[x][y];
 
-                switch (currWall) {
-                    case NORMAL -> sb.append("Normal").append(" ");
-                    case LARGE -> sb.append("Large").append(" ");
-                    default -> sb.append("  0   ").append(" ");
+        for (int y = 0; y < this.getWidth(); y++) {
+            for (int x = 0; x < this.getHeight(); x++) {
+
+                final WallType currPosition = this.getWallShape()[x][y];
+
+                if (currPosition == null) {
+                    sb.append(" 0 ").append(" ");
+                    continue;
                 }
-
+                if (currPosition == WallType.NORMAL) {
+                    sb.append("Nor").append(" ");
+                } else if (currPosition == WallType.LARGE) {
+                    sb.append("Lar").append(" ");
+                }
             }
-            if (i % this.wallData.getWidth() == 0) {
-                sb.append("\n");
-            }
-            i++;
-
+            sb.append("\n");
         }
 
         return sb.toString();
