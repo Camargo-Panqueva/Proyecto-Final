@@ -226,6 +226,9 @@ public final class GameController {
         }
 
         if (placeIt) {
+            if(this.matchManager.isABlockerWall(newWalls)){
+                return new ErrorResponse<>("You cannot block the path, chose another position");
+            }
             this.matchManager.executePlaceWall(this.model.getPlayers().get(playerId), wall, newWalls);
             return new SuccessResponse<>(null, "Ok, The Wall was placed");
         }
@@ -244,7 +247,7 @@ public final class GameController {
         return x <= this.model.getBoard().getWidth() * 2 - 2 && y <= this.model.getBoard().getHeight() * 2 - 2 && x >= 0 && y >= 0;
     }
 
-    private ServiceResponse<Void> validBasicParameters(int playerId) {
+    private ServiceResponse<Void> validBasicParameters(final int playerId) {
         if(this.model.getMatchState() == GameModel.MatchState.WINNER){
             return new ErrorResponse<>("There is a WINNER!! Congratulations " + this.model.getWinningPlayer().getName());
         }
