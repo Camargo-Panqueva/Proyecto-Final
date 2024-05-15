@@ -80,7 +80,7 @@ public final class Text extends GameComponent {
      */
     @Override
     protected void handleThemeChange(Theme theme) {
-        this.style.foregroundColor = theme.foreground;
+        this.style.foregroundColor = theme.getColor(Theme.ColorName.FOREGROUND, Theme.ColorVariant.NORMAL);
     }
 
     /**
@@ -93,6 +93,6 @@ public final class Text extends GameComponent {
     @Override
     protected void setupDefaultStyle() {
         this.style.font = this.contextProvider.window().getCanvas().getFont().deriveFont(16.0f);
-        this.style.foregroundColor = this.contextProvider.themeManager().getCurrentTheme().foreground;
+        this.style.foregroundColor = this.contextProvider.themeManager().getCurrentTheme().getColor(Theme.ColorName.FOREGROUND, Theme.ColorVariant.NORMAL);
     }
 }

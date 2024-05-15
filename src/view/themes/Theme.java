@@ -1,6 +1,7 @@
 package view.themes;
 
 import java.awt.*;
+import java.util.HashMap;
 
 /**
  * Represents a theme object that can be applied to the game view.
@@ -12,111 +13,7 @@ import java.awt.*;
  */
 public abstract class Theme {
 
-    /**
-     * The primary color of the theme.
-     */
-    public final Color primary;
-
-    /**
-     * The primary bright color of the theme.
-     */
-    public final Color primaryBright;
-
-    /**
-     * The primary dimmed color of the theme.
-     */
-    public final Color primaryDimmed;
-
-    /**
-     * The background color of the theme.
-     */
-    public final Color background;
-
-    /**
-     * The background bright color of the theme.
-     */
-    public final Color backgroundBright;
-
-    /**
-     * The background dimmed color of the theme.
-     */
-    public final Color backgroundDimmed;
-
-    /**
-     * The foreground color of the theme.
-     */
-    public final Color foreground;
-
-    /**
-     * The foreground bright color of the theme.
-     */
-    public final Color foregroundBright;
-
-    /**
-     * The foreground dimmed color of the theme.
-     */
-    public final Color foregroundDimmed;
-
-    /**
-     * The red color of the theme.
-     */
-    public final Color red;
-
-    /**
-     * The red bright color of the theme.
-     */
-    public final Color redBright;
-
-    /**
-     * The red dimmed color of the theme.
-     */
-    public final Color redDimmed;
-
-    /**
-     * The green color of the theme.
-     */
-    public final Color green;
-
-    /**
-     * The green bright color of the theme.
-     */
-    public final Color greenBright;
-
-    /**
-     * The green dimmed color of the theme.
-     */
-    public final Color greenDimmed;
-
-    /**
-     * The blue color of the theme.
-     */
-    public final Color blue;
-
-    /**
-     * The blue bright color of the theme.
-     */
-    public final Color blueBright;
-
-    /**
-     * The blue dimmed color of the theme.
-     */
-    public final Color blueDimmed;
-
-    /**
-     * The purple color of the theme.
-     */
-    public final Color purple;
-
-    /**
-     * The purple bright color of the theme.
-     */
-    public final Color purpleBright;
-
-    /**
-     * The purple dimmed color of the theme.
-     */
-    public final Color purpleDimmed;
-
+    private final HashMap<ColorName, HashMap<ColorVariant, Color>> colors;
 
     /**
      * Creates a new Theme with the given colors.
@@ -150,32 +47,68 @@ public abstract class Theme {
             Color purpleBright,
             Color purpleDimmed) {
 
-        this.primary = primary;
-        this.primaryBright = primaryBright;
-        this.primaryDimmed = primaryDimmed;
+        this.colors = new HashMap<>();
 
-        this.background = background;
-        this.backgroundBright = backgroundBright;
-        this.backgroundDimmed = backgroundDimmed;
+        this.colors.put(ColorName.PRIMARY, new HashMap<>() {{
+            put(ColorVariant.NORMAL, primary);
+            put(ColorVariant.BRIGHT, primaryBright);
+            put(ColorVariant.DIMMED, primaryDimmed);
+        }});
 
-        this.foreground = foreground;
-        this.foregroundBright = foregroundBright;
-        this.foregroundDimmed = foregroundDimmed;
+        this.colors.put(ColorName.BACKGROUND, new HashMap<>() {{
+            put(ColorVariant.NORMAL, background);
+            put(ColorVariant.BRIGHT, backgroundBright);
+            put(ColorVariant.DIMMED, backgroundDimmed);
+        }});
 
-        this.red = red;
-        this.redBright = redBright;
-        this.redDimmed = redDimmed;
+        this.colors.put(ColorName.FOREGROUND, new HashMap<>() {{
+            put(ColorVariant.NORMAL, foreground);
+            put(ColorVariant.BRIGHT, foregroundBright);
+            put(ColorVariant.DIMMED, foregroundDimmed);
+        }});
 
-        this.green = green;
-        this.greenBright = greenBright;
-        this.greenDimmed = greenDimmed;
+        this.colors.put(ColorName.RED, new HashMap<>() {{
+            put(ColorVariant.NORMAL, red);
+            put(ColorVariant.BRIGHT, redBright);
+            put(ColorVariant.DIMMED, redDimmed);
+        }});
 
-        this.blue = blue;
-        this.blueBright = blueBright;
-        this.blueDimmed = blueDimmed;
+        this.colors.put(ColorName.GREEN, new HashMap<>() {{
+            put(ColorVariant.NORMAL, green);
+            put(ColorVariant.BRIGHT, greenBright);
+            put(ColorVariant.DIMMED, greenDimmed);
+        }});
 
-        this.purple = purple;
-        this.purpleBright = purpleBright;
-        this.purpleDimmed = purpleDimmed;
+        this.colors.put(ColorName.BLUE, new HashMap<>() {{
+            put(ColorVariant.NORMAL, blue);
+            put(ColorVariant.BRIGHT, blueBright);
+            put(ColorVariant.DIMMED, blueDimmed);
+        }});
+
+        this.colors.put(ColorName.PURPLE, new HashMap<>() {{
+            put(ColorVariant.NORMAL, purple);
+            put(ColorVariant.BRIGHT, purpleBright);
+            put(ColorVariant.DIMMED, purpleDimmed);
+        }});
+    }
+
+    public Color getColor(ColorName colorName, ColorVariant colorVariant) {
+        return colors.get(colorName).get(colorVariant);
+    }
+
+    public enum ColorName {
+        PRIMARY,
+        BACKGROUND,
+        FOREGROUND,
+        RED,
+        GREEN,
+        BLUE,
+        PURPLE
+    }
+
+    public enum ColorVariant {
+        NORMAL,
+        BRIGHT,
+        DIMMED
     }
 }

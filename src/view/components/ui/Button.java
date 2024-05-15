@@ -92,8 +92,8 @@ public final class Button extends GameComponent {
      */
     @Override
     protected void handleThemeChange(Theme theme) {
-        this.style.backgroundColor = theme.primary;
-        this.style.foregroundColor = theme.background;
+        this.style.backgroundColor = theme.getColor(Theme.ColorName.PRIMARY, Theme.ColorVariant.NORMAL);
+        this.style.foregroundColor = theme.getColor(Theme.ColorName.BACKGROUND, Theme.ColorVariant.NORMAL);
     }
 
     /**
@@ -110,8 +110,8 @@ public final class Button extends GameComponent {
      */
     @Override
     protected void setupDefaultStyle() {
-        this.style.backgroundColor = this.contextProvider.themeManager().getCurrentTheme().primary;
-        this.style.foregroundColor = this.contextProvider.themeManager().getCurrentTheme().background;
+        this.style.backgroundColor = this.contextProvider.themeManager().getCurrentTheme().getColor(Theme.ColorName.PRIMARY, Theme.ColorVariant.NORMAL);
+        this.style.foregroundColor = this.contextProvider.themeManager().getCurrentTheme().getColor(Theme.ColorName.BACKGROUND, Theme.ColorVariant.NORMAL);
         this.style.font = this.contextProvider.window().getCanvas().getFont().deriveFont(26.0f);
         this.style.height = 60;
         this.style.width = 300;

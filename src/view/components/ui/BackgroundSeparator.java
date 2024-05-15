@@ -78,7 +78,7 @@ public final class BackgroundSeparator extends GameComponent {
      */
     @Override
     protected void handleThemeChange(Theme theme) {
-        this.style.backgroundColor = theme.backgroundDimmed;
+        this.style.backgroundColor = theme.getColor(Theme.ColorName.BACKGROUND, Theme.ColorVariant.DIMMED);
     }
 
     /**
@@ -90,6 +90,6 @@ public final class BackgroundSeparator extends GameComponent {
      */
     @Override
     protected void setupDefaultStyle() {
-        this.style.backgroundColor = this.contextProvider.themeManager().getCurrentTheme().backgroundDimmed;
+        this.style.backgroundColor = this.contextProvider.themeManager().getCurrentTheme().getColor(Theme.ColorName.BACKGROUND, Theme.ColorVariant.DIMMED);
     }
 }
