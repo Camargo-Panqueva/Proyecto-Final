@@ -30,18 +30,24 @@ public final class Keyboard implements KeyListener {
 
     @Override
     public void keyTyped(KeyEvent event) {
+        if (event.getKeyCode() >= this.keys.length) return;
+
         this.keys[event.getKeyCode()] = true;
         this.dispatchEvent(KeyboardEvent.EventType.TYPED, event);
     }
 
     @Override
     public void keyPressed(KeyEvent event) {
+        if (event.getKeyCode() >= this.keys.length) return;
+
         this.keys[event.getKeyCode()] = true;
         this.dispatchEvent(KeyboardEvent.EventType.PRESSED, event);
     }
 
     @Override
     public void keyReleased(KeyEvent event) {
+        if (event.getKeyCode() >= this.keys.length) return;
+
         this.keys[event.getKeyCode()] = false;
         this.dispatchEvent(KeyboardEvent.EventType.RELEASED, event);
     }

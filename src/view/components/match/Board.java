@@ -24,11 +24,12 @@ public final class Board extends GameComponent {
     private final int widthCells;
     private final int heightCells;
     private final Point parsedMousePosition;
-    private Wall currentWall;
+    private WallType currentWallType;
     private CellType[][] cells;
     private WallType[][] walls;
     private ArrayList<PlayerTransferObject> players;
     private PlayerTransferObject playerInTurn;
+
     private boolean isMouseValid;
 
     /**
@@ -48,7 +49,7 @@ public final class Board extends GameComponent {
 
         this.parsedMousePosition = new Point();
 
-        this.currentWall = new NormalWall();
+        this.currentWallType = WallType.NORMAL;
     }
 
     private void fetchBoardState() {
@@ -116,6 +117,7 @@ public final class Board extends GameComponent {
     private void renderWalls(Graphics2D graphics) {
 
         for (int x = 0; x < this.walls.length; x++) {
+
             for (int y = 0; y < this.walls[0].length; y++) {
                 WallType wallType = this.walls[x][y];
 
@@ -123,28 +125,14 @@ public final class Board extends GameComponent {
                     continue;
                 }
 
-                int cellsCountX = (int) Math.ceil(x / 2.0);
-                int cellsCountY = (int) Math.ceil(y / 2.0);
+                int[] renderParams = this.calculateWallRenderParams(x, y);
 
-                int wallsCountX = x / 2;
-                int wallsCountY = y / 2;
-
-                int width;
-                int height;
-
-                if (x % 2 == 0 && y % 2 == 0) {
-                    width = CELL_SIZE;
-                    height = CELL_SIZE;
-                } else if (x % 2 == 0) {
-                    width = CELL_SIZE;
-                    height = WALL_SIZE;
-                } else if (y % 2 == 0) {
-                    width = WALL_SIZE;
-                    height = CELL_SIZE;
-                } else {
-                    width = WALL_SIZE;
-                    height = WALL_SIZE;
-                }
+                int cellsCountX = renderParams[0];
+                int cellsCountY = renderParams[1];
+                int wallsCountX = renderParams[2];
+                int wallsCountY = renderParams[3];
+                int width = renderParams[4];
+                int height = renderParams[5];
 
                 graphics.setColor(this.contextProvider.themeManager().getCurrentTheme().primaryColor);
 
@@ -156,6 +144,44 @@ public final class Board extends GameComponent {
                 );
             }
         }
+    }
+
+    private void renderWallPreview(Graphics2D graphics) {
+        if (!this.isMouseValid || !this.isMouseOverEmptyWall()) {
+            return;
+        }
+
+        int x = this.parsedMousePosition.x;
+        int y = this.parsedMousePosition.y;
+
+        int[] renderParams = this.calculateWallRenderParams(x, y);
+
+        int cellsCountX = renderParams[0];
+        int cellsCountY = renderParams[1];
+        int wallsCountX = renderParams[2];
+        int wallsCountY = renderParams[3];
+        int width = renderParams[4];
+        int height = renderParams[5];
+
+        //TODO: Get scale from model
+        int scale = this.currentWallType == WallType.NORMAL ? 2 : 3;
+
+        if (this.parsedMousePosition.x % 2 == 0) {
+            width = scale * (WALL_SIZE + CELL_SIZE) - WALL_SIZE;
+        }
+
+        if (this.parsedMousePosition.y % 2 == 0) {
+            height = scale * (WALL_SIZE + CELL_SIZE) - WALL_SIZE;
+        }
+
+        graphics.setColor(this.contextProvider.themeManager().getCurrentTheme().secondaryColor);
+
+        graphics.fillRect(
+                this.style.x + this.style.paddingX + CELL_SIZE * cellsCountX + WALL_SIZE * wallsCountX,
+                this.style.y + this.style.paddingY + CELL_SIZE * cellsCountY + WALL_SIZE * wallsCountY,
+                width,
+                height
+        );
     }
 
     private void updateParsedMousePosition() {
@@ -191,8 +217,7 @@ public final class Board extends GameComponent {
     private void updateCursor() {
         Point movementPoint = new Point((this.parsedMousePosition.x + 1) / 2, (this.parsedMousePosition.y + 1) / 2);
 
-
-        if (this.isMouseValid && this.cursorIsInWall()) {
+        if (this.isMouseValid && (this.isMouseOverWall() || this.playerInTurn.allowedMoves().contains(movementPoint))) {
             this.contextProvider.window().getCanvas().setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         } else {
             this.contextProvider.window().getCanvas().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
@@ -215,6 +240,7 @@ public final class Board extends GameComponent {
         this.renderCells(graphics);
         this.renderPlayers(graphics);
         this.renderWalls(graphics);
+        this.renderWallPreview(graphics);
     }
 
     @Override
@@ -255,25 +281,18 @@ public final class Board extends GameComponent {
 
         this.addKeyListener(KeyboardEvent.EventType.PRESSED, event -> {
             this.handlePlayerKeyboardMovement(event);
-            this.handleWallDirectionChange(event);
             this.handleWallTypeChange(event);
         });
     }
 
-    private void handleWallDirectionChange(KeyboardEvent event) {
-        if (event.keyCode == KeyboardEvent.VK_R) {
-            this.currentWall.rotate();
-        }
-    }
-
     private void handleWallTypeChange(KeyboardEvent event) {
         if (event.keyCode == KeyboardEvent.VK_SPACE) {
-            this.currentWall = this.currentWall.getWallType() == WallType.NORMAL ? new LargeWall() : new NormalWall();
+            this.currentWallType = this.currentWallType == WallType.NORMAL ? WallType.LARGE : WallType.NORMAL;
         }
     }
 
     private void handlePlayerMouseMovement() {
-        if (!this.isMouseValid) {
+        if (!this.isMouseValid || this.isMouseOverWall()) {
             return;
         }
 
@@ -310,13 +329,19 @@ public final class Board extends GameComponent {
     }
 
     private void handleWallPlacement(MouseEvent event) {
-        if (!this.isMouseValid) {
+        if (!this.isMouseValid || !this.isMouseOverEmptyWall()) {
             return;
         }
 
-        this.currentWall.getWallData().setPositionOnBoard(new Point(parsedMousePosition.x, parsedMousePosition.y));
+        //TODO: Change to wall factory
+        Wall wall = this.currentWallType == WallType.NORMAL ? new NormalWall() : new LargeWall();
+        wall.setPositionOnBoard(new Point(parsedMousePosition.x, parsedMousePosition.y));
 
-        ServiceResponse<Void> response = this.contextProvider.controller().placeWall(this.playerInTurn.id(), this.currentWall);
+        if (this.parsedMousePosition.y % 2 == 0) {
+            wall.rotate();
+        }
+
+        ServiceResponse<Void> response = this.contextProvider.controller().placeWall(this.playerInTurn.id(), wall);
 
         if (!response.ok) {
             //TODO: Handle error
@@ -338,10 +363,47 @@ public final class Board extends GameComponent {
         }
     }
 
-    private boolean cursorIsInWall() {
+    private boolean isMouseOverWall() {
+
         boolean evenX = this.parsedMousePosition.x % 2 == 0;
         boolean evenY = this.parsedMousePosition.y % 2 == 0;
 
         return (evenX && !evenY) || (!evenX && evenY);
+    }
+
+    private boolean isMouseOverEmptyWall() {
+        return this.isMouseOverWall() && this.walls[this.parsedMousePosition.x][this.parsedMousePosition.y] == null;
+    }
+
+    private boolean isMouseOverFilledWall() {
+        return this.isMouseOverWall() && this.walls[this.parsedMousePosition.x][this.parsedMousePosition.y] != null;
+    }
+
+    private int[] calculateWallRenderParams(int x, int y) {
+
+        int cellsCountX = (int) Math.ceil(x / 2.0);
+        int cellsCountY = (int) Math.ceil(y / 2.0);
+
+        int wallsCountX = x / 2;
+        int wallsCountY = y / 2;
+
+        int width;
+        int height;
+
+        if (x % 2 == 0 && y % 2 == 0) {
+            width = CELL_SIZE;
+            height = CELL_SIZE;
+        } else if (x % 2 == 0) {
+            width = CELL_SIZE;
+            height = WALL_SIZE;
+        } else if (y % 2 == 0) {
+            width = WALL_SIZE;
+            height = CELL_SIZE;
+        } else {
+            width = WALL_SIZE;
+            height = WALL_SIZE;
+        }
+
+        return new int[]{cellsCountX, cellsCountY, wallsCountX, wallsCountY, width, height};
     }
 }
