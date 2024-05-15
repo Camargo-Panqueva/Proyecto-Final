@@ -29,7 +29,7 @@ public final class Board extends GameComponent {
     private WallType[][] walls;
     private ArrayList<PlayerTransferObject> players;
     private PlayerTransferObject playerInTurn;
-    private boolean isMouseInvalid;
+    private boolean isMouseValid;
 
     /**
      * Creates a new Board component with the given context provider.
@@ -156,12 +156,6 @@ public final class Board extends GameComponent {
                 );
             }
         }
-
-        if (this.isMouseInvalid) {
-            return;
-        }
-
-
     }
 
     private void updateParsedMousePosition() {
@@ -186,18 +180,19 @@ public final class Board extends GameComponent {
 
         if (isOutOfBounds) {
             this.parsedMousePosition.setLocation(-1, -1);
-            this.isMouseInvalid = true;
+            this.isMouseValid = false;
             return;
         }
 
-        this.isMouseInvalid = false;
+        this.isMouseValid = true;
         this.parsedMousePosition.setLocation(parsedX, parsedY);
     }
 
     private void updateCursor() {
         Point movementPoint = new Point((this.parsedMousePosition.x + 1) / 2, (this.parsedMousePosition.y + 1) / 2);
 
-        if (this.playerInTurn.allowedMoves().contains(movementPoint)) {
+
+        if (this.isMouseValid && this.cursorIsInWall()) {
             this.contextProvider.window().getCanvas().setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         } else {
             this.contextProvider.window().getCanvas().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
@@ -278,7 +273,7 @@ public final class Board extends GameComponent {
     }
 
     private void handlePlayerMouseMovement() {
-        if (this.isMouseInvalid) {
+        if (!this.isMouseValid) {
             return;
         }
 
@@ -315,7 +310,7 @@ public final class Board extends GameComponent {
     }
 
     private void handleWallPlacement(MouseEvent event) {
-        if (this.isMouseInvalid) {
+        if (!this.isMouseValid) {
             return;
         }
 
@@ -341,5 +336,12 @@ public final class Board extends GameComponent {
             //TODO: Handle error
             throw new RuntimeException("Failed to process player move: " + movementResponse.message);
         }
+    }
+
+    private boolean cursorIsInWall() {
+        boolean evenX = this.parsedMousePosition.x % 2 == 0;
+        boolean evenY = this.parsedMousePosition.y % 2 == 0;
+
+        return (evenX && !evenY) || (!evenX && evenY);
     }
 }
