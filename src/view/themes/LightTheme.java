@@ -58,6 +58,66 @@ public final class LightTheme extends Theme {
     private final static Color foregroundDimmed = new Color(0x191919);
 
     /**
+     * See {@link Theme#red}.
+     */
+    private final static Color red = new Color(0xBF4040);
+
+    /**
+     * See {@link Theme#redBright}.
+     */
+    private final static Color redBright = new Color(0xD98C8C);
+
+    /**
+     * See {@link Theme#redDimmed}.
+     */
+    private final static Color redDimmed = new Color(0x732626);
+
+    /**
+     * See {@link Theme#green}.
+     */
+    private final static Color green = new Color(0x80BF40);
+
+    /**
+     * See {@link Theme#greenBright}.
+     */
+    private final static Color greenBright = new Color(0xB3D98C);
+
+    /**
+     * See {@link Theme#greenDimmed}.
+     */
+    private final static Color greenDimmed = new Color(0x4D7326);
+
+    /**
+     * See {@link Theme#blue}.
+     */
+    private final static Color blue = new Color(0x40BFBF);
+
+    /**
+     * See {@link Theme#blueBright}.
+     */
+    private final static Color blueBright = new Color(0x8CD9D9);
+
+    /**
+     * See {@link Theme#blueDimmed}.
+     */
+    private final static Color blueDimmed = new Color(0x267373);
+
+    /**
+     * See {@link Theme#purple}.
+     */
+    private final static Color purple = new Color(0x8040BF);
+
+    /**
+     * See {@link Theme#purpleBright}.
+     */
+    private final static Color purpleBright = new Color(0xB38CD9);
+
+    /**
+     * See {@link Theme#purpleDimmed}.
+     */
+    private final static Color purpleDimmed = new Color(0x4D2673);
+
+    /**
      * Creates a new LightTheme with the default colors.
      * <p>
      * This constructor creates a new LightTheme with the default colors.
@@ -65,6 +125,28 @@ public final class LightTheme extends Theme {
      * </p>
      */
     public LightTheme() {
-        super(primary, primaryBright, primaryDimmed, background, backgroundBright, backgroundDimmed, foreground, foregroundBright, foregroundDimmed);
+        super(
+                primary,
+                primaryBright,
+                primaryDimmed,
+                background,
+                backgroundBright,
+                backgroundDimmed,
+                foreground,
+                foregroundBright,
+                foregroundDimmed,
+                red,
+                redBright,
+                redDimmed,
+                green,
+                greenBright,
+                greenDimmed,
+                blue,
+                blueBright,
+                blueDimmed,
+                purple,
+                purpleBright,
+                purpleDimmed
+        );
     }
 }
