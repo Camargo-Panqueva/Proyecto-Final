@@ -70,7 +70,7 @@ public final class Board extends GameComponent {
     }
 
     private void renderCells(Graphics2D graphics) {
-        graphics.setColor(this.contextProvider.themeManager().getCurrentTheme().backgroundColor);
+        graphics.setColor(this.contextProvider.themeManager().getCurrentTheme().background);
 
         for (int i = 0; i < this.widthCells; i++) {
             for (int j = 0; j < this.heightCells; j++) {
@@ -82,7 +82,7 @@ public final class Board extends GameComponent {
         }
 
         graphics.setFont(new Font("Arial", Font.PLAIN, 12));
-        graphics.setColor(this.contextProvider.themeManager().getCurrentTheme().foregroundColor);
+        graphics.setColor(this.contextProvider.themeManager().getCurrentTheme().foreground);
         graphics.drawString(String.format("Relative Mouse Position: [%d, %d]", this.parsedMousePosition.x, this.parsedMousePosition.y), 6, 86);
     }
 
@@ -91,9 +91,9 @@ public final class Board extends GameComponent {
         for (PlayerTransferObject player : this.players) {
 
             if (player.isInTurn()) {
-                graphics.setColor(this.contextProvider.themeManager().getCurrentTheme().primaryColor);
+                graphics.setColor(this.contextProvider.themeManager().getCurrentTheme().primary);
             } else {
-                graphics.setColor(this.contextProvider.themeManager().getCurrentTheme().secondaryColor);
+                graphics.setColor(this.contextProvider.themeManager().getCurrentTheme().primaryDimmed);
             }
 
             int x = player.position().x * (CELL_SIZE + WALL_SIZE) + this.style.x + this.style.paddingX;
@@ -134,7 +134,7 @@ public final class Board extends GameComponent {
                 int width = renderParams[4];
                 int height = renderParams[5];
 
-                graphics.setColor(this.contextProvider.themeManager().getCurrentTheme().primaryColor);
+                graphics.setColor(this.contextProvider.themeManager().getCurrentTheme().primary);
 
                 graphics.fillRect(
                         this.style.x + this.style.paddingX + CELL_SIZE * cellsCountX + WALL_SIZE * wallsCountX,
@@ -174,7 +174,7 @@ public final class Board extends GameComponent {
             height = scale * (WALL_SIZE + CELL_SIZE) - WALL_SIZE;
         }
 
-        graphics.setColor(this.contextProvider.themeManager().getCurrentTheme().secondaryColor);
+        graphics.setColor(this.contextProvider.themeManager().getCurrentTheme().primaryDimmed);
 
         graphics.fillRect(
                 this.style.x + this.style.paddingX + CELL_SIZE * cellsCountX + WALL_SIZE * wallsCountX,
@@ -267,7 +267,7 @@ public final class Board extends GameComponent {
         this.style.borderRadius = 26;
         this.style.width = this.contextProvider.window().getCanvasSize();
         this.style.height = this.contextProvider.window().getCanvasSize();
-        this.style.backgroundColor = this.contextProvider.themeManager().getCurrentTheme().backgroundContrastColor;
+        this.style.backgroundColor = this.contextProvider.themeManager().getCurrentTheme().backgroundDimmed;
     }
 
     @Override

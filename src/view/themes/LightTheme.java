@@ -13,29 +13,49 @@ import java.awt.*;
 public final class LightTheme extends Theme {
 
     /**
-     * See {@link Theme#primaryColor}.
+     * See {@link Theme#primary}.
      */
-    private final static Color primaryColor = new Color(0x642332);
+    private final static Color primary = new Color(0x5F1F2E);
 
     /**
-     * See {@link Theme#secondaryColor}.
+     * See {@link Theme#primaryBright}.
      */
-    private final static Color secondaryColor = new Color(0x59642332, true);
+    private final static Color primaryBright = new Color(0x852C41);
 
     /**
-     * See {@link Theme#backgroundColor}.
+     * See {@link Theme#primaryDimmed}.
      */
-    private final static Color backgroundColor = new Color(0xF0F0F0);
+    private final static Color primaryDimmed = new Color(0x905F1F2E, true);
 
     /**
-     * See {@link Theme#backgroundContrastColor}.
+     * See {@link Theme#background}.
      */
-    private final static Color backgroundContrastColor = new Color(0xDADADA);
+    private final static Color background = new Color(0xF0F0F0);
 
     /**
-     * See {@link Theme#foregroundColor}.
+     * See {@link Theme#backgroundBright}.
      */
-    private final static Color foregroundColor = new Color(0x262626);
+    private final static Color backgroundBright = new Color(0xFFFFFF);
+
+    /**
+     * See {@link Theme#backgroundDimmed}.
+     */
+    private final static Color backgroundDimmed = new Color(0xE2E2E2);
+
+    /**
+     * See {@link Theme#foreground}.
+     */
+    private final static Color foreground = new Color(0x272727);
+
+    /**
+     * See {@link Theme#foregroundBright}.
+     */
+    private final static Color foregroundBright = new Color(0x333333);
+
+    /**
+     * See {@link Theme#foregroundDimmed}.
+     */
+    private final static Color foregroundDimmed = new Color(0x191919);
 
     /**
      * Creates a new LightTheme with the default colors.
@@ -45,6 +65,6 @@ public final class LightTheme extends Theme {
      * </p>
      */
     public LightTheme() {
-        super(primaryColor, secondaryColor, backgroundColor, backgroundContrastColor, foregroundColor);
+        super(primary, primaryBright, primaryDimmed, background, backgroundBright, backgroundDimmed, foreground, foregroundBright, foregroundDimmed);
     }
 }

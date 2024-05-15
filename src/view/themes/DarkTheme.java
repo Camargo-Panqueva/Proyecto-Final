@@ -3,48 +3,68 @@ package view.themes;
 import java.awt.*;
 
 /**
- * Represents a dark theme object that can be applied to the game view.
+ * Represents a light theme object that can be applied to the game view.
  * <p>
- * This class represents a dark theme object that can be applied to the game view.
+ * This class represents a light theme object that can be applied to the game view.
  * It provides a structure for storing theme properties such as colors and fonts.
- * The dark theme object can be applied to the game view to change its appearance.
+ * The light theme object can be applied to the game view to change its appearance.
  * </p>
  */
 public final class DarkTheme extends Theme {
 
     /**
-     * See {@link Theme#primaryColor}.
+     * See {@link Theme#primary}.
      */
-    private final static Color primaryColor = new Color(0xD75A70);
+    private final static Color primary = new Color(0xE8626B);
 
     /**
-     * See {@link Theme#secondaryColor}.
+     * See {@link Theme#primaryBright}.
      */
-    private final static Color secondaryColor = new Color(0x59D75A70, true);
+    private final static Color primaryBright = new Color(0xE54C56);
 
     /**
-     * See {@link Theme#backgroundColor}.
+     * See {@link Theme#primaryDimmed}.
      */
-    private final static Color backgroundColor = new Color(0x262626);
+    private final static Color primaryDimmed = new Color(0x40E8626B, true);
 
     /**
-     * See {@link Theme#backgroundContrastColor}.
+     * See {@link Theme#background}.
      */
-    private final static Color backgroundContrastColor = new Color(0x1A1A1A);
+    private final static Color background = new Color(0x272727);
 
     /**
-     * See {@link Theme#foregroundColor}.
+     * See {@link Theme#backgroundBright}.
      */
-    private final static Color foregroundColor = new Color(0xF0F0F0);
+    private final static Color backgroundBright = new Color(0x191919);
 
     /**
-     * Creates a new DarkTheme with the default colors.
+     * See {@link Theme#backgroundDimmed}.
+     */
+    private final static Color backgroundDimmed = new Color(0x333333);
+
+    /**
+     * See {@link Theme#foreground}.
+     */
+    private final static Color foreground = new Color(0xF0F0F0);
+
+    /**
+     * See {@link Theme#foregroundBright}.
+     */
+    private final static Color foregroundBright = new Color(0xFFFFFF);
+
+    /**
+     * See {@link Theme#foregroundDimmed}.
+     */
+    private final static Color foregroundDimmed = new Color(0xE2E2E2);
+
+    /**
+     * Creates a new LightTheme with the default colors.
      * <p>
-     * This constructor creates a new DarkTheme with the default colors.
+     * This constructor creates a new LightTheme with the default colors.
      * The default colors are defined as constants in the class.
      * </p>
      */
     public DarkTheme() {
-        super(primaryColor, secondaryColor, backgroundColor, backgroundContrastColor, foregroundColor);
+        super(primary, primaryBright, primaryDimmed, background, backgroundBright, backgroundDimmed, foreground, foregroundBright, foregroundDimmed);
     }
 }

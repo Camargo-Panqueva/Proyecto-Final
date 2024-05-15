@@ -38,7 +38,7 @@ public final class TextInput extends GameComponent {
 
         FontMetrics metrics = graphics.getFontMetrics(this.style.font);
 
-        graphics.setColor(this.hasFocus ? this.contextProvider.themeManager().getCurrentTheme().primaryColor : this.style.backgroundColor);
+        graphics.setColor(this.hasFocus ? this.contextProvider.themeManager().getCurrentTheme().primary : this.style.backgroundColor);
         graphics.fillRoundRect(
                 this.style.x,
                 this.style.y,
@@ -74,14 +74,14 @@ public final class TextInput extends GameComponent {
 
     @Override
     protected void handleThemeChange(Theme theme) {
-        this.style.backgroundColor = theme.backgroundContrastColor;
-        this.style.foregroundColor = theme.foregroundColor;
+        this.style.backgroundColor = theme.backgroundDimmed;
+        this.style.foregroundColor = theme.foreground;
     }
 
     @Override
     protected void setupDefaultStyle() {
-        this.style.backgroundColor = this.contextProvider.themeManager().getCurrentTheme().backgroundContrastColor;
-        this.style.foregroundColor = this.contextProvider.themeManager().getCurrentTheme().foregroundColor;
+        this.style.backgroundColor = this.contextProvider.themeManager().getCurrentTheme().backgroundDimmed;
+        this.style.foregroundColor = this.contextProvider.themeManager().getCurrentTheme().foreground;
         this.style.font = this.contextProvider.window().getCanvas().getFont().deriveFont(26.0f);
         this.style.height = 60;
         this.style.width = 300;

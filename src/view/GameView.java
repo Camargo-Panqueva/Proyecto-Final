@@ -90,12 +90,12 @@ public final class GameView {
 
     private void renderBackground(Graphics2D graphics) {
         graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        graphics.setColor(this.themeManager.getCurrentTheme().backgroundColor);
+        graphics.setColor(this.themeManager.getCurrentTheme().background);
         graphics.fillRect(0, 0, this.window.getCanvasSize(), this.window.getCanvasSize());
     }
 
     private void renderPerformance(Graphics2D graphics) {
-        graphics.setColor(this.themeManager.getCurrentTheme().foregroundColor);
+        graphics.setColor(this.themeManager.getCurrentTheme().foreground);
         graphics.setFont(new Font("Arial", Font.PLAIN, 12));
 
         FontMetrics fontMetrics = graphics.getFontMetrics();
