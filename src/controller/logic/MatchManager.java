@@ -32,28 +32,54 @@ public class MatchManager {
         this.indexCurrentIndex = 0;
     }
 
-    public ArrayList<Point> getPossibleMovements(final Player player) {
-        final ArrayList<Point> possibleMovements = new ArrayList<>();
+    public void lookForwardMoves(final Player player, final ArrayList<Point> directions, final ArrayList<Point> possibleMovements) {
         final Point basePoint = new Point(player.getPosition());
-
-        final Point[] directions = {new Point(0, 1), new Point(1, 0), new Point(0, -1), new Point(-1, 0)};
 
         for (Point direction : directions) {
             Point objectivePoint = new Point(basePoint.x + direction.x, basePoint.y + direction.y);
-            if (isInsideBoard(objectivePoint) && !isOccupiedOrBlocked(player.getPosition(), objectivePoint)) {
+            if (!isInsideBoard(objectivePoint) || isABlockerWall(player.getPosition(), objectivePoint)) {
+            }
+            else if (isOccupiedPoint(objectivePoint)) {
+                final ArrayList<Point> jumpedPlayerMoves = new ArrayList<>();
+
+                final Point blockerPlayer = new Point(this.getPlayer(objectivePoint).getPosition());
+
+                for (Point dir : directions) {
+                    if ((dir.x == 1 && direction.x == -1) || (dir.y == 1 && direction.y == -1 || ((dir.x == -1 && direction.x == 1) || (dir.y == -1 && direction.y == 1)))) {
+                    } else if (getBlockerWall(blockerPlayer,
+                            new Point(blockerPlayer.x + dir.x, blockerPlayer.y + dir.y)) != null) {
+                    } else {
+                        jumpedPlayerMoves.add(new Point(dir));
+                    }
+                }
+                this.lookForwardMoves(this.getPlayer(objectivePoint), jumpedPlayerMoves, possibleMovements);
+            } else {
                 possibleMovements.add(new Point(objectivePoint));
             }
         }
+    }
 
-        return possibleMovements;
+    public ArrayList<Point> getPossibleMovements(final Player player) {
+        final ArrayList<Point> possibleMoves = new ArrayList<>();
+        final ArrayList<Point> basicDirections = new ArrayList<>();
+        basicDirections.add(new Point(0, 1));
+        basicDirections.add(new Point(1, 0));
+        basicDirections.add(new Point(0, -1));
+        basicDirections.add(new Point(-1, 0));
+        this.lookForwardMoves(player, basicDirections, possibleMoves);
+        return possibleMoves;
+    }
+
+    private Player getPlayer(Point point) {
+        return this.model.getPlayers().values().stream().filter(p -> p.getPosition().equals(point)).findAny().orElse(null);
     }
 
     private boolean isInsideBoard(Point point) {
         return point.x >= 0 && point.x < this.model.getBoard().getWidth() && point.y >= 0 && point.y < this.model.getBoard().getHeight();
     }
 
-    private boolean isOccupiedOrBlocked(Point playerPosition, Point objectivePoint) {
-        return isOccupiedPoint(objectivePoint) || isBlockedPoint(playerPosition, objectivePoint) != null;
+    private boolean isABlockerWall(Point playerPosition, Point objectivePoint) {
+        return getBlockerWall(playerPosition, objectivePoint) != null;
     }
 
     private boolean isOccupiedPoint(Point point) {
@@ -65,7 +91,7 @@ public class MatchManager {
         return false;
     }
 
-    private Wall isBlockedPoint(final Point initialPoint, final Point finalPoint) {
+    private Wall getBlockerWall(final Point initialPoint, final Point finalPoint) {
 
         final int xWall = initialPoint.x == finalPoint.x ? 2 * initialPoint.x : (2 * initialPoint.x) + (finalPoint.x - initialPoint.x);
         final int yWall = initialPoint.y == finalPoint.y ? 2 * initialPoint.y : (2 * initialPoint.y) + (finalPoint.y - initialPoint.y);
