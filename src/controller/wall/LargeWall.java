@@ -1,12 +1,12 @@
 package controller.wall;
 
-import model.GameModel;
+import controller.logic.MatchManager;
 import model.wall.WallData;
 import model.wall.WallType;
 
-public class LargeWall extends  Wall{
+public class LargeWall extends Wall {
 
-    public LargeWall(){
+    public LargeWall() {
         super.wallData.setWallType(WallType.LARGE);
         super.wallData.setHeight(5);
         super.wallData.setWidth(5);
@@ -19,12 +19,22 @@ public class LargeWall extends  Wall{
         super.wallData.getWallShape()[4][0] = WallType.LARGE;
     }
 
-    public LargeWall(WallData wallData){
+    public LargeWall(WallData wallData) {
         super(wallData);
     }
 
     @Override
-    public void action(GameModel gameModel) {
+    public void action(MatchManager matchManager) {
+
+    }
+
+    @Override
+    public void actionAtStartTurn(MatchManager matchManager) {
+
+    }
+
+    @Override
+    public void actionAtFinishTurn(MatchManager matchManager) {
 
     }
 }

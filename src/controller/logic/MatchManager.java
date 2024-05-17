@@ -35,9 +35,11 @@ public class MatchManager {
 
         this.startTimer();
 
-        this.model.setTurnCount(0);
+        this.model.setTurnCount((short) 0);
         this.model.setPlayerInTurn(0);
         this.indexCurrentIndex = 0;
+
+        this.triggerActionBeforeTurn();
     }
 
     public void lookForwardMoves(final Player player, final ArrayList<Point> directions, final ArrayList<Point> possibleMovements) {
@@ -250,6 +252,8 @@ public class MatchManager {
 
     private void nextTurn() {
 
+        this.triggerActionsAfterTurn();
+
         this.newTime();
 
         this.indexCurrentIndex++;
@@ -268,6 +272,24 @@ public class MatchManager {
             }
         }
 
+        this.model.setTurnCount((short) (model.getTurnCount() + 1));
+
+        this.triggerActionBeforeTurn();
+
+    }
+
+    private void triggerActionBeforeTurn() {
+        final HashMap<UUID, Wall> wallHashMap = new HashMap<>(this.walls);
+        wallHashMap.values().forEach(wall -> wall.actionAtStartTurn(this));
+    }
+
+    private void triggerActionsAfterTurn() {
+        final HashMap<UUID, Wall> wallHashMap = new HashMap<>(this.walls);
+        wallHashMap.values().forEach(wall -> wall.actionAtFinishTurn(this));
+    }
+
+    public short getTurnCount() {
+        return this.model.getTurnCount();
     }
 
     private void clockPerTurn() {

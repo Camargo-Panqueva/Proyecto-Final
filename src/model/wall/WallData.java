@@ -11,7 +11,9 @@ public class WallData {
     private char course;
     private UUID wallId;
     private Player owner;
+    private boolean isAlly;
     private WallType wallType;
+    private short creationTurn;
     private Point positionOnBoard;
     private WallType[][] wallShape;
 
@@ -48,6 +50,14 @@ public class WallData {
         return wallId;
     }
 
+    public short getCreationTurn() {
+        return this.creationTurn;
+    }
+
+    public boolean getIsAlly() {
+        return this.isAlly;
+    }
+
     public void setCourse(char course) {
         this.course = course;
     }
@@ -78,6 +88,14 @@ public class WallData {
 
     public void setWallId(UUID wallId) {
         this.wallId = wallId;
+    }
+
+    public void setCreationTurn(short creationTurn) {
+        this.creationTurn = creationTurn;
+    }
+
+    public void setAlly(boolean ally) {
+        this.isAlly = ally;
     }
 }
 

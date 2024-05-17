@@ -1,6 +1,6 @@
 package controller.wall;
 
-import model.GameModel;
+import controller.logic.MatchManager;
 import model.wall.WallData;
 import model.wall.WallType;
 
@@ -23,8 +23,17 @@ public class NormalWall extends Wall {
     }
 
     @Override
-    public void action(GameModel gameModel) {
+    public void action(MatchManager matchManager) {
+
     }
 
+    @Override
+    public void actionAtStartTurn(MatchManager matchManager) {
 
+    }
+
+    @Override
+    public void actionAtFinishTurn(MatchManager matchManager) {
+
+    }
 }

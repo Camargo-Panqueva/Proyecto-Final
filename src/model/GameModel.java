@@ -27,7 +27,7 @@ public final class GameModel {
 
     private final GameModeManager gameModeManager;
 
-    private int turnCount;
+    private short turnCount;
 
     public GameModel() {
         this.gameModeManager = new GameModeManager();
@@ -72,7 +72,7 @@ public final class GameModel {
         return this.gameModeManager.getBaseParameters().playersCount;
     }
 
-    public int getTurnCount() {
+    public short getTurnCount() {
         return turnCount;
     }
 
@@ -121,7 +121,7 @@ public final class GameModel {
         this.winningPlayer = winningPlayer;
     }
 
-    public void setTurnCount(int turnCount) {
+    public void setTurnCount(short turnCount) {
         this.turnCount = turnCount;
     }
 
