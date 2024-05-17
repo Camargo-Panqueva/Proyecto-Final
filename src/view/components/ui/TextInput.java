@@ -1,7 +1,7 @@
 package view.components.ui;
 
 import view.components.GameComponent;
-import view.context.ContextProvider;
+import view.context.GlobalContext;
 import view.input.KeyboardEvent;
 import view.themes.Theme;
 
@@ -17,10 +17,10 @@ public final class TextInput extends GameComponent {
     /**
      * Creates a new TextInput component with the given context provider.
      *
-     * @param contextProvider the context provider for the component.
+     * @param globalContext the context provider for the component.
      */
-    public TextInput(ContextProvider contextProvider) {
-        super(contextProvider);
+    public TextInput(GlobalContext globalContext) {
+        super(globalContext);
 
         this.value = "";
         this.style.cursor = Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR);
@@ -40,7 +40,7 @@ public final class TextInput extends GameComponent {
 
         graphics.setColor(
                 this.hasFocus
-                        ? this.contextProvider.currentTheme().getColor(Theme.ColorName.PRIMARY, Theme.ColorVariant.NORMAL)
+                        ? this.globalContext.currentTheme().getColor(Theme.ColorName.PRIMARY, Theme.ColorVariant.NORMAL)
                         : this.style.backgroundColor
         );
 
@@ -85,9 +85,9 @@ public final class TextInput extends GameComponent {
 
     @Override
     protected void setupDefaultStyle() {
-        this.style.backgroundColor = this.contextProvider.currentTheme().getColor(Theme.ColorName.BACKGROUND, Theme.ColorVariant.DIMMED);
-        this.style.foregroundColor = this.contextProvider.currentTheme().getColor(Theme.ColorName.FOREGROUND, Theme.ColorVariant.NORMAL);
-        this.style.font = this.contextProvider.window().getCanvas().getFont().deriveFont(26.0f);
+        this.style.backgroundColor = this.globalContext.currentTheme().getColor(Theme.ColorName.BACKGROUND, Theme.ColorVariant.DIMMED);
+        this.style.foregroundColor = this.globalContext.currentTheme().getColor(Theme.ColorName.FOREGROUND, Theme.ColorVariant.NORMAL);
+        this.style.font = this.globalContext.window().getCanvas().getFont().deriveFont(26.0f);
         this.style.height = 60;
         this.style.width = 300;
         this.style.borderRadius = 16;

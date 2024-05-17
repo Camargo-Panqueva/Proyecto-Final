@@ -3,7 +3,7 @@ package view.scene;
 import controller.states.GlobalState;
 import view.components.ui.Button;
 import view.components.ui.Text;
-import view.context.ContextProvider;
+import view.context.GlobalContext;
 import view.input.MouseEvent;
 
 //TODO: Update docs when different modes are implemented
@@ -26,10 +26,10 @@ public final class WelcomeScene extends Scene {
     /**
      * Creates a new WelcomeScene with the given context provider.
      *
-     * @param contextProvider the context provider for the scene.
+     * @param globalContext the context provider for the scene.
      */
-    public WelcomeScene(ContextProvider contextProvider) {
-        super(contextProvider);
+    public WelcomeScene(GlobalContext globalContext) {
+        super(globalContext);
     }
 
     /**
@@ -56,25 +56,25 @@ public final class WelcomeScene extends Scene {
      */
     @Override
     protected void setupComponents() {
-        this.welcomeTitle = new Text("Quoridor!", contextProvider);
+        this.welcomeTitle = new Text("Quoridor!", globalContext);
         this.welcomeTitle.getStyle().y = 80;
-        this.welcomeTitle.getStyle().font = this.contextProvider.window().getCanvas().getFont().deriveFont(100.0f);
+        this.welcomeTitle.getStyle().font = this.globalContext.window().getCanvas().getFont().deriveFont(100.0f);
         this.welcomeTitle.fitSize();
-        this.welcomeTitle.getStyle().centerHorizontally(contextProvider);
+        this.welcomeTitle.getStyle().centerHorizontally(globalContext);
 
-        this.authorsText = new Text("Camargo # Panqueva", contextProvider);
+        this.authorsText = new Text("Camargo # Panqueva", globalContext);
         this.authorsText.getStyle().y = 190;
-        this.authorsText.getStyle().font = this.contextProvider.window().getCanvas().getFont().deriveFont(21.0f);
+        this.authorsText.getStyle().font = this.globalContext.window().getCanvas().getFont().deriveFont(21.0f);
         this.authorsText.fitSize();
-        this.authorsText.getStyle().centerHorizontally(contextProvider);
+        this.authorsText.getStyle().centerHorizontally(globalContext);
 
-        this.startButton = new Button("Start", contextProvider);
+        this.startButton = new Button("Start", globalContext);
         this.startButton.getStyle().y = 400;
-        this.startButton.getStyle().centerHorizontally(contextProvider);
+        this.startButton.getStyle().centerHorizontally(globalContext);
 
-        this.themeButton = new Button("Toggle Theme", contextProvider);
+        this.themeButton = new Button("Toggle Theme", globalContext);
         this.themeButton.getStyle().y = this.startButton.getStyle().y + 90;
-        this.themeButton.getStyle().centerHorizontally(contextProvider);
+        this.themeButton.getStyle().centerHorizontally(globalContext);
     }
 
     /**
@@ -86,7 +86,7 @@ public final class WelcomeScene extends Scene {
      */
     @Override
     protected void setupEvents() {
-        this.startButton.addMouseListener(MouseEvent.EventType.RELEASED, _event -> this.contextProvider.controller().setGlobalState(GlobalState.SELECTING_GAME_MODE));
-        this.themeButton.addMouseListener(MouseEvent.EventType.RELEASED, _event -> this.contextProvider.themeManager().toggleTheme());
+        this.startButton.addMouseListener(MouseEvent.EventType.RELEASED, _event -> this.globalContext.controller().setGlobalState(GlobalState.SELECTING_GAME_MODE));
+        this.themeButton.addMouseListener(MouseEvent.EventType.RELEASED, _event -> this.globalContext.themeManager().toggleTheme());
     }
 }

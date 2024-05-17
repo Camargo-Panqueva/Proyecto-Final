@@ -1,7 +1,7 @@
 package view.components.ui;
 
 import view.components.GameComponent;
-import view.context.ContextProvider;
+import view.context.GlobalContext;
 import view.themes.Theme;
 
 import java.awt.*;
@@ -21,10 +21,10 @@ public final class Text extends GameComponent {
      * Creates a new Text component with the given text and context provider.
      *
      * @param text            the text to render.
-     * @param contextProvider the context provider for the component.
+     * @param globalContext the context provider for the component.
      */
-    public Text(String text, ContextProvider contextProvider) {
-        super(contextProvider);
+    public Text(String text, GlobalContext globalContext) {
+        super(globalContext);
         this.text = text;
     }
 
@@ -48,7 +48,7 @@ public final class Text extends GameComponent {
     @Override
     public void render(Graphics2D graphics) {
         graphics.setFont(this.style.font);
-        FontMetrics fontMetrics = this.contextProvider.window().getCanvas().getFontMetrics(this.style.font);
+        FontMetrics fontMetrics = this.globalContext.window().getCanvas().getFontMetrics(this.style.font);
 
         graphics.setColor(this.style.foregroundColor);
         graphics.drawString(this.text, this.style.x, this.style.y + this.style.height - fontMetrics.getDescent());
@@ -64,7 +64,7 @@ public final class Text extends GameComponent {
      */
     @Override
     public void fitSize() {
-        FontMetrics fontMetrics = this.contextProvider.window().getCanvas().getFontMetrics(this.style.font);
+        FontMetrics fontMetrics = this.globalContext.window().getCanvas().getFontMetrics(this.style.font);
 
         this.style.width = fontMetrics.stringWidth(this.text) + this.style.paddingX;
         this.style.height = fontMetrics.getHeight() + this.style.paddingY;
@@ -92,7 +92,7 @@ public final class Text extends GameComponent {
      */
     @Override
     protected void setupDefaultStyle() {
-        this.style.font = this.contextProvider.window().getCanvas().getFont().deriveFont(16.0f);
-        this.style.foregroundColor = this.contextProvider.currentTheme().getColor(Theme.ColorName.FOREGROUND, Theme.ColorVariant.NORMAL);
+        this.style.font = this.globalContext.window().getCanvas().getFont().deriveFont(16.0f);
+        this.style.foregroundColor = this.globalContext.currentTheme().getColor(Theme.ColorName.FOREGROUND, Theme.ColorVariant.NORMAL);
     }
 }

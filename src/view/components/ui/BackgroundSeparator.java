@@ -1,7 +1,7 @@
 package view.components.ui;
 
 import view.components.GameComponent;
-import view.context.ContextProvider;
+import view.context.GlobalContext;
 import view.themes.Theme;
 
 import java.awt.*;
@@ -19,10 +19,10 @@ public final class BackgroundSeparator extends GameComponent {
     /**
      * Creates a new BackgroundSeparator component with the given context provider.
      *
-     * @param contextProvider the context provider for the component.
+     * @param globalContext the context provider for the component.
      */
-    public BackgroundSeparator(ContextProvider contextProvider) {
-        super(contextProvider);
+    public BackgroundSeparator(GlobalContext globalContext) {
+        super(globalContext);
     }
 
     /**
@@ -90,6 +90,6 @@ public final class BackgroundSeparator extends GameComponent {
      */
     @Override
     protected void setupDefaultStyle() {
-        this.style.backgroundColor = this.contextProvider.currentTheme().getColor(Theme.ColorName.BACKGROUND, Theme.ColorVariant.DIMMED);
+        this.style.backgroundColor = this.globalContext.currentTheme().getColor(Theme.ColorName.BACKGROUND, Theme.ColorVariant.DIMMED);
     }
 }
