@@ -134,10 +134,37 @@ public class MatchManager {
         for (Point point : newWalls) {
             this.model.getBoard().getBoardWalls()[point.x][point.y] = wall.getWallData();
         }
+        wall.setOwner(player);
         player.addWallPlaced(wall.getWallData());
         this.walls.put(wallUuid, wall);
         this.model.addWall(wallUuid, wall.getWallData());
         this.nextTurn();
+    }
+
+    public Wall executeDeleteWall(UUID wallId) {
+        final Wall wall = this.walls.get(wallId);
+        if (wall == null) {
+            return null;
+        }
+        int boardWallX;
+        int boardWallY;
+        for (int x = 0; x < wall.getWidth(); x++) {
+            for (int y = 0; y < wall.getHeight(); y++) {
+
+                boardWallX = wall.getPositionOnBoard().x + x;
+                boardWallY = wall.getPositionOnBoard().y + y;
+                final WallData wallDataPosition = this.model.getBoard().getBoardWalls()[boardWallX][boardWallY];
+
+                if (wallDataPosition == wall.getWallData()) {
+                    model.getBoard().getBoardWalls()[boardWallX][boardWallY] = null;
+                }
+            }
+        }
+
+        wall.getOwner().removeWallPlaced(wall.getWallData());
+        wall.setOwner(null);
+        model.getWalls().remove(wall.getWallId());
+        return this.walls.remove(wall.getWallId());
     }
 
     public boolean isABlockerWall(final ArrayList<Point> newWalls) {

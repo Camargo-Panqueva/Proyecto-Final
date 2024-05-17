@@ -8,7 +8,6 @@ import java.util.ArrayList;
 public class Player {
     private Point position;
     private int wallsPlaced;
-    private int wallsInField;
     private final String name;
     private final int allowedWalls;
     private final int xWinPosition;
@@ -25,6 +24,7 @@ public class Player {
         this.xWinPosition = xWinner;
         this.yWinPosition = yWinner;
         this.winDirection = this.generateWinDirection();
+        this.wallsPlaced = 0;
         this.timePlayed = 0;
     }
 
@@ -56,7 +56,7 @@ public class Player {
     }
 
     public int getWallsInField() {
-        return wallsInField;
+        return playerWalls.size();
     }
 
     public int getWallsPlaced() {
@@ -87,19 +87,16 @@ public class Player {
         this.timePlayed = timePlayed;
     }
 
-    public void setWallsInField(int wallsInField) {
-        this.wallsInField = wallsInField;
-    }
-
-    public void setWallsPlaced(int wallsPlaced) {
-        this.wallsPlaced = wallsPlaced;
-    }
-
     public ArrayList<WallData> getPlayerWalls() {
         return new ArrayList<>(playerWalls);
     }
 
     public void addWallPlaced(WallData newAddedWall) {
         this.playerWalls.add(newAddedWall);
+        this.wallsPlaced++;
+    }
+
+    public void removeWallPlaced(WallData wallData){
+        this.playerWalls.remove(wallData);
     }
 }
