@@ -6,8 +6,11 @@ import model.GameModel;
 import model.modes.GameModes;
 import model.player.Player;
 import model.wall.WallData;
+import util.ConcurrentLoop;
 
 import java.awt.*;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
 
 public class MatchManager {
@@ -15,6 +18,8 @@ public class MatchManager {
     private final HashMap<UUID, Wall> walls;
     private final int[][] abstractBoard;
     private int indexCurrentIndex;
+
+    private Instant secondCount;
 
     public MatchManager(final GameModel gameModel) {
         this.model = gameModel;
@@ -28,6 +33,8 @@ public class MatchManager {
             }
         }
 
+        this.startTimer();
+
         this.model.setPlayerInTurn(0);
         this.indexCurrentIndex = 0;
     }
@@ -38,8 +45,7 @@ public class MatchManager {
         for (Point direction : directions) {
             Point objectivePoint = new Point(basePoint.x + direction.x, basePoint.y + direction.y);
             if (!isInsideBoard(objectivePoint) || isABlockerWall(player.getPosition(), objectivePoint)) {
-            }
-            else if (isOccupiedPoint(objectivePoint)) {
+            } else if (isOccupiedPoint(objectivePoint)) {
                 final ArrayList<Point> jumpedPlayerMoves = new ArrayList<>();
 
                 final Point blockerPlayer = new Point(this.getPlayer(objectivePoint).getPosition());
@@ -202,21 +208,46 @@ public class MatchManager {
 
     }
 
+    private void startTimer() {
+        ConcurrentLoop clockCurrentTurn = new ConcurrentLoop(this::clockPerTurn, 5, "Time Limit per Turn");
+        this.secondCount = Instant.now();
+        clockCurrentTurn.start();
+    }
+
+    private void newTime() {
+        Player playerInTurn = this.model.getPlayers().get(model.getPlayerInTurnId());
+        playerInTurn.setTimePlayed(0);
+        this.secondCount = Instant.now();
+    }
+
     private void nextTurn() {
+
+        this.newTime();
 
         this.indexCurrentIndex++;
 
         if (!this.model.getPlayers().containsKey(this.indexCurrentIndex)) {
             this.indexCurrentIndex = 0;
             this.model.setPlayerInTurn(0);
-            return;
+
+        } else {
+
+            this.model.setPlayerInTurn(this.indexCurrentIndex);
+
+            //hardcode, the IA always is the player 2
+            if (this.model.getGameModeManager().getCurrentGameMode() == GameModes.NORMAL_PLAYER_IA && this.indexCurrentIndex == 1) {
+
+            }
         }
 
-        this.model.setPlayerInTurn(this.indexCurrentIndex);
+    }
 
-        //hardcode, the IA always is the player 2
-        if (this.model.getGameModeManager().getCurrentGameMode() == GameModes.NORMAL_PLAYER_IA && this.indexCurrentIndex == 1) {
+    private void clockPerTurn() {
+        final Player playerInTurn = this.model.getPlayers().get(model.getPlayerInTurnId());
+        playerInTurn.setTimePlayed((int) Duration.between(this.secondCount, Instant.now()).getSeconds());
 
+        if (playerInTurn.getTimePlayed() >= this.model.getGameModeManager().getBaseParameters().timeLimitPerPlayer) {
+            this.nextTurn();
         }
     }
 

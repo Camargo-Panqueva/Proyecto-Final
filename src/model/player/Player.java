@@ -2,8 +2,7 @@ package model.player;
 
 import model.wall.WallData;
 
-import java.awt.*;
-import java.time.Instant;
+import java.awt.Point;
 import java.util.ArrayList;
 
 public class Player {
@@ -16,8 +15,7 @@ public class Player {
     private final int yWinPosition;
     private final Point winDirection;
     private final ArrayList<WallData> playerWalls;
-    private final long timeLimit;
-    private final long timePlayed;
+    private int timePlayed;
 
     public Player(final Point initialPosition, final String name, final int allowedWalls, final int xWinner, final int yWinner, final long timeLimitSeg) {
         this.name = name;
@@ -27,7 +25,6 @@ public class Player {
         this.xWinPosition = xWinner;
         this.yWinPosition = yWinner;
         this.winDirection = this.generateWinDirection();
-        this.timeLimit = Instant.now().plusSeconds(timeLimitSeg).getEpochSecond();
         this.timePlayed = 0;
     }
 
@@ -66,12 +63,8 @@ public class Player {
         return wallsPlaced;
     }
 
-    public long getTimePlayed() {
+    public int getTimePlayed() {
         return timePlayed;
-    }
-
-    public long getTimeLimit() {
-        return timeLimit;
     }
 
     public int getXWinPosition() {
@@ -88,6 +81,10 @@ public class Player {
 
     public void setPosition(Point position) {
         this.position = position;
+    }
+
+    public void setTimePlayed(int timePlayed) {
+        this.timePlayed = timePlayed;
     }
 
     public void setWallsInField(int wallsInField) {
