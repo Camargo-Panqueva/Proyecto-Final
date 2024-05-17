@@ -3,12 +3,14 @@ package view.context;
 import controller.dto.PlayerTransferObject;
 import model.cell.CellType;
 import model.wall.WallType;
+import view.themes.Theme;
 
 import java.awt.*;
 import java.util.ArrayList;
 
 public final class MatchContext {
 
+    private final GlobalContext globalContext;
     private final Point mousePosition;
 
     private ArrayList<PlayerTransferObject> players;
@@ -26,7 +28,7 @@ public final class MatchContext {
     private boolean mouseOverEmptyWall;
     private boolean mouseOverFilledWall;
 
-    public MatchContext() {
+    public MatchContext(GlobalContext globalContext) {
 
         this.mousePosition = new Point(0, 0);
         this.players = new ArrayList<>();
@@ -35,6 +37,8 @@ public final class MatchContext {
 
         this.selectedWallType = WallType.NORMAL;
         this.playerInTurn = null;
+
+        this.globalContext = globalContext;
     }
 
     public ArrayList<PlayerTransferObject> players() {
@@ -59,6 +63,19 @@ public final class MatchContext {
 
     public Point mousePosition() {
         return mousePosition;
+    }
+
+    public Color getPlayerColor(PlayerTransferObject player, Theme.ColorVariant variant) {
+        int playerId = player.id();
+        Theme theme = this.globalContext.currentTheme();
+
+        return switch (playerId) {
+            case 0 -> theme.getColor(Theme.ColorName.RED, variant);
+            case 1 -> theme.getColor(Theme.ColorName.PURPLE, variant);
+            case 2 -> theme.getColor(Theme.ColorName.BLUE, variant);
+            case 3 -> theme.getColor(Theme.ColorName.GREEN, variant);
+            default -> throw new IllegalArgumentException("Invalid player id: " + playerId);
+        };
     }
 
     public int boardWidth() {

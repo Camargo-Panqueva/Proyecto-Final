@@ -32,7 +32,7 @@ public final class PlayingScene extends Scene {
         int controlPanelWidth = 440;
         int borderRadius = 16;
 
-        this.matchContext = new MatchContext();
+        this.matchContext = new MatchContext(this.globalContext);
 
         this.board = new Board(this.globalContext, this.matchContext);
         this.board.getStyle().paddingX = padding;
