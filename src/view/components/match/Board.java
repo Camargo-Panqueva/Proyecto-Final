@@ -26,6 +26,7 @@ public final class Board extends GameComponent {
     private final int heightCells;
     private final Point parsedMousePosition;
     private final PlayerRenderer playerRenderer;
+    private final CellRenderer cellRenderer;
 
     private WallType currentWallType;
     private CellType[][] cells;
@@ -54,6 +55,7 @@ public final class Board extends GameComponent {
 
         this.parsedMousePosition = new Point();
         this.playerRenderer = new PlayerRenderer(this.style, this.contextProvider);
+        this.cellRenderer = new CellRenderer(this.style, this.contextProvider);
     }
 
     private void fetchBoardState() {
@@ -71,19 +73,6 @@ public final class Board extends GameComponent {
         this.walls = boardState.walls();
 
         this.playerInTurn = boardState.playerInTurn();
-    }
-
-    private void renderCells(Graphics2D graphics) {
-        graphics.setColor(this.contextProvider.themeManager().getCurrentTheme().getColor(Theme.ColorName.BACKGROUND, Theme.ColorVariant.NORMAL));
-
-        for (int i = 0; i < this.widthCells; i++) {
-            for (int j = 0; j < this.heightCells; j++) {
-                int x = this.style.x + this.style.paddingX + i * (CELL_SIZE + WALL_SIZE);
-                int y = this.style.y + this.style.paddingY + j * (CELL_SIZE + WALL_SIZE);
-
-                graphics.fillRoundRect(x, y, CELL_SIZE, CELL_SIZE, 8, 8);
-            }
-        }
     }
 
     private void renderWalls(Graphics2D graphics) {
@@ -156,7 +145,7 @@ public final class Board extends GameComponent {
         );
     }
 
-    private void renderBoard(Graphics2D graphics) {
+    private void renderBackground(Graphics2D graphics) {
         graphics.setColor(this.style.backgroundColor);
         graphics.fillRoundRect(this.style.x, this.style.y, this.style.width, this.style.height, this.style.borderRadius, this.style.borderRadius);
     }
@@ -212,8 +201,9 @@ public final class Board extends GameComponent {
     @Override
     public void render(Graphics2D graphics) {
 
-        this.renderBoard(graphics);
-        this.renderCells(graphics);
+        this.renderBackground(graphics);
+
+        this.cellRenderer.render(graphics, this.cells);
         this.renderWalls(graphics);
         this.renderWallPreview(graphics);
         this.playerRenderer.render(graphics, this.players);
