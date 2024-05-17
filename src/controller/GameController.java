@@ -16,7 +16,6 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Optional;
-import java.util.UUID;
 
 public final class GameController {
 
@@ -157,7 +156,7 @@ public final class GameController {
         return new SuccessResponse<>(
                 new BoardTransferObject(
                         cellTypesCopy,
-                        wallTypesCopy,
+                        wallTypesCopy, this.model.getTurnCount(),
                         playerTransferObjectArrayList,
                         playerTransferObjectArrayList.stream().filter(PlayerTransferObject::isInTurn).findFirst().orElse(null) //TODO : check if this is correct
                 ), "Ok");
@@ -237,8 +236,14 @@ public final class GameController {
         return new SuccessResponse<>(null, "Can place the Wall");
     }
 
-    public ServiceResponse<Void> canPlaceWall(final int playerId, final Wall wall) {
-        return this.placeWallProcess(playerId, wall, false);
+    public ServiceResponse<Boolean> canPlaceWall(final int playerId, final Wall wall) {
+        ServiceResponse<Void> response = this.placeWallProcess(playerId, wall, false);
+        if (response.ok) {
+            return new SuccessResponse<>(true, response.message);
+        }
+
+        return new ErrorResponse<>(response.message);
+
     }
 
     public ServiceResponse<Void> placeWall(final int playerId, final Wall wall) {
@@ -277,7 +282,7 @@ public final class GameController {
             return new ErrorResponse<>("There is no a Wall in: " + point);
         }
 
-        if(this.matchManager.executeDeleteWall(this.model.getBoard().getWallId(point)) == null){
+        if (this.matchManager.executeDeleteWall(this.model.getBoard().getWallId(point)) == null) {
             return new ErrorResponse<>("There wasn't a wall for delete, check walls attribute in the Match Manager");
         }
         return new SuccessResponse<>(null, "The Wall was deleted");

@@ -35,8 +35,11 @@ public class MatchManager {
 
         this.startTimer();
 
+        this.model.setTurnCount((short) 0);
         this.model.setPlayerInTurn(0);
         this.indexCurrentIndex = 0;
+
+        this.triggerActionBeforeTurn();
     }
 
     public void lookForwardMoves(final Player player, final ArrayList<Point> directions, final ArrayList<Point> possibleMovements) {
@@ -52,8 +55,7 @@ public class MatchManager {
 
                 for (Point dir : directions) {
                     if ((dir.x == 1 && direction.x == -1) || (dir.y == 1 && direction.y == -1 || ((dir.x == -1 && direction.x == 1) || (dir.y == -1 && direction.y == 1)))) {
-                    } else if (getBlockerWall(blockerPlayer,
-                            new Point(blockerPlayer.x + dir.x, blockerPlayer.y + dir.y)) != null) {
+                    } else if (getBlockerWall(blockerPlayer, new Point(blockerPlayer.x + dir.x, blockerPlayer.y + dir.y)) != null) {
                     } else {
                         jumpedPlayerMoves.add(new Point(dir));
                     }
@@ -102,7 +104,7 @@ public class MatchManager {
         final int xWall = initialPoint.x == finalPoint.x ? 2 * initialPoint.x : (2 * initialPoint.x) + (finalPoint.x - initialPoint.x);
         final int yWall = initialPoint.y == finalPoint.y ? 2 * initialPoint.y : (2 * initialPoint.y) + (finalPoint.y - initialPoint.y);
 
-        if (!(yWall <= this.model.getBoard().getWidth() * 2 - 2 && yWall <= this.model.getBoard().getHeight() * 2 - 2 && xWall >= 0 && yWall >= 0)) {
+        if (!(xWall <= this.model.getBoard().getWidth() * 2 - 2 && yWall <= this.model.getBoard().getHeight() * 2 - 2 && xWall >= 0 && yWall >= 0)) {
             return null;
         }
 
@@ -134,6 +136,7 @@ public class MatchManager {
         for (Point point : newWalls) {
             this.model.getBoard().getBoardWalls()[point.x][point.y] = wall.getWallData();
         }
+
         wall.setOwner(player);
         player.addWallPlaced(wall.getWallData());
         this.walls.put(wallUuid, wall);
@@ -249,6 +252,8 @@ public class MatchManager {
 
     private void nextTurn() {
 
+        this.triggerActionsAfterTurn();
+
         this.newTime();
 
         this.indexCurrentIndex++;
@@ -267,6 +272,24 @@ public class MatchManager {
             }
         }
 
+        this.model.setTurnCount((short) (model.getTurnCount() + 1));
+
+        this.triggerActionBeforeTurn();
+
+    }
+
+    private void triggerActionBeforeTurn() {
+        final HashMap<UUID, Wall> wallHashMap = new HashMap<>(this.walls);
+        wallHashMap.values().forEach(wall -> wall.actionAtStartTurn(this));
+    }
+
+    private void triggerActionsAfterTurn() {
+        final HashMap<UUID, Wall> wallHashMap = new HashMap<>(this.walls);
+        wallHashMap.values().forEach(wall -> wall.actionAtFinishTurn(this));
+    }
+
+    public short getTurnCount() {
+        return this.model.getTurnCount();
     }
 
     private void clockPerTurn() {

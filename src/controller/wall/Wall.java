@@ -1,6 +1,6 @@
 package controller.wall;
 
-import model.GameModel;
+import controller.ActionableElement;
 import model.player.Player;
 import model.wall.WallData;
 import model.wall.WallType;
@@ -9,7 +9,7 @@ import java.awt.*;
 import java.util.Arrays;
 import java.util.UUID;
 
-public abstract class Wall {
+public abstract class Wall implements ActionableElement {
 
     protected final WallData wallData;
 
@@ -20,8 +20,6 @@ public abstract class Wall {
     public Wall(WallData wallData) {
         this.wallData = wallData;
     }
-
-    public abstract void action(GameModel gameModel);
 
     public void rotate() {
         int width = this.wallData.getWidth();
@@ -108,6 +106,15 @@ public abstract class Wall {
         return this.wallData.getWallId();
     }
 
+
+    public short getCreationTurn() {
+        return this.wallData.getCreationTurn();
+    }
+
+    public boolean getIsAlly() {
+        return this.wallData.getIsAlly();
+    }
+
     public void setCourse(char course) {
         this.wallData.setCourse(course);
     }
@@ -140,5 +147,12 @@ public abstract class Wall {
         this.wallData.setWallId(wallId);
     }
 
+    public void setCreationTurn(short creationTurn) {
+        this.wallData.setCreationTurn(creationTurn);
+    }
+
+    public void setAlly(boolean ally) {
+        this.wallData.setAlly(ally);
+    }
 
 }
