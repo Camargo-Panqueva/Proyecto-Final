@@ -151,7 +151,7 @@ public final class GameController {
 
         this.model.getPlayers().forEach(((id, player) -> {
             playerTransferObjectArrayList.add(new PlayerTransferObject(id, player.getName(), new Point(player.getPosition()),
-                    this.model.getPlayerInTurnId() == id, this.matchManager.getPossibleMovements(player)));
+                    this.model.getPlayerInTurnId() == id, this.matchManager.getPossibleMovements(player), player.getWallsInField(), player.getTimePlayed()));
         }));
 
         return new SuccessResponse<>(

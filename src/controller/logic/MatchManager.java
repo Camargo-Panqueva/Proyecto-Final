@@ -150,6 +150,7 @@ public class MatchManager {
         int boardWallY;
         for (int x = 0; x < wall.getWidth(); x++) {
             for (int y = 0; y < wall.getHeight(); y++) {
+
                 boardWallX = wall.getPositionOnBoard().x + x;
                 boardWallY = wall.getPositionOnBoard().y + y;
                 final WallData wallDataPosition = this.model.getBoard().getBoardWalls()[boardWallX][boardWallY];
@@ -272,7 +273,7 @@ public class MatchManager {
         final Player playerInTurn = this.model.getPlayers().get(model.getPlayerInTurnId());
         playerInTurn.setTimePlayed((int) Duration.between(this.secondCount, Instant.now()).getSeconds());
 
-        if (playerInTurn.getTimePlayed() >= 5) {
+        if (playerInTurn.getTimePlayed() >= this.model.getGameModeManager().getBaseParameters().timeLimitPerPlayer) {
             this.nextTurn();
         }
     }
