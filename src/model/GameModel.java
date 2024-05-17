@@ -27,6 +27,8 @@ public final class GameModel {
 
     private final GameModeManager gameModeManager;
 
+    private int turnCount;
+
     public GameModel() {
         this.gameModeManager = new GameModeManager();
         this.players = new HashMap<>();
@@ -68,6 +70,10 @@ public final class GameModel {
 
     public int getPlayerCount() {
         return this.gameModeManager.getBaseParameters().playersCount;
+    }
+
+    public int getTurnCount() {
+        return turnCount;
     }
 
     public HashMap<Integer, Player> getPlayers() {
@@ -113,6 +119,10 @@ public final class GameModel {
 
     public void setWinningPlayer(final Player winningPlayer) {
         this.winningPlayer = winningPlayer;
+    }
+
+    public void setTurnCount(int turnCount) {
+        this.turnCount = turnCount;
     }
 
     public enum MatchState {
