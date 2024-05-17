@@ -1,65 +1,48 @@
 package view.components.match;
 
 import controller.dto.BoardTransferObject;
-import controller.dto.PlayerTransferObject;
 import controller.dto.ServiceResponse;
 import controller.wall.LargeWall;
 import controller.wall.NormalWall;
 import controller.wall.Wall;
-import model.cell.CellType;
 import model.wall.WallType;
 import view.components.GameComponent;
-import view.context.ContextProvider;
+import view.context.GlobalContext;
+import view.context.MatchContext;
 import view.input.KeyboardEvent;
 import view.input.MouseEvent;
 import view.themes.Theme;
 
 import java.awt.*;
-import java.util.ArrayList;
 
 public final class Board extends GameComponent {
 
     public final static int CELL_SIZE = 48;
     public final static int WALL_SIZE = CELL_SIZE / 4;
 
-    private final int widthCells;
-    private final int heightCells;
-    private final Point parsedMousePosition;
     private final PlayerRenderer playerRenderer;
     private final CellRenderer cellRenderer;
-
-    private WallType currentWallType;
-    private CellType[][] cells;
-    private WallType[][] walls;
-    private ArrayList<PlayerTransferObject> players;
-    private PlayerTransferObject playerInTurn;
-
-    private boolean isMouseValid;
+    private final MatchContext matchContext;
 
     /**
      * Creates a new Board component with the given context provider.
      *
-     * @param contextProvider the context provider for the component.
+     * @param globalContext the context provider for the component.
      */
-    public Board(ContextProvider contextProvider) {
+    public Board(GlobalContext globalContext, MatchContext matchContext) {
 
         //TODO : fit canvas size for the height
-        super(contextProvider);
+        super(globalContext);
+        this.matchContext = matchContext;
 
         this.fetchBoardState();
 
-        this.widthCells = cells.length;
-        this.heightCells = cells[0].length;
-
-        this.currentWallType = WallType.NORMAL;
-
-        this.parsedMousePosition = new Point();
-        this.playerRenderer = new PlayerRenderer(this.style, this.contextProvider);
-        this.cellRenderer = new CellRenderer(this.style, this.contextProvider);
+        this.playerRenderer = new PlayerRenderer(this.style, this.globalContext, this.matchContext);
+        this.cellRenderer = new CellRenderer(this.style, this.globalContext, this.matchContext);
     }
 
     private void fetchBoardState() {
-        ServiceResponse<BoardTransferObject> boardStateResponse = this.contextProvider.controller().getBoardState();
+        ServiceResponse<BoardTransferObject> boardStateResponse = this.globalContext.controller().getBoardState();
 
         if (!boardStateResponse.ok) {
             //TODO: Handle error
@@ -68,19 +51,17 @@ public final class Board extends GameComponent {
 
         BoardTransferObject boardState = boardStateResponse.payload;
 
-        this.cells = boardState.cells();
-        this.players = boardState.players();
-        this.walls = boardState.walls();
-
-        this.playerInTurn = boardState.playerInTurn();
+        this.matchContext.setCells(boardState.cells());
+        this.matchContext.setPlayers(boardState.players());
+        this.matchContext.setWalls(boardState.walls());
+        this.matchContext.setPlayerInTurn(boardState.playerInTurn());
     }
 
     private void renderWalls(Graphics2D graphics) {
 
-        for (int x = 0; x < this.walls.length; x++) {
-
-            for (int y = 0; y < this.walls[0].length; y++) {
-                WallType wallType = this.walls[x][y];
+        for (int x = 0; x < this.matchContext.walls().length; x++) {
+            for (int y = 0; y < this.matchContext.walls()[0].length; y++) {
+                WallType wallType = this.matchContext.walls()[x][y];
 
                 if (wallType == null) {
                     continue;
@@ -95,7 +76,7 @@ public final class Board extends GameComponent {
                 int width = renderParams[4];
                 int height = renderParams[5];
 
-                graphics.setColor(this.contextProvider.currentTheme().getColor(Theme.ColorName.PRIMARY, Theme.ColorVariant.NORMAL));
+                graphics.setColor(this.globalContext.currentTheme().getColor(Theme.ColorName.PRIMARY, Theme.ColorVariant.NORMAL));
 
                 graphics.fillRect(
                         this.style.x + this.style.paddingX + CELL_SIZE * cellsCountX + WALL_SIZE * wallsCountX,
@@ -108,12 +89,12 @@ public final class Board extends GameComponent {
     }
 
     private void renderWallPreview(Graphics2D graphics) {
-        if (!this.isMouseValid || !this.isMouseOverEmptyWall()) {
+        if (!this.matchContext.mouseOverEmptyWall()) {
             return;
         }
 
-        int x = this.parsedMousePosition.x;
-        int y = this.parsedMousePosition.y;
+        int x = this.matchContext.mousePosition().x;
+        int y = this.matchContext.mousePosition().y;
 
         int[] renderParams = this.calculateWallRenderParams(x, y);
 
@@ -125,17 +106,17 @@ public final class Board extends GameComponent {
         int height = renderParams[5];
 
         //TODO: Get scale from model
-        int scale = this.currentWallType == WallType.NORMAL ? 2 : 3;
+        int scale = this.matchContext.selectedWallType() == WallType.NORMAL ? 2 : 3;
 
-        if (this.parsedMousePosition.x % 2 == 0) {
+        if (this.matchContext.mousePosition().x % 2 == 0) {
             width = scale * (WALL_SIZE + CELL_SIZE) - WALL_SIZE;
         }
 
-        if (this.parsedMousePosition.y % 2 == 0) {
+        if (this.matchContext.mousePosition().y % 2 == 0) {
             height = scale * (WALL_SIZE + CELL_SIZE) - WALL_SIZE;
         }
 
-        graphics.setColor(this.contextProvider.currentTheme().getColor(Theme.ColorName.PRIMARY, Theme.ColorVariant.DIMMED));
+        graphics.setColor(this.globalContext.currentTheme().getColor(Theme.ColorName.PRIMARY, Theme.ColorVariant.DIMMED));
 
         graphics.fillRect(
                 this.style.x + this.style.paddingX + CELL_SIZE * cellsCountX + WALL_SIZE * wallsCountX,
@@ -152,7 +133,7 @@ public final class Board extends GameComponent {
 
     private void updateParsedMousePosition() {
 
-        Point relativePosition = this.contextProvider.mouse().getMouseRelativePosition(this.getBounds());
+        Point relativePosition = this.globalContext.mouse().getMouseRelativePosition(this.getBounds());
 
         relativePosition.x -= this.style.paddingX;
         relativePosition.y -= this.style.paddingY;
@@ -167,26 +148,21 @@ public final class Board extends GameComponent {
             parsedY++;
         }
 
-        boolean isOutOfBounds =
-                relativePosition.y < 0 || relativePosition.x < 0 || parsedY >= 2 * this.heightCells - 1 || parsedX >= 2 * this.widthCells - 1;
+        parsedX = relativePosition.x < 0 ? -1 : parsedX;
+        parsedY = relativePosition.y < 0 ? -1 : parsedY;
 
-        if (isOutOfBounds) {
-            this.parsedMousePosition.setLocation(-1, -1);
-            this.isMouseValid = false;
-            return;
-        }
-
-        this.isMouseValid = true;
-        this.parsedMousePosition.setLocation(parsedX, parsedY);
+        this.matchContext.setMousePosition(new Point(parsedX, parsedY));
     }
 
     private void updateCursor() {
-        Point movementPoint = new Point((this.parsedMousePosition.x + 1) / 2, (this.parsedMousePosition.y + 1) / 2);
+        Point movementPoint = new Point((this.matchContext.mousePosition().x + 1) / 2, (this.matchContext.mousePosition().y + 1) / 2);
 
-        if (this.isMouseValid && (this.isMouseOverWall() || this.playerInTurn.allowedMoves().contains(movementPoint))) {
-            this.contextProvider.window().getCanvas().setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        boolean inAllowedAction = this.matchContext.mouseOverWall() || this.matchContext.playerInTurn().allowedMoves().contains(movementPoint);
+
+        if (!this.matchContext.mouseOutOfBounds() && inAllowedAction) {
+            this.globalContext.window().getCanvas().setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         } else {
-            this.contextProvider.window().getCanvas().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+            this.globalContext.window().getCanvas().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         }
     }
 
@@ -205,19 +181,23 @@ public final class Board extends GameComponent {
 
         this.renderWalls(graphics);
         this.renderWallPreview(graphics);
-        this.cellRenderer.render(graphics, this.cells);
-        this.playerRenderer.render(graphics, this.players);
+        this.cellRenderer.render(graphics);
+        this.playerRenderer.render(graphics);
     }
 
     @Override
     public void fitSize() {
+
+        int widthCells = this.matchContext.cells().length;
+        int heightCells = this.matchContext.cells()[0].length;
+
         int margin = this.style.paddingX * 2;
 
-        this.style.width = this.style.paddingX * 2 + CELL_SIZE * this.widthCells + WALL_SIZE * (this.widthCells - 1);
-        this.style.height = this.style.paddingY * 2 + CELL_SIZE * this.heightCells + WALL_SIZE * (this.heightCells - 1);
+        this.style.width = this.style.paddingX * 2 + CELL_SIZE * widthCells + WALL_SIZE * (widthCells - 1);
+        this.style.height = this.style.paddingY * 2 + CELL_SIZE * heightCells + WALL_SIZE * (heightCells - 1);
 
-        if (this.style.width + margin > this.contextProvider.window().getCanvasSize()) {
-            this.contextProvider.window().setCanvasSize(this.style.width + margin);
+        if (this.style.width + margin > this.globalContext.window().getCanvasSize()) {
+            this.globalContext.window().setCanvasSize(this.style.width + margin);
         }
     }
 
@@ -229,9 +209,9 @@ public final class Board extends GameComponent {
     @Override
     protected void setupDefaultStyle() {
 
-        this.style.width = this.contextProvider.window().getCanvasSize();
-        this.style.height = this.contextProvider.window().getCanvasSize();
-        this.style.backgroundColor = this.contextProvider.currentTheme().getColor(Theme.ColorName.BACKGROUND, Theme.ColorVariant.DIMMED);
+        this.style.width = this.globalContext.window().getCanvasSize();
+        this.style.height = this.globalContext.window().getCanvasSize();
+        this.style.backgroundColor = this.globalContext.currentTheme().getColor(Theme.ColorName.BACKGROUND, Theme.ColorVariant.DIMMED);
     }
 
     @Override
@@ -251,22 +231,22 @@ public final class Board extends GameComponent {
 
     private void handleWallTypeChange(KeyboardEvent event) {
         if (event.keyCode == KeyboardEvent.VK_SPACE) {
-            this.currentWallType = this.currentWallType == WallType.NORMAL ? WallType.LARGE : WallType.NORMAL;
+            this.matchContext.toggleWallType();
         }
     }
 
     private void handlePlayerMouseMovement() {
-        if (!this.isMouseValid || this.isMouseOverWall()) {
+        if (this.matchContext.mouseOutOfBounds() || this.matchContext.mouseOverWall()) {
             return;
         }
 
-        Point movementPoint = new Point((this.parsedMousePosition.x + 1) / 2, (this.parsedMousePosition.y + 1) / 2);
+        Point movementPoint = new Point((this.matchContext.mousePosition().x + 1) / 2, (this.matchContext.mousePosition().y + 1) / 2);
 
         this.tryMovePlayer(movementPoint);
     }
 
     private void handlePlayerKeyboardMovement(KeyboardEvent event) {
-        Point movementPoint = new Point(this.playerInTurn.position());
+        Point movementPoint = new Point(this.matchContext.playerInTurn().position());
 
         switch (event.keyCode) {
             case KeyboardEvent.VK_UP:
@@ -293,19 +273,19 @@ public final class Board extends GameComponent {
     }
 
     private void handleWallPlacement(MouseEvent event) {
-        if (!this.isMouseValid || !this.isMouseOverEmptyWall()) {
+        if (this.matchContext.mouseOutOfBounds() || !this.matchContext.mouseOverEmptyWall()) {
             return;
         }
 
         //TODO: Change to wall factory
-        Wall wall = this.currentWallType == WallType.NORMAL ? new NormalWall() : new LargeWall();
-        wall.setPositionOnBoard(new Point(parsedMousePosition.x, parsedMousePosition.y));
+        Wall wall = this.matchContext.selectedWallType() == WallType.NORMAL ? new NormalWall() : new LargeWall();
+        wall.setPositionOnBoard(new Point(matchContext.mousePosition().x, matchContext.mousePosition().y));
 
-        if (this.parsedMousePosition.y % 2 == 0) {
+        if (this.matchContext.mousePosition().y % 2 == 0) {
             wall.rotate();
         }
 
-        ServiceResponse<Void> response = this.contextProvider.controller().placeWall(this.playerInTurn.id(), wall);
+        ServiceResponse<Void> response = this.globalContext.controller().placeWall(this.matchContext.playerInTurn().id(), wall);
 
         if (!response.ok) {
             //TODO: Handle error
@@ -314,33 +294,17 @@ public final class Board extends GameComponent {
     }
 
     private void tryMovePlayer(Point newPosition) {
-        if (!this.playerInTurn.allowedMoves().contains(newPosition)) {
+        if (!this.matchContext.playerInTurn().allowedMoves().contains(newPosition)) {
             return;
         }
 
         ServiceResponse<Void> movementResponse =
-                this.contextProvider.controller().processPlayerMove(this.playerInTurn.id(), newPosition);
+                this.globalContext.controller().processPlayerMove(this.matchContext.playerInTurn().id(), newPosition);
 
         if (!movementResponse.ok) {
             //TODO: Handle error
             throw new RuntimeException("Failed to process player move: " + movementResponse.message);
         }
-    }
-
-    private boolean isMouseOverWall() {
-
-        boolean evenX = this.parsedMousePosition.x % 2 == 0;
-        boolean evenY = this.parsedMousePosition.y % 2 == 0;
-
-        return (evenX && !evenY) || (!evenX && evenY);
-    }
-
-    private boolean isMouseOverEmptyWall() {
-        return this.isMouseOverWall() && this.walls[this.parsedMousePosition.x][this.parsedMousePosition.y] == null;
-    }
-
-    private boolean isMouseOverFilledWall() {
-        return this.isMouseOverWall() && this.walls[this.parsedMousePosition.x][this.parsedMousePosition.y] != null;
     }
 
     private int[] calculateWallRenderParams(int x, int y) {

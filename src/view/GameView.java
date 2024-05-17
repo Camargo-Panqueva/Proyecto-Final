@@ -3,7 +3,7 @@ package view;
 import com.sun.management.OperatingSystemMXBean;
 import controller.GameController;
 import util.ConcurrentLoop;
-import view.context.ContextProvider;
+import view.context.GlobalContext;
 import view.input.Keyboard;
 import view.input.Mouse;
 import view.scene.SceneManager;
@@ -24,7 +24,7 @@ import java.util.List;
 
 public final class GameView {
 
-    private final ContextProvider contextProvider;
+    private final GlobalContext globalContext;
     private final GameController controller;
     private final SceneManager sceneManager;
     private final ThemeManager themeManager;
@@ -48,8 +48,8 @@ public final class GameView {
         this.window.getCanvas().addKeyListener(this.keyboard);
         this.window.getCanvas().setFont(new Font("Yoster Island Regular", Font.PLAIN, 16));
 
-        this.contextProvider = new ContextProvider(this.window, this.controller, this.mouse, this.keyboard, this.themeManager);
-        this.sceneManager = new SceneManager(this.contextProvider);
+        this.globalContext = new GlobalContext(this.window, this.controller, this.mouse, this.keyboard, this.themeManager);
+        this.sceneManager = new SceneManager(this.globalContext);
     }
 
     public void start() {
@@ -91,12 +91,12 @@ public final class GameView {
 
     private void renderBackground(Graphics2D graphics) {
         graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        graphics.setColor(this.contextProvider.currentTheme().getColor(Theme.ColorName.BACKGROUND, Theme.ColorVariant.NORMAL));
+        graphics.setColor(this.globalContext.currentTheme().getColor(Theme.ColorName.BACKGROUND, Theme.ColorVariant.NORMAL));
         graphics.fillRect(0, 0, this.window.getCanvasSize(), this.window.getCanvasSize());
     }
 
     private void renderPerformance(Graphics2D graphics) {
-        graphics.setColor(this.contextProvider.currentTheme().getColor(Theme.ColorName.FOREGROUND, Theme.ColorVariant.NORMAL));
+        graphics.setColor(this.globalContext.currentTheme().getColor(Theme.ColorName.FOREGROUND, Theme.ColorVariant.NORMAL));
         graphics.setFont(new Font("Arial", Font.PLAIN, 12));
 
         FontMetrics fontMetrics = graphics.getFontMetrics();

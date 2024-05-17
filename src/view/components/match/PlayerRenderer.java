@@ -1,7 +1,8 @@
 package view.components.match;
 
 import controller.dto.PlayerTransferObject;
-import view.context.ContextProvider;
+import view.context.GlobalContext;
+import view.context.MatchContext;
 import view.context.Style;
 import view.themes.Theme;
 
@@ -16,14 +17,18 @@ public final class PlayerRenderer {
     private static final int PLAYER_PADDING = 3;
 
     private final Style boardStyle;
-    private final ContextProvider contextProvider;
+    private final GlobalContext globalContext;
+    private final MatchContext matchContext;
 
-    public PlayerRenderer(Style boardStyle, ContextProvider contextProvider) {
+    public PlayerRenderer(Style boardStyle, GlobalContext globalContext, MatchContext matchContext){
         this.boardStyle = boardStyle;
-        this.contextProvider = contextProvider;
+        this.globalContext = globalContext;
+        this.matchContext = matchContext;
     }
 
-    public void render(Graphics2D graphics, ArrayList<PlayerTransferObject> players) {
+    public void render(Graphics2D graphics) {
+
+        ArrayList<PlayerTransferObject> players = this.matchContext.players();
 
         for (PlayerTransferObject player : players) {
             this.renderPlayer(graphics, player);
@@ -55,7 +60,7 @@ public final class PlayerRenderer {
         graphics.setColor(this.getPlayerColor(player, variant));
         graphics.fillOval(x, y, CELL_SIZE, CELL_SIZE);
 
-        graphics.setColor(this.contextProvider.currentTheme().getColor(Theme.ColorName.BACKGROUND, Theme.ColorVariant.NORMAL));
+        graphics.setColor(this.globalContext.currentTheme().getColor(Theme.ColorName.BACKGROUND, Theme.ColorVariant.NORMAL));
         graphics.fillOval(
                 x + PLAYER_PADDING,
                 y + PLAYER_PADDING,
@@ -74,7 +79,7 @@ public final class PlayerRenderer {
         graphics.setColor(this.getPlayerColor(player, variant));
         graphics.drawString(player.name(), x + CELL_SIZE, y - 3);
 
-        graphics.setColor(this.contextProvider.currentTheme().getColor(Theme.ColorName.BACKGROUND, Theme.ColorVariant.NORMAL));
+        graphics.setColor(this.globalContext.currentTheme().getColor(Theme.ColorName.BACKGROUND, Theme.ColorVariant.NORMAL));
         graphics.drawString(
                 player.name().substring(0, 1),
                 x + CELL_SIZE / 2 - 5,
@@ -84,7 +89,7 @@ public final class PlayerRenderer {
 
     private Color getPlayerColor(PlayerTransferObject player, Theme.ColorVariant variant) {
         int playerId = player.id();
-        Theme theme = this.contextProvider.currentTheme();
+        Theme theme = this.globalContext.currentTheme();
 
         return switch (playerId) {
             case 0 -> theme.getColor(Theme.ColorName.RED, variant);

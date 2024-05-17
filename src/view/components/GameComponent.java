@@ -1,7 +1,7 @@
 package view.components;
 
 import util.ConsumerFunction;
-import view.context.ContextProvider;
+import view.context.GlobalContext;
 import view.context.Style;
 import view.input.KeyboardEvent;
 import view.input.Mouse;
@@ -21,7 +21,7 @@ import java.util.HashMap;
  */
 public abstract class GameComponent {
 
-    protected final ContextProvider contextProvider;
+    protected final GlobalContext globalContext;
     private final HashMap<MouseEvent.EventType, ArrayList<ConsumerFunction<MouseEvent>>> mouseEventHandlers;
     protected Style style;
     protected boolean isMouseEntered;
@@ -31,16 +31,16 @@ public abstract class GameComponent {
     /**
      * Creates a new GameComponent with the given context provider.
      *
-     * @param contextProvider the context provider for the component.
+     * @param globalContext the context provider for the component.
      */
-    public GameComponent(ContextProvider contextProvider) {
+    public GameComponent(GlobalContext globalContext) {
         this.mouseEventHandlers = new HashMap<>();
-        this.contextProvider = contextProvider;
+        this.globalContext = globalContext;
         this.style = new Style();
 
         this.setupDefaultEventListeners();
         this.setupDefaultStyle();
-        this.contextProvider.themeManager().addListener(this::handleThemeChange);
+        this.globalContext.themeManager().addListener(this::handleThemeChange);
     }
 
     /**
@@ -76,8 +76,8 @@ public abstract class GameComponent {
      * Sets up the default event listeners for the component.
      */
     protected void setupDefaultEventListeners() {
-        this.addMouseListener(MouseEvent.EventType.ENTER, _event -> this.contextProvider.window().getCanvas().setCursor(this.style.cursor));
-        this.addMouseListener(MouseEvent.EventType.LEAVE, _event -> this.contextProvider.window().getCanvas().setCursor(Cursor.getDefaultCursor()));
+        this.addMouseListener(MouseEvent.EventType.ENTER, _event -> this.globalContext.window().getCanvas().setCursor(this.style.cursor));
+        this.addMouseListener(MouseEvent.EventType.LEAVE, _event -> this.globalContext.window().getCanvas().setCursor(Cursor.getDefaultCursor()));
     }
 
     /**
@@ -93,7 +93,7 @@ public abstract class GameComponent {
      * </p>
      */
     protected void pollMouseEvents() {
-        Mouse mouse = this.contextProvider.mouse();
+        Mouse mouse = this.globalContext.mouse();
         GameComponent component = this;
 
         MouseEvent event = new MouseEvent(mouse, component);
@@ -180,7 +180,7 @@ public abstract class GameComponent {
     }
 
     public void addKeyListener(KeyboardEvent.EventType eventType, ConsumerFunction<KeyboardEvent> handler) {
-        this.contextProvider.keyboard().addEventHandler(eventType, handler);
+        this.globalContext.keyboard().addEventHandler(eventType, handler);
     }
 
     /**

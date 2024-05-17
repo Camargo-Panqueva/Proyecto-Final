@@ -1,7 +1,7 @@
 package view.scene;
 
 import view.components.GameComponent;
-import view.context.ContextProvider;
+import view.context.GlobalContext;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -16,16 +16,16 @@ import java.util.ArrayList;
 public abstract class Scene {
 
     protected final ArrayList<GameComponent> components;
-    protected final ContextProvider contextProvider;
+    protected final GlobalContext globalContext;
 
     /**
      * Creates a new Scene with the given context provider.
      *
-     * @param contextProvider the context provider for the scene.
+     * @param globalContext the context provider for the scene.
      */
-    public Scene(ContextProvider contextProvider) {
+    public Scene(GlobalContext globalContext) {
         this.components = new ArrayList<>();
-        this.contextProvider = contextProvider;
+        this.globalContext = globalContext;
 
         this.setupComponents();
         this.setupEvents();

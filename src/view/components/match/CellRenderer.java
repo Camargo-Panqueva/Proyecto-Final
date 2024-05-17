@@ -1,7 +1,8 @@
 package view.components.match;
 
 import model.cell.CellType;
-import view.context.ContextProvider;
+import view.context.GlobalContext;
+import view.context.MatchContext;
 import view.context.Style;
 import view.themes.Theme;
 
@@ -14,23 +15,25 @@ import static view.components.match.Board.WALL_SIZE;
 public final class CellRenderer {
 
     private final Style boardStyle;
-    private final ContextProvider contextProvider;
+    private final GlobalContext globalContext;
+    private final MatchContext matchContext;
 
-    public CellRenderer(Style boardStyle, ContextProvider contextProvider) {
+    public CellRenderer(Style boardStyle, GlobalContext globalContext, MatchContext matchContext) {
         this.boardStyle = boardStyle;
-        this.contextProvider = contextProvider;
+        this.globalContext = globalContext;
+        this.matchContext = matchContext;
     }
 
-    public void render(Graphics2D graphics, CellType[][] cells) {
+    public void render(Graphics2D graphics) {
 
-        int widthCells = cells.length;
-        int heightCells = cells[0].length;
+        int widthCells = this.matchContext.cells().length;
+        int heightCells = this.matchContext.cells()[0].length;
 
-        graphics.setColor(this.contextProvider.currentTheme().getColor(Theme.ColorName.BACKGROUND, Theme.ColorVariant.NORMAL));
+        graphics.setColor(this.globalContext.currentTheme().getColor(Theme.ColorName.BACKGROUND, Theme.ColorVariant.NORMAL));
 
         for (int i = 0; i < widthCells; i++) {
             for (int j = 0; j < heightCells; j++) {
-                CellType cellType = cells[i][j];
+                CellType cellType = this.matchContext.cells()[i][j];
 
                 int x = this.boardStyle.x + this.boardStyle.paddingX + i * (CELL_SIZE + WALL_SIZE);
                 int y = this.boardStyle.y + this.boardStyle.paddingY + j * (CELL_SIZE + WALL_SIZE);
@@ -60,7 +63,7 @@ public final class CellRenderer {
     }
 
     private void drawNormalCell(Graphics2D graphics) {
-        graphics.setColor(this.contextProvider.currentTheme().getColor(Theme.ColorName.BACKGROUND, Theme.ColorVariant.NORMAL));
+        graphics.setColor(this.globalContext.currentTheme().getColor(Theme.ColorName.BACKGROUND, Theme.ColorVariant.NORMAL));
         graphics.fillRoundRect(0, 0, CELL_SIZE, CELL_SIZE, 8, 8);
     }
 }

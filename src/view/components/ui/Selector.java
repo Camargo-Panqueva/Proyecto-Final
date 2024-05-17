@@ -1,7 +1,7 @@
 package view.components.ui;
 
 import view.components.GameComponent;
-import view.context.ContextProvider;
+import view.context.GlobalContext;
 import view.input.MouseEvent;
 import view.themes.Theme;
 
@@ -24,10 +24,10 @@ public final class Selector extends GameComponent {
      * Creates a new Selector with the given options and context provider.
      *
      * @param options         the list of options for the selector.
-     * @param contextProvider the context provider for the selector.
+     * @param globalContext the context provider for the selector.
      */
-    public Selector(ArrayList<String> options, ContextProvider contextProvider) {
-        super(contextProvider);
+    public Selector(ArrayList<String> options, GlobalContext globalContext) {
+        super(globalContext);
 
         this.options = options;
         this.selectedOption = 0;
@@ -118,9 +118,9 @@ public final class Selector extends GameComponent {
     @Override
     protected void setupDefaultStyle() {
         //TODO: Remove code duplication with Button default style
-        this.style.backgroundColor = this.contextProvider.currentTheme().getColor(Theme.ColorName.PRIMARY, Theme.ColorVariant.NORMAL);
-        this.style.foregroundColor = this.contextProvider.currentTheme().getColor(Theme.ColorName.BACKGROUND, Theme.ColorVariant.NORMAL);
-        this.style.font = this.contextProvider.window().getCanvas().getFont().deriveFont(26.0f);
+        this.style.backgroundColor = this.globalContext.currentTheme().getColor(Theme.ColorName.PRIMARY, Theme.ColorVariant.NORMAL);
+        this.style.foregroundColor = this.globalContext.currentTheme().getColor(Theme.ColorName.BACKGROUND, Theme.ColorVariant.NORMAL);
+        this.style.font = this.globalContext.window().getCanvas().getFont().deriveFont(26.0f);
         this.style.height = 60;
         this.style.width = 300;
         this.style.borderRadius = 16;

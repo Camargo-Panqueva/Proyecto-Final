@@ -1,7 +1,7 @@
 package view.components.match;
 
 import view.components.GameComponent;
-import view.context.ContextProvider;
+import view.context.GlobalContext;
 import view.themes.Theme;
 
 import java.awt.*;
@@ -12,14 +12,14 @@ public final class ControlPanel extends GameComponent {
     /**
      * Creates a new ControlPanel component with the given context provider.
      *
-     * @param contextProvider the context provider for the component.
+     * @param globalContext the context provider for the component.
      */
-    public ControlPanel(ContextProvider contextProvider) {
-        super(contextProvider);
+    public ControlPanel(GlobalContext globalContext) {
+        super(globalContext);
     }
 
     private void renderBackground(Graphics2D graphics) {
-        graphics.setColor(this.contextProvider.currentTheme().getColor(Theme.ColorName.BACKGROUND, Theme.ColorVariant.DIMMED));
+        graphics.setColor(this.globalContext.currentTheme().getColor(Theme.ColorName.BACKGROUND, Theme.ColorVariant.DIMMED));
         graphics.fillRoundRect(
                 this.style.x,
                 this.style.y,
@@ -29,7 +29,7 @@ public final class ControlPanel extends GameComponent {
                 this.style.borderRadius
         );
 
-        graphics.setColor(this.contextProvider.currentTheme().getColor(Theme.ColorName.BACKGROUND, Theme.ColorVariant.NORMAL));
+        graphics.setColor(this.globalContext.currentTheme().getColor(Theme.ColorName.BACKGROUND, Theme.ColorVariant.NORMAL));
         graphics.fillRoundRect(
                 this.style.x + this.style.borderWidth,
                 this.style.y + this.style.borderWidth,
@@ -55,8 +55,8 @@ public final class ControlPanel extends GameComponent {
 
         int expectedWidth = this.style.x + this.style.width + this.style.paddingX;
 
-        if (expectedWidth > this.contextProvider.window().getCanvas().getWidth()) {
-            this.contextProvider.window().setCanvasWidth(expectedWidth);
+        if (expectedWidth > this.globalContext.window().getCanvas().getWidth()) {
+            this.globalContext.window().setCanvasWidth(expectedWidth);
         }
     }
 

@@ -22,8 +22,8 @@ import view.window.Window;
  * @param mouse
  * @param themeManager
  */
-public record ContextProvider(Window window, GameController controller, Mouse mouse, Keyboard keyboard,
-                              ThemeManager themeManager) {
+public record GlobalContext(Window window, GameController controller, Mouse mouse, Keyboard keyboard,
+                            ThemeManager themeManager) {
 
     /**
      * Shorthand method to get the current theme from the theme manager.

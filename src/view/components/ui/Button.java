@@ -1,7 +1,7 @@
 package view.components.ui;
 
 import view.components.GameComponent;
-import view.context.ContextProvider;
+import view.context.GlobalContext;
 import view.themes.Theme;
 
 import java.awt.*;
@@ -24,7 +24,7 @@ public final class Button extends GameComponent {
      * @param text    the text to render in the button.
      * @param context the context provider for the component.
      */
-    public Button(String text, ContextProvider context) {
+    public Button(String text, GlobalContext context) {
         super(context);
         this.text = text;
 
@@ -110,9 +110,9 @@ public final class Button extends GameComponent {
      */
     @Override
     protected void setupDefaultStyle() {
-        this.style.backgroundColor = this.contextProvider.currentTheme().getColor(Theme.ColorName.PRIMARY, Theme.ColorVariant.NORMAL);
-        this.style.foregroundColor = this.contextProvider.currentTheme().getColor(Theme.ColorName.BACKGROUND, Theme.ColorVariant.NORMAL);
-        this.style.font = this.contextProvider.window().getCanvas().getFont().deriveFont(26.0f);
+        this.style.backgroundColor = this.globalContext.currentTheme().getColor(Theme.ColorName.PRIMARY, Theme.ColorVariant.NORMAL);
+        this.style.foregroundColor = this.globalContext.currentTheme().getColor(Theme.ColorName.BACKGROUND, Theme.ColorVariant.NORMAL);
+        this.style.font = this.globalContext.window().getCanvas().getFont().deriveFont(26.0f);
         this.style.height = 60;
         this.style.width = 300;
         this.style.borderRadius = 16;
