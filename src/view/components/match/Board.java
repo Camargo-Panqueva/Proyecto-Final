@@ -203,15 +203,15 @@ public final class Board extends GameComponent {
 
         this.renderBackground(graphics);
 
-        this.cellRenderer.render(graphics, this.cells);
         this.renderWalls(graphics);
         this.renderWallPreview(graphics);
+        this.cellRenderer.render(graphics, this.cells);
         this.playerRenderer.render(graphics, this.players);
     }
 
     @Override
     public void fitSize() {
-        int margin = this.style.paddingX * 4;
+        int margin = this.style.paddingX * 2;
 
         this.style.width = this.style.paddingX * 2 + CELL_SIZE * this.widthCells + WALL_SIZE * (this.widthCells - 1);
         this.style.height = this.style.paddingY * 2 + CELL_SIZE * this.heightCells + WALL_SIZE * (this.heightCells - 1);
@@ -228,9 +228,7 @@ public final class Board extends GameComponent {
 
     @Override
     protected void setupDefaultStyle() {
-        this.style.paddingX = 16;
-        this.style.paddingY = 16;
-        this.style.borderRadius = 26;
+
         this.style.width = this.contextProvider.window().getCanvasSize();
         this.style.height = this.contextProvider.window().getCanvasSize();
         this.style.backgroundColor = this.contextProvider.currentTheme().getColor(Theme.ColorName.BACKGROUND, Theme.ColorVariant.DIMMED);

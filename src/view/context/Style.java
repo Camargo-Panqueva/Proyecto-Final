@@ -109,7 +109,7 @@ public final class Style {
      * @param context the context provider for the component.
      */
     public void centerHorizontally(ContextProvider context) {
-        int canvasSize = context.window().getCanvasSize();
+        int canvasSize = context.window().getCanvas().getWidth();
         this.x = (canvasSize - this.width) / 2;
     }
 
@@ -125,7 +125,7 @@ public final class Style {
      * @param context the context provider for the component.
      */
     public void centerVertically(ContextProvider context) {
-        int canvasSize = context.window().getCanvasSize();
+        int canvasSize = context.window().getCanvas().getHeight();
         this.y = (canvasSize - this.height) / 2;
     }
 }
