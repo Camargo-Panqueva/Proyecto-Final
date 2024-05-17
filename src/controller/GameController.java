@@ -265,7 +265,7 @@ public final class GameController {
         return null;
     }
 
-    public ServiceResponse<UUID> getWallId(Point point) {
+    public ServiceResponse<Void> getWallId(Point point) {
         if (!this.isPointInsideBoard(point.x, point.y)) {
             return new ErrorResponse<>("Point off the board");
         }
@@ -277,7 +277,10 @@ public final class GameController {
             return new ErrorResponse<>("There is no a Wall in: " + point);
         }
 
-        return new SuccessResponse<>(this.model.getBoard().getWallId(point), "Ok");
+        if(this.matchManager.executeDeleteWall(this.model.getBoard().getWallId(point)) == null){
+            return new ErrorResponse<>("There wasn't a wall for delete, check walls attribute in the Match Manager");
+        }
+        return new SuccessResponse<>(null, "The Wall was deleted");
     }
 
 
