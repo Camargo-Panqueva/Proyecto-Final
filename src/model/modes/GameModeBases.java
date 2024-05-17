@@ -8,11 +8,15 @@ public abstract class GameModeBases {
     public final int playersCount;
     public final int wallsPerPlayer;
 
-    public GameModeBases(int boardWidth, int boardHeight, int playerCount, int wallsPerPlayer) {
+    public final int timeLimitPerPlayer;
+
+
+    public GameModeBases(int boardWidth, int boardHeight, int playerCount, int wallsPerPlayer, int timeLimitPerPlayer) {
         this.boardHeight = boardHeight;
         this.boardWidth = boardWidth;
         this.playersCount = playerCount;
         this.wallsPerPlayer = wallsPerPlayer;
+        this.timeLimitPerPlayer = timeLimitPerPlayer;
     }
 
     public abstract GameModes getGameModeType();

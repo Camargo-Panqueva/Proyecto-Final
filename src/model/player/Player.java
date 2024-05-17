@@ -3,6 +3,7 @@ package model.player;
 import model.wall.WallData;
 
 import java.awt.*;
+import java.time.Instant;
 import java.util.ArrayList;
 
 public class Player {
@@ -13,19 +14,44 @@ public class Player {
     private final int allowedWalls;
     private final int xWinPosition;
     private final int yWinPosition;
+    private final Point winDirection;
     private final ArrayList<WallData> playerWalls;
+    private final long timeLimit;
+    private final long timePlayed;
 
-    public Player(final Point initialPosition, final String name, final int allowedWalls, final int xWinner, final int yWinner) {
+    public Player(final Point initialPosition, final String name, final int allowedWalls, final int xWinner, final int yWinner, final long timeLimitSeg) {
         this.name = name;
         this.position = initialPosition;
         this.allowedWalls = allowedWalls;
         this.playerWalls = new ArrayList<>();
         this.xWinPosition = xWinner;
         this.yWinPosition = yWinner;
+        this.winDirection = this.generateWinDirection();
+        this.timeLimit = Instant.now().plusSeconds(timeLimitSeg).getEpochSecond();
+        this.timePlayed = 0;
+    }
+
+    private Point generateWinDirection() {
+        final Point vector = new Point();
+        if (this.yWinPosition == 0) {
+            vector.setLocation(0, -1);
+        } else if (this.yWinPosition != -1) {
+            vector.setLocation(0, 1);
+        } else if (this.xWinPosition == 0) {
+            vector.setLocation(-1, 0);
+        } else {
+            vector.setLocation(1, 0);
+        }
+
+        return vector;
     }
 
     public Point getPosition() {
         return position;
+    }
+
+    public Point getWinDirection() {
+        return this.winDirection;
     }
 
     public int getAllowedWalls() {
@@ -38,6 +64,14 @@ public class Player {
 
     public int getWallsPlaced() {
         return wallsPlaced;
+    }
+
+    public long getTimePlayed() {
+        return timePlayed;
+    }
+
+    public long getTimeLimit() {
+        return timeLimit;
     }
 
     public int getXWinPosition() {

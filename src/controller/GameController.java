@@ -45,6 +45,7 @@ public final class GameController {
 
     private void setupPlayers() {
         final int allowedWallsPerPlayer = this.model.getGameModeManager().getBaseParameters().wallsPerPlayer;
+        final int timeLimitPerPlayer = this.model.getGameModeManager().getBaseParameters().timeLimitPerPlayer;
 
         final int width = this.model.getBoard().getWidth() - 1;
         final int height = this.model.getBoard().getHeight() - 1;
@@ -57,27 +58,27 @@ public final class GameController {
         final int heightCenterPosition = heightIsEven ? (height / 2) - 1 : (height / 2);
 
         if (widthIsEven) {
-            this.model.addPlayer(0, new Player(new Point(widthCenterPosition + 1, 0), "Player 1", allowedWallsPerPlayer, -1, height));
-            this.model.addPlayer(1, new Player(new Point(widthCenterPosition + 2, height), "Player 2", allowedWallsPerPlayer, -1, 0));
+            this.model.addPlayer(0, new Player(new Point(widthCenterPosition + 1, 0), "Player 1", allowedWallsPerPlayer, -1, height, timeLimitPerPlayer));
+            this.model.addPlayer(1, new Player(new Point(widthCenterPosition + 2, height), "Player 2", allowedWallsPerPlayer, -1, 0, timeLimitPerPlayer));
         } else {
-            this.model.addPlayer(0, new Player(new Point(widthCenterPosition, 0), "Player 1", allowedWallsPerPlayer , -1, height));
-            this.model.addPlayer(1, new Player(new Point(widthCenterPosition, height), "Player 2", allowedWallsPerPlayer , -1, 0));
+            this.model.addPlayer(0, new Player(new Point(widthCenterPosition, 0), "Player 1", allowedWallsPerPlayer, -1, height, timeLimitPerPlayer));
+            this.model.addPlayer(1, new Player(new Point(widthCenterPosition, height), "Player 2", allowedWallsPerPlayer, -1, 0, timeLimitPerPlayer));
         }
 
         if (heightIsEven) {
             if (this.model.getPlayerCount() > 2) {
-                this.model.addPlayer(2, new Player(new Point(0, heightCenterPosition + 2), "Player 3", allowedWallsPerPlayer, width, -1));
+                this.model.addPlayer(2, new Player(new Point(0, heightCenterPosition + 2), "Player 3", allowedWallsPerPlayer, width, -1, timeLimitPerPlayer));
             }
             if (this.model.getPlayerCount() > 3) {
-                this.model.addPlayer(3, new Player(new Point(width, heightCenterPosition + 1), "Player 4", allowedWallsPerPlayer, 0, -1));
+                this.model.addPlayer(3, new Player(new Point(width, heightCenterPosition + 1), "Player 4", allowedWallsPerPlayer, 0, -1, timeLimitPerPlayer));
             }
         } else {
 
             if (this.model.getPlayerCount() > 2) {
-                this.model.addPlayer(2, new Player(new Point(0, heightCenterPosition), "Player 3", allowedWallsPerPlayer, width, -1));
+                this.model.addPlayer(2, new Player(new Point(0, heightCenterPosition), "Player 3", allowedWallsPerPlayer, width, -1, timeLimitPerPlayer));
             }
             if (this.model.getPlayerCount() > 3) {
-                this.model.addPlayer(3, new Player(new Point(width, heightCenterPosition), "Player 4", allowedWallsPerPlayer, 0, -1));
+                this.model.addPlayer(3, new Player(new Point(width, heightCenterPosition), "Player 4", allowedWallsPerPlayer, 0, -1, timeLimitPerPlayer));
 
             }
         }
@@ -99,14 +100,15 @@ public final class GameController {
         return new SuccessResponse<>(null, "Ok");
     }
 
-    public ServiceResponse<Void> setInitialCustomParameters(final int width, final int height, final int playerCount, final int wallsPerPlayer) {
+    public ServiceResponse<Void> setInitialCustomParameters(final int width, final int height, final int playerCount, final int wallsPerPlayer,
+                                                            final int timeLimitP1) {
         if (playerCount < 2 || playerCount > 4) {
             return new ErrorResponse<>("Our Quoridor accept just 2, 3 and 4 players");
         }
         if (width < 0 || height < 0 || width > 21 || height > 21) {
             return new ErrorResponse<>("Out of limits, the size must be between 0 and 21");
         }
-        this.model.getGameModeManager().setCurrentGameMode(GameModes.CUSTOM, width, height, playerCount, wallsPerPlayer);
+        this.model.getGameModeManager().setCurrentGameMode(GameModes.CUSTOM, width, height, playerCount, wallsPerPlayer, timeLimitP1);
         return new SuccessResponse<>(null, "Custom initial parameters were established");
     }
 
@@ -184,7 +186,7 @@ public final class GameController {
         if (wall.getWallType() == null || wall.getPositionOnBoard() == null) {
             return new ErrorResponse<>("Walls passed as parameter must have defined its position, use wall.getDataWall().setPositionOnBoard()");
         }
-        if (wall.getPositionOnBoard().x % 2 == 1 && wall.getPositionOnBoard().y % 2 == 1){
+        if (wall.getPositionOnBoard().x % 2 == 1 && wall.getPositionOnBoard().y % 2 == 1) {
             return new ErrorResponse<>("Walls cannot be placed in corners");
         }
 
@@ -226,7 +228,7 @@ public final class GameController {
         }
 
         if (placeIt) {
-            if(this.matchManager.isABlockerWall(newWalls)){
+            if (this.matchManager.isABlockerWall(newWalls)) {
                 return new ErrorResponse<>("You cannot block the path, chose another position");
             }
             this.matchManager.executePlaceWall(this.model.getPlayers().get(playerId), wall, newWalls);
@@ -248,7 +250,7 @@ public final class GameController {
     }
 
     private ServiceResponse<Void> validBasicParameters(final int playerId) {
-        if(this.model.getMatchState() == GameModel.MatchState.WINNER){
+        if (this.model.getMatchState() == GameModel.MatchState.WINNER) {
             return new ErrorResponse<>("There is a WINNER!! Congratulations " + this.model.getWinningPlayer().getName());
         }
         if (!this.model.getMatchState().equals(GameModel.MatchState.PLAYING)) {

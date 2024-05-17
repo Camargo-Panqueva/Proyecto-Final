@@ -2,7 +2,7 @@ package model.modes;
 
 public final class TwoNormalMode extends GameModeBases {
     public TwoNormalMode() {
-        super(9, 9, 2, 10);
+        super(9, 9, 2, 10, 60);
     }
 
     @Override
