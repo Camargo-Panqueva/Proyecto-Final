@@ -95,7 +95,7 @@ public final class Board extends GameComponent {
                 int width = renderParams[4];
                 int height = renderParams[5];
 
-                graphics.setColor(this.contextProvider.themeManager().getCurrentTheme().getColor(Theme.ColorName.PRIMARY, Theme.ColorVariant.NORMAL));
+                graphics.setColor(this.contextProvider.currentTheme().getColor(Theme.ColorName.PRIMARY, Theme.ColorVariant.NORMAL));
 
                 graphics.fillRect(
                         this.style.x + this.style.paddingX + CELL_SIZE * cellsCountX + WALL_SIZE * wallsCountX,
@@ -135,7 +135,7 @@ public final class Board extends GameComponent {
             height = scale * (WALL_SIZE + CELL_SIZE) - WALL_SIZE;
         }
 
-        graphics.setColor(this.contextProvider.themeManager().getCurrentTheme().getColor(Theme.ColorName.PRIMARY, Theme.ColorVariant.DIMMED));
+        graphics.setColor(this.contextProvider.currentTheme().getColor(Theme.ColorName.PRIMARY, Theme.ColorVariant.DIMMED));
 
         graphics.fillRect(
                 this.style.x + this.style.paddingX + CELL_SIZE * cellsCountX + WALL_SIZE * wallsCountX,
@@ -233,7 +233,7 @@ public final class Board extends GameComponent {
         this.style.borderRadius = 26;
         this.style.width = this.contextProvider.window().getCanvasSize();
         this.style.height = this.contextProvider.window().getCanvasSize();
-        this.style.backgroundColor = this.contextProvider.themeManager().getCurrentTheme().getColor(Theme.ColorName.BACKGROUND, Theme.ColorVariant.DIMMED);
+        this.style.backgroundColor = this.contextProvider.currentTheme().getColor(Theme.ColorName.BACKGROUND, Theme.ColorVariant.DIMMED);
     }
 
     @Override

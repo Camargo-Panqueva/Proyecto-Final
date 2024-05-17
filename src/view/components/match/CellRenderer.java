@@ -26,7 +26,7 @@ public final class CellRenderer {
         int widthCells = cells.length;
         int heightCells = cells[0].length;
 
-        graphics.setColor(this.contextProvider.themeManager().getCurrentTheme().getColor(Theme.ColorName.BACKGROUND, Theme.ColorVariant.NORMAL));
+        graphics.setColor(this.contextProvider.currentTheme().getColor(Theme.ColorName.BACKGROUND, Theme.ColorVariant.NORMAL));
 
         for (int i = 0; i < widthCells; i++) {
             for (int j = 0; j < heightCells; j++) {
@@ -60,7 +60,7 @@ public final class CellRenderer {
     }
 
     private void drawNormalCell(Graphics2D graphics) {
-        graphics.setColor(this.contextProvider.themeManager().getCurrentTheme().getColor(Theme.ColorName.BACKGROUND, Theme.ColorVariant.NORMAL));
+        graphics.setColor(this.contextProvider.currentTheme().getColor(Theme.ColorName.BACKGROUND, Theme.ColorVariant.NORMAL));
         graphics.fillRoundRect(0, 0, CELL_SIZE, CELL_SIZE, 8, 8);
     }
 }

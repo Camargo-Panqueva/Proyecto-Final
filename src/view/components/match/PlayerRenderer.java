@@ -55,7 +55,7 @@ public final class PlayerRenderer {
         graphics.setColor(this.getPlayerColor(player, variant));
         graphics.fillOval(x, y, CELL_SIZE, CELL_SIZE);
 
-        graphics.setColor(this.contextProvider.themeManager().getCurrentTheme().getColor(Theme.ColorName.BACKGROUND, Theme.ColorVariant.NORMAL));
+        graphics.setColor(this.contextProvider.currentTheme().getColor(Theme.ColorName.BACKGROUND, Theme.ColorVariant.NORMAL));
         graphics.fillOval(
                 x + PLAYER_PADDING,
                 y + PLAYER_PADDING,
@@ -74,7 +74,7 @@ public final class PlayerRenderer {
         graphics.setColor(this.getPlayerColor(player, variant));
         graphics.drawString(player.name(), x + CELL_SIZE, y - 3);
 
-        graphics.setColor(this.contextProvider.themeManager().getCurrentTheme().getColor(Theme.ColorName.BACKGROUND, Theme.ColorVariant.NORMAL));
+        graphics.setColor(this.contextProvider.currentTheme().getColor(Theme.ColorName.BACKGROUND, Theme.ColorVariant.NORMAL));
         graphics.drawString(
                 player.name().substring(0, 1),
                 x + CELL_SIZE / 2 - 5,
@@ -84,7 +84,7 @@ public final class PlayerRenderer {
 
     private Color getPlayerColor(PlayerTransferObject player, Theme.ColorVariant variant) {
         int playerId = player.id();
-        Theme theme = this.contextProvider.themeManager().getCurrentTheme();
+        Theme theme = this.contextProvider.currentTheme();
 
         return switch (playerId) {
             case 0 -> theme.getColor(Theme.ColorName.RED, variant);
