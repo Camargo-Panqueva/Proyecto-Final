@@ -19,11 +19,15 @@ import java.util.ArrayList;
 
 public final class Board extends GameComponent {
 
-    private final static int CELL_SIZE = 48;
-    private final static int WALL_SIZE = CELL_SIZE / 4;
+    public final static int CELL_SIZE = 48;
+    public final static int WALL_SIZE = CELL_SIZE / 4;
+
     private final int widthCells;
     private final int heightCells;
     private final Point parsedMousePosition;
+    private final PlayerRenderer playerRenderer;
+    private final CellRenderer cellRenderer;
+
     private WallType currentWallType;
     private CellType[][] cells;
     private WallType[][] walls;
@@ -47,9 +51,11 @@ public final class Board extends GameComponent {
         this.widthCells = cells.length;
         this.heightCells = cells[0].length;
 
-        this.parsedMousePosition = new Point();
-
         this.currentWallType = WallType.NORMAL;
+
+        this.parsedMousePosition = new Point();
+        this.playerRenderer = new PlayerRenderer(this.style, this.contextProvider);
+        this.cellRenderer = new CellRenderer(this.style, this.contextProvider);
     }
 
     private void fetchBoardState() {
@@ -67,47 +73,6 @@ public final class Board extends GameComponent {
         this.walls = boardState.walls();
 
         this.playerInTurn = boardState.playerInTurn();
-    }
-
-    private void renderCells(Graphics2D graphics) {
-        graphics.setColor(this.contextProvider.themeManager().getCurrentTheme().getColor(Theme.ColorName.BACKGROUND, Theme.ColorVariant.NORMAL));
-
-        for (int i = 0; i < this.widthCells; i++) {
-            for (int j = 0; j < this.heightCells; j++) {
-                int x = this.style.x + this.style.paddingX + i * (CELL_SIZE + WALL_SIZE);
-                int y = this.style.y + this.style.paddingY + j * (CELL_SIZE + WALL_SIZE);
-
-                graphics.fillRoundRect(x, y, CELL_SIZE, CELL_SIZE, 8, 8);
-            }
-        }
-    }
-
-    private void renderPlayers(Graphics2D graphics) {
-
-        for (PlayerTransferObject player : this.players) {
-
-            if (player.isInTurn()) {
-                graphics.setColor(this.getPlayerColor(player, Theme.ColorVariant.NORMAL));
-            } else {
-                graphics.setColor(this.getPlayerColor(player, Theme.ColorVariant.DIMMED));
-            }
-
-            int x = player.position().x * (CELL_SIZE + WALL_SIZE) + this.style.x + this.style.paddingX;
-            int y = player.position().y * (CELL_SIZE + WALL_SIZE) + this.style.y + this.style.paddingY;
-
-            graphics.fillOval(x, y, CELL_SIZE, CELL_SIZE);
-            graphics.drawString(player.name(), x + CELL_SIZE, y - 3);
-            this.renderAllowedMoves(graphics, player);
-        }
-    }
-
-    private void renderAllowedMoves(Graphics2D graphics, PlayerTransferObject player) {
-        for (Point move : player.allowedMoves()) {
-            int x = move.x * (CELL_SIZE + WALL_SIZE) + this.style.x + this.style.paddingX;
-            int y = move.y * (CELL_SIZE + WALL_SIZE) + this.style.y + this.style.paddingY;
-
-            graphics.drawOval(x, y, CELL_SIZE, CELL_SIZE);
-        }
     }
 
     private void renderWalls(Graphics2D graphics) {
@@ -130,7 +95,7 @@ public final class Board extends GameComponent {
                 int width = renderParams[4];
                 int height = renderParams[5];
 
-                graphics.setColor(this.contextProvider.themeManager().getCurrentTheme().getColor(Theme.ColorName.PRIMARY, Theme.ColorVariant.NORMAL));
+                graphics.setColor(this.contextProvider.currentTheme().getColor(Theme.ColorName.PRIMARY, Theme.ColorVariant.NORMAL));
 
                 graphics.fillRect(
                         this.style.x + this.style.paddingX + CELL_SIZE * cellsCountX + WALL_SIZE * wallsCountX,
@@ -170,7 +135,7 @@ public final class Board extends GameComponent {
             height = scale * (WALL_SIZE + CELL_SIZE) - WALL_SIZE;
         }
 
-        graphics.setColor(this.contextProvider.themeManager().getCurrentTheme().getColor(Theme.ColorName.PRIMARY, Theme.ColorVariant.DIMMED));
+        graphics.setColor(this.contextProvider.currentTheme().getColor(Theme.ColorName.PRIMARY, Theme.ColorVariant.DIMMED));
 
         graphics.fillRect(
                 this.style.x + this.style.paddingX + CELL_SIZE * cellsCountX + WALL_SIZE * wallsCountX,
@@ -178,6 +143,11 @@ public final class Board extends GameComponent {
                 width,
                 height
         );
+    }
+
+    private void renderBackground(Graphics2D graphics) {
+        graphics.setColor(this.style.backgroundColor);
+        graphics.fillRoundRect(this.style.x, this.style.y, this.style.width, this.style.height, this.style.borderRadius, this.style.borderRadius);
     }
 
     private void updateParsedMousePosition() {
@@ -230,13 +200,13 @@ public final class Board extends GameComponent {
 
     @Override
     public void render(Graphics2D graphics) {
-        graphics.setColor(this.style.backgroundColor);
-        graphics.fillRoundRect(this.style.x, this.style.y, this.style.width, this.style.height, this.style.borderRadius, this.style.borderRadius);
 
-        this.renderCells(graphics);
+        this.renderBackground(graphics);
+
+        this.cellRenderer.render(graphics, this.cells);
         this.renderWalls(graphics);
         this.renderWallPreview(graphics);
-        this.renderPlayers(graphics);
+        this.playerRenderer.render(graphics, this.players);
     }
 
     @Override
@@ -263,7 +233,7 @@ public final class Board extends GameComponent {
         this.style.borderRadius = 26;
         this.style.width = this.contextProvider.window().getCanvasSize();
         this.style.height = this.contextProvider.window().getCanvasSize();
-        this.style.backgroundColor = this.contextProvider.themeManager().getCurrentTheme().getColor(Theme.ColorName.BACKGROUND, Theme.ColorVariant.DIMMED);
+        this.style.backgroundColor = this.contextProvider.currentTheme().getColor(Theme.ColorName.BACKGROUND, Theme.ColorVariant.DIMMED);
     }
 
     @Override
@@ -373,19 +343,6 @@ public final class Board extends GameComponent {
 
     private boolean isMouseOverFilledWall() {
         return this.isMouseOverWall() && this.walls[this.parsedMousePosition.x][this.parsedMousePosition.y] != null;
-    }
-
-    private Color getPlayerColor(PlayerTransferObject player, Theme.ColorVariant variant) {
-        int playerId = player.id();
-        Theme theme = this.contextProvider.themeManager().getCurrentTheme();
-
-        return switch (playerId) {
-            case 0 -> theme.getColor(Theme.ColorName.RED, variant);
-            case 1 -> theme.getColor(Theme.ColorName.BLUE, variant);
-            case 2 -> theme.getColor(Theme.ColorName.GREEN, variant);
-            case 3 -> theme.getColor(Theme.ColorName.PURPLE, variant);
-            default -> throw new IllegalArgumentException("Invalid player id: " + playerId);
-        };
     }
 
     private int[] calculateWallRenderParams(int x, int y) {

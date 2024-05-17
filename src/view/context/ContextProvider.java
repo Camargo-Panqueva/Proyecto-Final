@@ -3,6 +3,7 @@ package view.context;
 import controller.GameController;
 import view.input.Keyboard;
 import view.input.Mouse;
+import view.themes.Theme;
 import view.themes.ThemeManager;
 import view.window.Window;
 
@@ -23,4 +24,14 @@ import view.window.Window;
  */
 public record ContextProvider(Window window, GameController controller, Mouse mouse, Keyboard keyboard,
                               ThemeManager themeManager) {
+
+    /**
+     * Shorthand method to get the current theme from the theme manager.
+     *
+     * @return the current theme
+     * @see ThemeManager#getCurrentTheme()
+     */
+    public Theme currentTheme() {
+        return this.themeManager().getCurrentTheme();
+    }
 }
