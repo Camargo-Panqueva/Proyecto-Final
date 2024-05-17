@@ -22,6 +22,7 @@ public final class Board extends GameComponent {
 
     private final PlayerRenderer playerRenderer;
     private final CellRenderer cellRenderer;
+    private final WallRenderer wallRenderer;
     private final MatchContext matchContext;
 
     /**
@@ -39,6 +40,7 @@ public final class Board extends GameComponent {
 
         this.playerRenderer = new PlayerRenderer(this.style, this.globalContext, this.matchContext);
         this.cellRenderer = new CellRenderer(this.style, this.globalContext, this.matchContext);
+        this.wallRenderer = new WallRenderer(this.style, this.globalContext, this.matchContext);
     }
 
     private void fetchBoardState() {
@@ -55,75 +57,6 @@ public final class Board extends GameComponent {
         this.matchContext.setPlayers(boardState.players());
         this.matchContext.setWalls(boardState.walls());
         this.matchContext.setPlayerInTurn(boardState.playerInTurn());
-    }
-
-    private void renderWalls(Graphics2D graphics) {
-
-        for (int x = 0; x < this.matchContext.walls().length; x++) {
-            for (int y = 0; y < this.matchContext.walls()[0].length; y++) {
-                WallType wallType = this.matchContext.walls()[x][y];
-
-                if (wallType == null) {
-                    continue;
-                }
-
-                int[] renderParams = this.calculateWallRenderParams(x, y);
-
-                int cellsCountX = renderParams[0];
-                int cellsCountY = renderParams[1];
-                int wallsCountX = renderParams[2];
-                int wallsCountY = renderParams[3];
-                int width = renderParams[4];
-                int height = renderParams[5];
-
-                graphics.setColor(this.globalContext.currentTheme().getColor(Theme.ColorName.PRIMARY, Theme.ColorVariant.NORMAL));
-
-                graphics.fillRect(
-                        this.style.x + this.style.paddingX + CELL_SIZE * cellsCountX + WALL_SIZE * wallsCountX,
-                        this.style.y + this.style.paddingY + CELL_SIZE * cellsCountY + WALL_SIZE * wallsCountY,
-                        width,
-                        height
-                );
-            }
-        }
-    }
-
-    private void renderWallPreview(Graphics2D graphics) {
-        if (!this.matchContext.mouseOverEmptyWall()) {
-            return;
-        }
-
-        int x = this.matchContext.mousePosition().x;
-        int y = this.matchContext.mousePosition().y;
-
-        int[] renderParams = this.calculateWallRenderParams(x, y);
-
-        int cellsCountX = renderParams[0];
-        int cellsCountY = renderParams[1];
-        int wallsCountX = renderParams[2];
-        int wallsCountY = renderParams[3];
-        int width = renderParams[4];
-        int height = renderParams[5];
-
-        //TODO: Get scale from model
-        int scale = this.matchContext.selectedWallType() == WallType.NORMAL ? 2 : 3;
-
-        if (this.matchContext.mousePosition().x % 2 == 0) {
-            width = scale * (WALL_SIZE + CELL_SIZE) - WALL_SIZE;
-        }
-
-        if (this.matchContext.mousePosition().y % 2 == 0) {
-            height = scale * (WALL_SIZE + CELL_SIZE) - WALL_SIZE;
-        }
-
-        graphics.setColor(this.globalContext.currentTheme().getColor(Theme.ColorName.PRIMARY, Theme.ColorVariant.DIMMED));
-
-        graphics.fillRect(
-                this.style.x + this.style.paddingX + CELL_SIZE * cellsCountX + WALL_SIZE * wallsCountX,
-                this.style.y + this.style.paddingY + CELL_SIZE * cellsCountY + WALL_SIZE * wallsCountY,
-                width,
-                height
-        );
     }
 
     private void renderBackground(Graphics2D graphics) {
@@ -179,8 +112,7 @@ public final class Board extends GameComponent {
 
         this.renderBackground(graphics);
 
-        this.renderWalls(graphics);
-        this.renderWallPreview(graphics);
+        this.wallRenderer.render(graphics);
         this.cellRenderer.render(graphics);
         this.playerRenderer.render(graphics);
     }
@@ -305,33 +237,5 @@ public final class Board extends GameComponent {
             //TODO: Handle error
             throw new RuntimeException("Failed to process player move: " + movementResponse.message);
         }
-    }
-
-    private int[] calculateWallRenderParams(int x, int y) {
-
-        int cellsCountX = (int) Math.ceil(x / 2.0);
-        int cellsCountY = (int) Math.ceil(y / 2.0);
-
-        int wallsCountX = x / 2;
-        int wallsCountY = y / 2;
-
-        int width;
-        int height;
-
-        if (x % 2 == 0 && y % 2 == 0) {
-            width = CELL_SIZE;
-            height = CELL_SIZE;
-        } else if (x % 2 == 0) {
-            width = CELL_SIZE;
-            height = WALL_SIZE;
-        } else if (y % 2 == 0) {
-            width = WALL_SIZE;
-            height = CELL_SIZE;
-        } else {
-            width = WALL_SIZE;
-            height = WALL_SIZE;
-        }
-
-        return new int[]{cellsCountX, cellsCountY, wallsCountX, wallsCountY, width, height};
     }
 }

@@ -114,6 +114,21 @@ public final class Style {
     }
 
     /**
+     * Centers the component horizontally within the given bounds.
+     * <p>
+     * This method centers the component horizontally within the given bounds.
+     * It calculates the x-coordinate of the component to center it horizontally.
+     * The component must have a width set for this method to work.
+     * The method uses the bounds to calculate the center.
+     * </p>
+     *
+     * @param bounds the bounds to center the component within.
+     */
+    public void centerHorizontally(Rectangle bounds) {
+        this.x = (bounds.width - this.width) / 2 + bounds.x;
+    }
+
+    /**
      * Centers the component vertically on the canvas.
      * <p>
      * This method centers the component vertically on the canvas.
@@ -127,5 +142,20 @@ public final class Style {
     public void centerVertically(GlobalContext context) {
         int canvasSize = context.window().getCanvas().getHeight();
         this.y = (canvasSize - this.height) / 2;
+    }
+
+    /**
+     * Centers the component vertically within the given bounds.
+     * <p>
+     * This method centers the component vertically within the given bounds.
+     * It calculates the y-coordinate of the component to center it vertically.
+     * The component must have a height set for this method to work.
+     * The method uses the bounds to calculate the center.
+     * </p>
+     *
+     * @param bounds the bounds to center the component within.
+     */
+    public void centerVertically(Rectangle bounds) {
+        this.y = (bounds.height - this.height) / 2 + bounds.y;
     }
 }
