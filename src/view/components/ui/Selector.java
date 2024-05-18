@@ -221,7 +221,6 @@ public final class Selector<T> extends GameComponent {
      * @return the selected option from the selector.
      */
     public T getSelectedOption() {
-
         return switch (this.type) {
             case OBJECT -> this.options.get(this.selectedOption);
             case NUMBER -> (T) Integer.valueOf(this.selectedOption);
@@ -230,11 +229,27 @@ public final class Selector<T> extends GameComponent {
     }
 
     public void setSelectedOption(T selectedOption) {
-        int index = this.options.indexOf(selectedOption);
-        if (index == -1) {
-            throw new IllegalArgumentException("Option not found in selector");
+        if (this.type == SelectorType.OBJECT) {
+            int index = this.options.indexOf(selectedOption);
+            if (index == -1) {
+                throw new IllegalArgumentException("Option not found in selector");
+            }
+            this.setSelectedIndex(index);
         }
-        this.setSelectedIndex(index);
+
+        if (this.type == SelectorType.NUMBER) {
+            int index = (int) selectedOption;
+            if (index < this.min || index > this.max) {
+                throw new IllegalArgumentException("Option out of range");
+            }
+            this.selectedOption = index;
+        }
+
+        if (this.type == SelectorType.BOOLEAN) {
+            boolean value = (boolean) selectedOption;
+            this.selectedOption = value ? 1 : 0;
+        }
+
         this.dispatchComponentEvent(ComponentEvent.VALUE_CHANGED, selectedOption, this.getSelectedOption());
     }
 
@@ -243,6 +258,11 @@ public final class Selector<T> extends GameComponent {
     }
 
     public void setSelectedIndex(int selectedOption) {
+
+        if (this.type != SelectorType.OBJECT) {
+            throw new UnsupportedOperationException("Selected index can only be set for object selectors");
+        }
+
         if (selectedOption != this.selectedOption) {
             this.dispatchComponentEvent(ComponentEvent.VALUE_CHANGED, this.getSelectedOption(), this.options.get(selectedOption));
             this.selectedOption = selectedOption;

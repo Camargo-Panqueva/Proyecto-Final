@@ -193,19 +193,24 @@ public final class SettingsScene extends Scene {
 
         for (int index = 0; index < this.playerColorSelects.size(); index++) {
             Selector<ColorName> colorNameSelector = this.playerColorSelects.get(index);
+            Selector<PlayerType> playerTypeSelect = this.playerTypeSelects.get(index);
+            TextInput playerNameInput = this.playerNameInputs.get(index);
 
             int finalIndex = index;
 
             colorNameSelector.addComponentListener(GameComponent.ComponentEvent.VALUE_CHANGED, (previousValue, currentValue) -> {
                 this.updatePlayerFieldColor(finalIndex, (ColorName) previousValue, (ColorName) currentValue);
             });
-        }
 
-        for (int index = 2; index < this.playerNameInputs.size(); index++) {
-            this.playerNameInputs.get(index).addComponentListener(GameComponent.ComponentEvent.VALUE_CHANGED, (previousValue, currentValue) -> {
+            playerTypeSelect.addComponentListener(GameComponent.ComponentEvent.VALUE_CHANGED, (previousValue, currentValue) -> {
+                this.updateDisabledAiProfiles(finalIndex);
+            });
+
+            playerNameInput.addComponentListener(GameComponent.ComponentEvent.VALUE_CHANGED, (previousValue, currentValue) -> {
                 this.updateDisabledPlayers();
             });
         }
+
 
         for (Selector<Integer> wallCountSelector : this.wallCountSelects) {
             wallCountSelector.addComponentListener(GameComponent.ComponentEvent.VALUE_CHANGED, (previousValue, currentValue) -> {
@@ -268,6 +273,7 @@ public final class SettingsScene extends Scene {
         this.widthCellsSelect.getStyle().font = this.componentFont;
         this.widthCellsSelect.getStyle().backgroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.BRIGHT);
         this.widthCellsSelect.getStyle().foregroundColor = new ThemeColor(ColorName.PURPLE, ColorVariant.NORMAL);
+        this.widthCellsSelect.setSelectedOption(9);
 
         this.heightCellsLabel = new Text("Height", this.globalContext);
         this.heightCellsLabel.getStyle().x = this.margin;
@@ -286,6 +292,7 @@ public final class SettingsScene extends Scene {
         this.heightCellsSelect.getStyle().font = this.componentFont;
         this.heightCellsSelect.getStyle().backgroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.BRIGHT);
         this.heightCellsSelect.getStyle().foregroundColor = new ThemeColor(ColorName.PURPLE, ColorVariant.NORMAL);
+        this.heightCellsSelect.setSelectedOption(9);
     }
 
     private void setupTimeSelectorComponents() {
@@ -391,7 +398,7 @@ public final class SettingsScene extends Scene {
 
         for (int index = 0; index < playerCount; index++) {
 
-            TextInput playerNameInput = new TextInput(this.globalContext, "Player " + (index + 1));
+            TextInput playerNameInput = new TextInput(this.globalContext, String.format("Enter Player %d", index + 1));
             playerNameInput.getStyle().x = this.componentWidth + 2 * this.margin;
             playerNameInput.getStyle().y = this.margin + 2 * index * (this.paddingY + this.componentHeight);
             playerNameInput.getStyle().textAlignment = Style.TextAlignment.CENTER;
@@ -412,18 +419,20 @@ public final class SettingsScene extends Scene {
             this.playerColorSelects.add(playerColorInput);
 
             Selector<PlayerType> playerTypeSelect = new Selector<>(playerTypes, this.globalContext);
-            playerTypeSelect.getStyle().x = playerNameInput.getStyle().x;
+            playerTypeSelect.getStyle().x = playerColorInput.getStyle().x;
             applySecondRowStyle.run(playerTypeSelect);
             this.playerTypeSelects.add(playerTypeSelect);
 
             Selector<AIProfile> aiProfileSelect = new Selector<>(aiProfiles, this.globalContext);
-            aiProfileSelect.getStyle().x = playerColorInput.getStyle().x;
+            aiProfileSelect.getStyle().x = playerNameInput.getStyle().x;
             applySecondRowStyle.run(aiProfileSelect);
             this.aiProfileSelects.add(aiProfileSelect);
 
             this.updatePlayerFieldColor(index, null, colorNames.get(index % colorNames.size()));
-            this.updateDisabledPlayers();
+            this.updateDisabledAiProfiles(index);
         }
+
+        this.updateDisabledPlayers();
     }
 
     private void setupButtons() {
@@ -463,17 +472,21 @@ public final class SettingsScene extends Scene {
 
         for (int j = 0; j < this.playerColorSelects.size(); j++) {
             Selector<ColorName> colorNameSelector = this.playerColorSelects.get(j);
+            TextInput playerNameInput = this.playerNameInputs.get(j);
+            ColorVariant variant = playerNameInput.getValue().isEmpty() ? ColorVariant.DIMMED : ColorVariant.NORMAL;
 
             if (index != j && colorNameSelector.getSelectedOption() == colorName) {
 
                 colorNameSelector.setSelectedOption(previousColorName);
 
-                colorNameSelector.getStyle().foregroundColor = new ThemeColor(previousColorName, ColorVariant.NORMAL);
+                colorNameSelector.getStyle().foregroundColor = new ThemeColor(previousColorName, variant);
+                this.playerTypeSelects.get(j).getStyle().foregroundColor = new ThemeColor(previousColorName, variant);
+                this.aiProfileSelects.get(j).getStyle().foregroundColor = new ThemeColor(previousColorName, variant);
                 this.playerNameInputs.get(j).getStyle().foregroundColor = new ThemeColor(previousColorName, ColorVariant.NORMAL);
-                this.playerTypeSelects.get(j).getStyle().foregroundColor = new ThemeColor(previousColorName, ColorVariant.NORMAL);
-                this.aiProfileSelects.get(j).getStyle().foregroundColor = new ThemeColor(previousColorName, ColorVariant.NORMAL);
             }
+
         }
+        this.updateDisabledPlayers();
     }
 
     private void updateMaxWallCount(int maxWallCount) {
@@ -486,7 +499,7 @@ public final class SettingsScene extends Scene {
     }
 
     private void updateDisabledPlayers() {
-        for (int index = 2; index < this.playerNameInputs.size(); index++) {
+        for (int index = 0; index < this.playerNameInputs.size(); index++) {
             TextInput playerNameInput = this.playerNameInputs.get(index);
 
             boolean isDisabled = playerNameInput.getValue().isEmpty();
@@ -494,6 +507,8 @@ public final class SettingsScene extends Scene {
             this.playerColorSelects.get(index).setDisabled(isDisabled);
             this.playerTypeSelects.get(index).setDisabled(isDisabled);
             this.aiProfileSelects.get(index).setDisabled(isDisabled);
+
+            this.updateDisabledAiProfiles(index);
         }
     }
 
@@ -503,6 +518,12 @@ public final class SettingsScene extends Scene {
         this.colonText.setDisabled(timeDisabled);
         this.minutesInput.setDisabled(timeDisabled);
         this.secondsInput.setDisabled(timeDisabled);
+    }
+
+    private void updateDisabledAiProfiles(int index) {
+        Selector<AIProfile> aiProfileSelect = this.aiProfileSelects.get(index);
+        PlayerType playerType = this.playerTypeSelects.get(index).getSelectedOption();
+        aiProfileSelect.setDisabled(!playerType.equals(PlayerType.AI) || this.playerNameInputs.get(index).getValue().isEmpty());
     }
 
     private HashMap<WallType, Integer> getWallCounts() {

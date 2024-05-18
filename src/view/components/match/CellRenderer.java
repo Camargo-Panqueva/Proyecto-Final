@@ -67,7 +67,7 @@ public final class CellRenderer {
     }
 
     private void drawNormalCell(Graphics2D graphics) {
-        graphics.setColor(this.globalContext.currentTheme().getColor(ColorName.BACKGROUND, ColorVariant.DIMMED));
+        graphics.setColor(this.globalContext.currentTheme().getColor(ColorName.BACKGROUND, ColorVariant.NORMAL));
         graphics.fillRoundRect(0, 0, CELL_SIZE, CELL_SIZE, 8, 8);
     }
 

@@ -86,11 +86,15 @@ public final class PlayerRenderer {
         graphics.setColor(color);
         graphics.drawString(player.name(), x + CELL_SIZE, y - 3);
 
+        graphics.setFont(this.globalContext.window().getCanvas().getFont().deriveFont(22.0f));
+        FontMetrics metrics = this.globalContext.window().getCanvas().getFontMetrics(graphics.getFont());
+        String initial = player.name().substring(0, 1).toUpperCase();
+
         graphics.setColor(this.globalContext.currentTheme().getColor(ColorName.BACKGROUND, ColorVariant.NORMAL));
         graphics.drawString(
-                player.name().substring(0, 1),
-                x + CELL_SIZE / 2 - 5,
-                y + CELL_SIZE / 2 + 5
+                initial,
+                x + (CELL_SIZE - metrics.stringWidth(initial)) / 2,
+                y + CELL_SIZE / 2 + metrics.getHeight() / 4
         );
     }
 }

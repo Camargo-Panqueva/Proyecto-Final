@@ -222,12 +222,20 @@ public abstract class GameComponent {
     }
 
     /**
+     * Returns whether the component is disabled.
+     *
+     * @return whether the component is disabled.
+     */
+    public boolean isDisabled() {
+        return isDisabled;
+    }
+
+    /**
      * Sets the disabled state of the component.
      *
      * @param disabled the disabled state of the component.
      */
     public void setDisabled(boolean disabled) {
-        this.setCursor(disabled ? Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR) : this.style.cursor);
         this.isDisabled = disabled;
         this.style.foregroundColor = new ThemeColor(this.style.foregroundColor.name(), disabled ? ThemeColor.ColorVariant.DIMMED : ThemeColor.ColorVariant.NORMAL);
     }
