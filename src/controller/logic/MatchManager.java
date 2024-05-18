@@ -3,6 +3,7 @@ package controller.logic;
 import controller.wall.Wall;
 import controller.wall.WallManager;
 import model.GameModel;
+import model.difficulty.DifficultyType;
 import model.player.Player;
 import model.wall.WallData;
 import util.ConcurrentLoop;
@@ -35,7 +36,9 @@ public class MatchManager {
 
         this.model.getPlayers().values().stream().filter(Player::getIsAI).forEach(player -> this.aiPlayers.put(player, new AIPlayer(player, this)));
 
-        this.startTimer();
+        if (this.model.getDifficulty().getDifficultyType() != DifficultyType.NORMAL) {
+            this.startTimer();
+        }
 
         this.model.setTurnCount((short) 0);
         this.model.setPlayerInTurn(0);
@@ -242,7 +245,7 @@ public class MatchManager {
         return playersThatGoalIsReachable.size() != this.model.getPlayerCount(); //if at least one player misses his goal -> true
     }
 
-    private int[][] getAbstractBoard(final Player player){
+    private int[][] getAbstractBoard(final Player player) {
         final int[][] abstractBoard = new int[model.getBoard().getWidth() * 2 - 1][model.getBoard().getHeight() * 2 - 1];
         return abstractBoard;
     }
@@ -251,7 +254,10 @@ public class MatchManager {
 
         this.triggerActionsAfterTurn();
 
-        this.newTime();
+        if (this.model.getDifficulty().getDifficultyType() != DifficultyType.NORMAL) {
+            this.newTime();
+        }
+
 
         this.indexCurrentIndex++;
 
@@ -272,6 +278,7 @@ public class MatchManager {
         this.triggerActionBeforeTurn();
 
     }
+
     private void startTimer() {
         ConcurrentLoop clockCurrentTurn = new ConcurrentLoop(this::clockPerTurn, 10, "Time Limit per Turn");
         this.secondCount = Instant.now();
@@ -294,7 +301,7 @@ public class MatchManager {
         wallHashMap.values().forEach(wall -> wall.actionAtFinishTurn(this));
     }
 
-    public Player getPlayerInTurn(){
+    public Player getPlayerInTurn() {
         return this.model.getPlayers().get(this.model.getPlayerInTurnId());
     }
 
