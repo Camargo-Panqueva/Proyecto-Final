@@ -77,8 +77,8 @@ public final class GameController {
             this.model.getDifficulty().setDifficulty(difficultyType, 0, 0);
         }
 
-        if (setupSettings.wallTypeCount().values().stream().mapToInt(Integer::intValue).sum() != playerWallQuota) {
-            return new ErrorResponse<>("The sum of walls must be: " + playerWallQuota);
+        if (setupSettings.wallTypeCount().values().stream().mapToInt(Integer::intValue).sum() > playerWallQuota) {
+            return new ErrorResponse<>("The sum of walls at most it should be: " + playerWallQuota);
         }
 
         this.model.getGameBaseParameters().setBaseParameters(GameModes.CUSTOM, boardWidth, boardHeight, playerCount, wallsPerPlayer);
@@ -96,11 +96,11 @@ public final class GameController {
 
     private void buildBoard(final boolean isRandom) {
         this.model.setWallCount(this.model.getGameBaseParameters().getWallsPerPlayer());
+        this.model.setBoard(this.model.getGameBaseParameters().getBoardWidth(), this.model.getGameBaseParameters().getBoardHeight());
 
         if (isRandom) {
             this.model.getBoard().setAsRandomly();
         }
-        this.model.setBoard(this.model.getGameBaseParameters().getBoardWidth(), this.model.getGameBaseParameters().getBoardHeight());
 
         if (this.model.getBoard().getIsRandomly()) {
             this.createRandomlyCells();
