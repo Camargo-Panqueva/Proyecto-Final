@@ -18,9 +18,9 @@ public final class LightTheme extends Theme {
 
     private final static Color primaryDimmed = new Color(0x905F1F2E, true);
 
-    private final static Color background = new Color(0xF0F0F0);
+    private final static Color background = new Color(0xFFFFFF);
 
-    private final static Color backgroundBright = new Color(0xFFFFFF);
+    private final static Color backgroundBright = new Color(0xF0F0F0);
 
     private final static Color backgroundDimmed = new Color(0x90BBBBBB, true);
 

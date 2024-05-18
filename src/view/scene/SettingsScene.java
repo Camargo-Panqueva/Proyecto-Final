@@ -57,7 +57,7 @@ public final class SettingsScene extends Scene {
     // Render parameters
     private ArrayList<Selector<Integer>> wallCountSelects;
     private ArrayList<TextInput> playerNameInputs;
-    private ArrayList<Selector<ColorName>> playerColorInputs;
+    private ArrayList<Selector<ColorName>> playerColorSelects;
     private ArrayList<Selector<PlayerType>> playerTypeSelects;
     private ArrayList<Selector<AIProfile>> aiProfileSelects;
     private Button startButton;
@@ -112,7 +112,7 @@ public final class SettingsScene extends Scene {
         for (TextInput playerNameInput : this.playerNameInputs) {
             this.addComponent(playerNameInput);
         }
-        for (Selector<ColorName> playerColorInput : this.playerColorInputs) {
+        for (Selector<ColorName> playerColorInput : this.playerColorSelects) {
             this.addComponent(playerColorInput);
         }
         for (Selector<PlayerType> playerTypeSelect : this.playerTypeSelects) {
@@ -172,6 +172,16 @@ public final class SettingsScene extends Scene {
         this.backButton.addMouseListener(MouseEvent.EventType.RELEASED, event -> {
             this.globalContext.controller().setGlobalState(GlobalState.WELCOME);
         });
+
+        for (int index = 0; index < this.playerColorSelects.size(); index++) {
+            Selector<ColorName> colorNameSelector = this.playerColorSelects.get(index);
+
+            int finalIndex = index;
+
+            colorNameSelector.addComponentListener(GameComponent.ComponentEvent.VALUE_CHANGED, (previousValue, currentValue) -> {
+                this.updatePlayerFieldColor(finalIndex, (ColorName) previousValue, (ColorName) currentValue);
+            });
+        }
     }
 
     @Override
@@ -259,7 +269,7 @@ public final class SettingsScene extends Scene {
         this.timeLimitLabel.getStyle().backgroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.DIMMED);
         this.timeLimitLabel.getStyle().foregroundColor = new ThemeColor(ColorName.FOREGROUND, ColorVariant.NORMAL);
 
-        this.minutesInput = new TextInput(this.globalContext);
+        this.minutesInput = new TextInput(this.globalContext, "0");
         this.minutesInput.getStyle().x = this.paddingX + this.timeLimitLabel.getStyle().width + this.timeLimitLabel.getStyle().x;
         this.minutesInput.getStyle().y = this.timeLimitLabel.getStyle().y;
         this.minutesInput.getStyle().height = this.componentHeight;
@@ -274,7 +284,7 @@ public final class SettingsScene extends Scene {
         this.colonText.getStyle().width = this.colonWidth;
         this.colonText.getStyle().font = this.componentFont;
 
-        this.secondsInput = new TextInput(this.globalContext);
+        this.secondsInput = new TextInput(this.globalContext, "0");
         this.secondsInput.getStyle().x = this.colonWidth + this.colonText.getStyle().width + this.colonText.getStyle().x;
         this.secondsInput.getStyle().y = this.minutesInput.getStyle().y;
         this.secondsInput.getStyle().height = this.componentHeight;
@@ -315,7 +325,7 @@ public final class SettingsScene extends Scene {
     private void setupPlayerComponents() {
         int playerCount = 4;
         this.playerNameInputs = new ArrayList<>();
-        this.playerColorInputs = new ArrayList<>();
+        this.playerColorSelects = new ArrayList<>();
         this.playerTypeSelects = new ArrayList<>();
         this.aiProfileSelects = new ArrayList<>();
 
@@ -345,7 +355,7 @@ public final class SettingsScene extends Scene {
 
         for (int index = 0; index < playerCount; index++) {
 
-            TextInput playerNameInput = new TextInput(this.globalContext);
+            TextInput playerNameInput = new TextInput(this.globalContext, "Player " + (index + 1));
             playerNameInput.getStyle().x = this.componentWidth + 2 * this.margin;
             playerNameInput.getStyle().y = this.margin + 2 * index * (this.paddingY + this.componentHeight);
             applyFirstRowStyle.run(playerNameInput);
@@ -360,8 +370,9 @@ public final class SettingsScene extends Scene {
             Selector<ColorName> playerColorInput = new Selector<>(colorNames, this.globalContext);
             playerColorInput.getStyle().x = playerNameInput.getStyle().x + playerNameInput.getStyle().width + this.paddingX;
             playerColorInput.getStyle().y = playerNameInput.getStyle().y;
+            playerColorInput.setSelectedIndex(index % colorNames.size());
             applyFirstRowStyle.run(playerColorInput);
-            this.playerColorInputs.add(playerColorInput);
+            this.playerColorSelects.add(playerColorInput);
 
             Selector<PlayerType> playerTypeSelect = new Selector<>(playerTypes, this.globalContext);
             playerTypeSelect.getStyle().x = playerNameInput.getStyle().x;
@@ -372,6 +383,8 @@ public final class SettingsScene extends Scene {
             aiProfileSelect.getStyle().x = playerColorInput.getStyle().x;
             applySecondRowStyle.run(aiProfileSelect);
             this.aiProfileSelects.add(aiProfileSelect);
+
+            this.updatePlayerFieldColor(index, null, colorNames.get(index % colorNames.size()));
         }
     }
 
@@ -396,5 +409,32 @@ public final class SettingsScene extends Scene {
         this.startButton.getStyle().height = this.componentHeight;
         this.startButton.getStyle().width = 4 * this.componentWidth / 5;
         this.startButton.getStyle().font = this.componentFont;
+    }
+
+    private void updatePlayerFieldColor(int index, ColorName previousColorName, ColorName colorName) {
+
+        this.playerNameInputs.get(index).getStyle().foregroundColor = new ThemeColor(colorName, ColorVariant.NORMAL);
+        this.playerNameInputs.get(index).getStyle().borderColor = new ThemeColor(colorName, ColorVariant.NORMAL);
+        this.playerColorSelects.get(index).getStyle().foregroundColor = new ThemeColor(colorName, ColorVariant.NORMAL);
+        this.playerTypeSelects.get(index).getStyle().foregroundColor = new ThemeColor(colorName, ColorVariant.NORMAL);
+        this.aiProfileSelects.get(index).getStyle().foregroundColor = new ThemeColor(colorName, ColorVariant.NORMAL);
+
+        if (previousColorName == null) {
+            return;
+        }
+
+        for (int j = 0; j < this.playerColorSelects.size(); j++) {
+            Selector<ColorName> colorNameSelector = this.playerColorSelects.get(j);
+
+            if (index != j && colorNameSelector.getSelectedOption() == colorName) {
+
+                colorNameSelector.setSelectedOption(previousColorName);
+
+                colorNameSelector.getStyle().foregroundColor = new ThemeColor(previousColorName, ColorVariant.NORMAL);
+                this.playerNameInputs.get(j).getStyle().foregroundColor = new ThemeColor(previousColorName, ColorVariant.NORMAL);
+                this.playerTypeSelects.get(j).getStyle().foregroundColor = new ThemeColor(previousColorName, ColorVariant.NORMAL);
+                this.aiProfileSelects.get(j).getStyle().foregroundColor = new ThemeColor(previousColorName, ColorVariant.NORMAL);
+            }
+        }
     }
 }

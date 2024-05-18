@@ -14,6 +14,7 @@ public final class TextInput extends GameComponent {
     private static final int BLINK_INTERVAL = 1600;
 
     private String value;
+    private final String placeholder;
     private int maxLength;
 
     /**
@@ -21,10 +22,11 @@ public final class TextInput extends GameComponent {
      *
      * @param globalContext the context provider for the component.
      */
-    public TextInput(GlobalContext globalContext) {
+    public TextInput(GlobalContext globalContext, String placeholder) {
         super(globalContext);
 
         this.value = "";
+        this.placeholder = placeholder;
         this.style.cursor = Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR);
         this.maxLength = 20;
     }
@@ -39,12 +41,14 @@ public final class TextInput extends GameComponent {
         graphics.setFont(this.style.font);
 
         FontMetrics metrics = graphics.getFontMetrics(this.style.font);
+        Color borderColor = this.globalContext.currentTheme().getColor(this.getStyle().borderColor);
         Color backgroundColor = this.globalContext.currentTheme().getColor(this.getStyle().backgroundColor);
         Color foregroundColor = this.globalContext.currentTheme().getColor(this.getStyle().foregroundColor);
+        Color placeholderColor = this.globalContext.currentTheme().getColor(this.getStyle().backgroundColor.name(), ColorVariant.DIMMED);
 
         graphics.setColor(
                 this.hasFocus
-                        ? this.globalContext.currentTheme().getColor(ColorName.PRIMARY, ColorVariant.NORMAL)
+                        ? borderColor
                         : backgroundColor
         );
 
@@ -69,6 +73,11 @@ public final class TextInput extends GameComponent {
                     this.style.borderRadius,
                     this.style.borderRadius
             );
+        }
+
+        if (this.value.isEmpty() && !this.hasFocus) {
+            graphics.setColor(placeholderColor);
+            graphics.drawString(this.placeholder, this.style.x + this.style.paddingX, this.style.y + this.style.height / 2 + metrics.getHeight() / 4);
         }
 
         String appendedValue = this.hasFocus && (System.currentTimeMillis() % BLINK_INTERVAL < BLINK_INTERVAL / 2) ? "&" : "";
@@ -100,6 +109,8 @@ public final class TextInput extends GameComponent {
     }
 
     private void handleKeyTyped(KeyboardEvent event) {
+        String lastValue = this.value;
+
         if (!this.hasFocus) {
             return;
         }
@@ -115,9 +126,18 @@ public final class TextInput extends GameComponent {
         if (event.keyCode == KeyboardEvent.VK_BACKSPACE && !this.value.isEmpty()) {
             this.value = this.value.substring(0, this.value.length() - 1);
         }
+
+        if (!this.value.equals(lastValue)) {
+            this.dispatchComponentEvent(ComponentEvent.VALUE_CHANGED, lastValue, this.value);
+        }
     }
 
     public void setMaxLength(int maxLength) {
         this.maxLength = maxLength;
+
+        if (this.value.length() > maxLength) {
+            this.value = this.value.substring(0, maxLength);
+            this.dispatchComponentEvent(ComponentEvent.VALUE_CHANGED, this.value, this.value);
+        }
     }
 }

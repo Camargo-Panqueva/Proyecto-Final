@@ -2,7 +2,6 @@ package view.components.ui;
 
 import view.components.GameComponent;
 import view.context.GlobalContext;
-import view.themes.Theme;
 import view.themes.ThemeColor;
 import view.themes.ThemeColor.ColorName;
 import view.themes.ThemeColor.ColorVariant;
@@ -114,7 +113,10 @@ public final class Text extends GameComponent {
      * @param text the new text to render.
      */
     public void setText(String text) {
-        this.text = text;
-        this.fitSize();
+        if (!this.text.equals(text)) {
+            this.fitSize();
+            this.dispatchComponentEvent(ComponentEvent.VALUE_CHANGED, this.text, text);
+            this.text = text;
+        }
     }
 }

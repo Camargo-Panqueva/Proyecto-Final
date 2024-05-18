@@ -188,6 +188,8 @@ public final class Selector<T> extends GameComponent {
     }
 
     private void incrementSelectedOption() {
+        T previousValue = this.getSelectedOption();
+
         if (this.type == SelectorType.OBJECT)
             this.selectedOption = (this.selectedOption + 1) % this.options.size();
         else if (this.type == SelectorType.NUMBER)
@@ -195,9 +197,13 @@ public final class Selector<T> extends GameComponent {
         else {
             this.selectedOption = this.selectedOption == 0 ? 1 : 0;
         }
+
+        this.dispatchComponentEvent(ComponentEvent.VALUE_CHANGED, previousValue, this.getSelectedOption());
     }
 
     private void decrementSelectedOption() {
+        T previousValue = this.getSelectedOption();
+
         if (this.type == SelectorType.OBJECT)
             this.selectedOption = (this.selectedOption - 1 + this.options.size()) % this.options.size();
         else if (this.type == SelectorType.NUMBER)
@@ -205,6 +211,8 @@ public final class Selector<T> extends GameComponent {
         else {
             this.selectedOption = this.selectedOption == 1 ? 0 : 1;
         }
+
+        this.dispatchComponentEvent(ComponentEvent.VALUE_CHANGED, previousValue, this.getSelectedOption());
     }
 
     /**
@@ -219,6 +227,26 @@ public final class Selector<T> extends GameComponent {
             case NUMBER -> (T) Integer.valueOf(this.selectedOption);
             case BOOLEAN -> (T) Boolean.valueOf(this.selectedOption == 1);
         };
+    }
+
+    public void setSelectedOption(T selectedOption) {
+        int index = this.options.indexOf(selectedOption);
+        if (index == -1) {
+            throw new IllegalArgumentException("Option not found in selector");
+        }
+        this.setSelectedIndex(index);
+        this.dispatchComponentEvent(ComponentEvent.VALUE_CHANGED, selectedOption, this.getSelectedOption());
+    }
+
+    public int getSelectedIndex() {
+        return this.selectedOption;
+    }
+
+    public void setSelectedIndex(int selectedOption) {
+        if (selectedOption != this.selectedOption) {
+            this.dispatchComponentEvent(ComponentEvent.VALUE_CHANGED, this.getSelectedOption(), this.options.get(selectedOption));
+            this.selectedOption = selectedOption;
+        }
     }
 
     private String getStringValue() {
