@@ -35,7 +35,7 @@ public final class GameController {
         final int playerCount = setupSettings.players().size();
         final int boardWidth = setupSettings.boardWidth();
         final int boardHeight = setupSettings.boardHeight();
-        final int wallsPerPlayer = setupSettings.wallTypeCount().values().stream().mapToInt(Integer::intValue).sum()
+        final int wallsPerPlayer = setupSettings.wallTypeCount().values().stream().mapToInt(Integer::intValue).sum();
 
         final int time = setupSettings.time();
         final DifficultyType difficultyType = setupSettings.difficultyType();

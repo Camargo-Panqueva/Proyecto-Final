@@ -1,5 +1,7 @@
 package view.scene;
 
+import controller.dto.PlayerSetupTransferObject;
+import controller.dto.SetupTransferObject;
 import controller.states.GlobalState;
 import model.difficulty.DifficultyType;
 import model.player.AIProfile;
@@ -12,6 +14,7 @@ import view.components.ui.Selector;
 import view.components.ui.Text;
 import view.components.ui.TextInput;
 import view.context.GlobalContext;
+import view.context.Style;
 import view.input.MouseEvent;
 import view.themes.ThemeColor;
 import view.themes.ThemeColor.ColorName;
@@ -20,6 +23,7 @@ import view.themes.ThemeColor.ColorVariant;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 
 //TODO: Update docs when different modes are implemented
 
@@ -160,13 +164,23 @@ public final class SettingsScene extends Scene {
 
         this.startButton.addMouseListener(MouseEvent.EventType.RELEASED, event -> {
             //TODO: Implement game start
-            this.globalContext.controller().createMatch(
-                    4,
+
+
+            SetupTransferObject setupTransferObject = new SetupTransferObject(
                     this.widthCellsSelect.getSelectedOption(),
                     this.heightCellsSelect.getSelectedOption(),
-                    10
+                    this.specialCellsSelect.getSelectedOption(),
+                    this.difficultySelect.getSelectedOption(),
+                    this.getTotalSeconds(),
+                    this.getWallCounts(),
+                    this.getPlayerSetups()
             );
-            this.globalContext.controller().setGlobalState(GlobalState.PLAYING);
+
+            var response = this.globalContext.controller().createMatch(setupTransferObject);
+
+            if (!response.ok) {
+                System.out.println(response.message);
+            }
         });
 
         this.backButton.addMouseListener(MouseEvent.EventType.RELEASED, event -> {
@@ -276,6 +290,7 @@ public final class SettingsScene extends Scene {
         this.minutesInput.getStyle().width = this.componentWidth / 5 - (this.colonWidth + this.paddingX) / 2;
         this.minutesInput.getStyle().font = this.componentFont;
         this.minutesInput.getStyle().paddingX = 13;
+        this.minutesInput.getStyle().textAlignment = Style.TextAlignment.CENTER;
 
         this.colonText = new Text(":", this.globalContext);
         this.colonText.getStyle().x = this.colonWidth + this.minutesInput.getStyle().width + this.minutesInput.getStyle().x;
@@ -291,6 +306,7 @@ public final class SettingsScene extends Scene {
         this.secondsInput.getStyle().width = (this.componentWidth / 5) - (this.colonWidth + this.paddingX) / 2;
         this.secondsInput.getStyle().font = this.componentFont;
         this.secondsInput.getStyle().paddingX = 13;
+        this.secondsInput.getStyle().textAlignment = Style.TextAlignment.CENTER;
     }
 
     private void setupWallCountComponents() {
@@ -358,6 +374,7 @@ public final class SettingsScene extends Scene {
             TextInput playerNameInput = new TextInput(this.globalContext, "Player " + (index + 1));
             playerNameInput.getStyle().x = this.componentWidth + 2 * this.margin;
             playerNameInput.getStyle().y = this.margin + 2 * index * (this.paddingY + this.componentHeight);
+            playerNameInput.getStyle().textAlignment = Style.TextAlignment.CENTER;
             applyFirstRowStyle.run(playerNameInput);
 
             if (index > 1) {
@@ -436,5 +453,45 @@ public final class SettingsScene extends Scene {
                 this.aiProfileSelects.get(j).getStyle().foregroundColor = new ThemeColor(previousColorName, ColorVariant.NORMAL);
             }
         }
+    }
+
+    private HashMap<WallType, Integer> getWallCounts() {
+        HashMap<WallType, Integer> wallCounts = new HashMap<>();
+
+        for (int index = 0; index < this.wallCountSelects.size(); index++) {
+            Selector<Integer> wallCountSelector = this.wallCountSelects.get(index);
+            WallType wallType = WallType.values()[index];
+
+            wallCounts.put(wallType, wallCountSelector.getSelectedOption());
+        }
+
+        return wallCounts;
+    }
+
+    private ArrayList<PlayerSetupTransferObject> getPlayerSetups() {
+        ArrayList<PlayerSetupTransferObject> playerSetups = new ArrayList<>();
+
+        for (int index = 0; index < this.playerNameInputs.size(); index++) {
+            TextInput playerNameInput = this.playerNameInputs.get(index);
+            Selector<PlayerType> playerTypeSelect = this.playerTypeSelects.get(index);
+            Selector<AIProfile> aiProfileSelect = this.aiProfileSelects.get(index);
+
+            PlayerSetupTransferObject playerSetup = new PlayerSetupTransferObject(
+                    playerNameInput.getValue(),
+                    playerTypeSelect.getSelectedOption(),
+                    aiProfileSelect.getSelectedOption()
+            );
+
+            playerSetups.add(playerSetup);
+        }
+
+        return playerSetups;
+    }
+
+    private int getTotalSeconds() {
+        int minutes = Integer.parseInt(this.minutesInput.getValue());
+        int seconds = Integer.parseInt(this.secondsInput.getValue());
+
+        return minutes * 60 + seconds;
     }
 }

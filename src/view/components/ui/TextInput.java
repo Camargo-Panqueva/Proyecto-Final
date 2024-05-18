@@ -2,6 +2,7 @@ package view.components.ui;
 
 import view.components.GameComponent;
 import view.context.GlobalContext;
+import view.context.Style;
 import view.input.KeyboardEvent;
 import view.themes.ThemeColor;
 import view.themes.ThemeColor.ColorName;
@@ -12,9 +13,8 @@ import java.awt.*;
 public final class TextInput extends GameComponent {
 
     private static final int BLINK_INTERVAL = 1600;
-
-    private String value;
     private final String placeholder;
+    private String value;
     private int maxLength;
 
     /**
@@ -75,14 +75,31 @@ public final class TextInput extends GameComponent {
             );
         }
 
+
+        int textX;
+        int placeHolderX;
+
+        int textY = this.style.y + this.style.height / 2 + metrics.getHeight() / 4;
+
+        if (this.style.textAlignment == Style.TextAlignment.LEFT) {
+            textX = this.style.x + this.style.paddingX;
+            placeHolderX = this.style.x + this.style.paddingX;
+        } else if (this.style.textAlignment == Style.TextAlignment.CENTER) {
+            textX = this.style.x + (this.style.width - metrics.stringWidth(this.value)) / 2;
+            placeHolderX = this.style.x + (this.style.width - metrics.stringWidth(this.placeholder)) / 2;
+        } else {
+            textX = this.style.x + this.style.width - this.style.paddingX - metrics.stringWidth(this.value);
+            placeHolderX = this.style.x + this.style.width - this.style.paddingX - metrics.stringWidth(this.placeholder);
+        }
+
         if (this.value.isEmpty() && !this.hasFocus) {
             graphics.setColor(placeholderColor);
-            graphics.drawString(this.placeholder, this.style.x + this.style.paddingX, this.style.y + this.style.height / 2 + metrics.getHeight() / 4);
+            graphics.drawString(this.placeholder, placeHolderX, textY);
         }
 
         String appendedValue = this.hasFocus && (System.currentTimeMillis() % BLINK_INTERVAL < BLINK_INTERVAL / 2) ? "&" : "";
         graphics.setColor(foregroundColor);
-        graphics.drawString(this.value + appendedValue, this.style.x + this.style.paddingX, this.style.y + this.style.height / 2 + metrics.getHeight() / 4);
+        graphics.drawString(this.value + appendedValue, textX, textY);
     }
 
     @Override
@@ -94,6 +111,7 @@ public final class TextInput extends GameComponent {
     protected void setupDefaultStyle() {
         this.style.backgroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.DIMMED);
         this.style.foregroundColor = new ThemeColor(ColorName.FOREGROUND, ColorVariant.NORMAL);
+        this.style.borderColor = new ThemeColor(ColorName.PRIMARY, ColorVariant.NORMAL);
         this.style.font = this.globalContext.window().getCanvas().getFont().deriveFont(26.0f);
         this.style.height = 60;
         this.style.width = 300;
@@ -139,5 +157,9 @@ public final class TextInput extends GameComponent {
             this.value = this.value.substring(0, maxLength);
             this.dispatchComponentEvent(ComponentEvent.VALUE_CHANGED, this.value, this.value);
         }
+    }
+
+    public String getValue() {
+        return this.value;
     }
 }

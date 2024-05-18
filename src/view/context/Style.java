@@ -42,6 +42,11 @@ public final class Style {
     public Cursor cursor;
 
     /**
+     * The text alignment of the component.
+     */
+    public TextAlignment textAlignment;
+
+    /**
      * The x-coordinate in {@code pixels} of the component respective to the canvas.
      */
     public int x;
@@ -96,6 +101,7 @@ public final class Style {
         this.height = 0;
         this.x = 0;
         this.y = 0;
+        this.textAlignment = TextAlignment.LEFT;
 
         this.font = new Font("Arial", Font.PLAIN, 12);
         this.cursor = Cursor.getDefaultCursor();
@@ -161,5 +167,11 @@ public final class Style {
      */
     public void centerVertically(Rectangle bounds) {
         this.y = (bounds.height - this.height) / 2 + bounds.y;
+    }
+
+    public enum TextAlignment {
+        LEFT,
+        CENTER,
+        RIGHT
     }
 }
