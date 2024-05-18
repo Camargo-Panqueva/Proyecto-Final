@@ -1,27 +1,22 @@
 package controller.wall;
 
 import controller.logic.MatchManager;
-import model.wall.WallData;
 import model.wall.WallType;
 
-public class NormalWall extends Wall {
+public class AllyWall extends Wall {
 
-    public NormalWall() {
+    public AllyWall() {
         super.wallData.setWidth(3);
         super.wallData.setHeight(3);
         super.wallData.setWallShape(new WallType[super.wallData.getWidth()][super.wallData.getHeight()]);
 
-        super.setWallType(WallType.NORMAL);
+        super.setWallType(WallType.ALLY);
 
-        super.wallData.getWallShape()[0][0] = WallType.NORMAL;
-        super.wallData.getWallShape()[1][0] = WallType.NORMAL;
-        super.wallData.getWallShape()[2][0] = WallType.NORMAL;
+        super.wallData.getWallShape()[0][0] = WallType.ALLY;
+        super.wallData.getWallShape()[1][0] = WallType.ALLY;
+        super.wallData.getWallShape()[2][0] = WallType.ALLY;
 
-        super.wallData.setAlly(false);
-    }
-
-    public NormalWall(WallData wallData) {
-        super(wallData);
+        super.wallData.setAlly(true);
     }
 
     @Override

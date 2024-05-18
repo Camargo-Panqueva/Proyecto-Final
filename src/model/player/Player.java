@@ -16,7 +16,7 @@ public class Player {
     private final ArrayList<WallData> playerWalls;
     private int timePlayed;
 
-    public Player(final Point initialPosition, final String name, final int allowedWalls, final int xWinner, final int yWinner, final long timeLimitSeg) {
+    public Player(final Point initialPosition, final String name, final int allowedWalls, final int xWinner, final int yWinner) {
         this.name = name;
         this.position = initialPosition;
         this.allowedWalls = allowedWalls;

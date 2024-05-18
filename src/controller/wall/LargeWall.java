@@ -17,6 +17,8 @@ public class LargeWall extends Wall {
         super.wallData.getWallShape()[2][0] = WallType.LARGE;
         super.wallData.getWallShape()[3][0] = WallType.LARGE;
         super.wallData.getWallShape()[4][0] = WallType.LARGE;
+
+        super.wallData.setAlly(false);
     }
 
     public LargeWall(WallData wallData) {

@@ -4,7 +4,8 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public record PlayerTransferObject(int id, String name, Point position, boolean isInTurn,
-                                   ArrayList<Point> allowedMoves, int wallsPlaced, int secondRemaining) {
+                                   ArrayList<Point> allowedMoves, int wallsPlaced, int secondRemaining,
+                                   int wallsRemaining) {
 
 }
 

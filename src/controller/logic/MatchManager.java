@@ -42,12 +42,12 @@ public class MatchManager {
         this.triggerActionBeforeTurn();
     }
 
-    public void lookForwardMoves(final Player player, final ArrayList<Point> directions, final ArrayList<Point> possibleMovements) {
-        final Point basePoint = new Point(player.getPosition());
+    public void lookForwardMoves(final Player fromPlayer, final ArrayList<Point> directions, final ArrayList<Point> possibleMovements, final Player playerLooking) {
+        final Point basePoint = new Point(fromPlayer.getPosition());
 
         for (Point direction : directions) {
             Point objectivePoint = new Point(basePoint.x + direction.x, basePoint.y + direction.y);
-            if (!isInsideBoard(objectivePoint) || isABlockerWall(player.getPosition(), objectivePoint)) {
+            if (!isInsideBoard(objectivePoint) || isABlockerWall(fromPlayer.getPosition(), objectivePoint, playerLooking)) {
             } else if (isOccupiedPoint(objectivePoint)) {
                 final ArrayList<Point> jumpedPlayerMoves = new ArrayList<>();
 
@@ -60,7 +60,7 @@ public class MatchManager {
                         jumpedPlayerMoves.add(new Point(dir));
                     }
                 }
-                this.lookForwardMoves(this.getPlayer(objectivePoint), jumpedPlayerMoves, possibleMovements);
+                this.lookForwardMoves(this.getPlayer(objectivePoint), jumpedPlayerMoves, possibleMovements, playerLooking);
             } else {
                 possibleMovements.add(new Point(objectivePoint));
             }
@@ -74,7 +74,7 @@ public class MatchManager {
         basicDirections.add(new Point(1, 0));
         basicDirections.add(new Point(0, -1));
         basicDirections.add(new Point(-1, 0));
-        this.lookForwardMoves(player, basicDirections, possibleMoves);
+        this.lookForwardMoves(player, basicDirections, possibleMoves, player);
         return possibleMoves;
     }
 
@@ -86,8 +86,14 @@ public class MatchManager {
         return point.x >= 0 && point.x < this.model.getBoard().getWidth() && point.y >= 0 && point.y < this.model.getBoard().getHeight();
     }
 
-    private boolean isABlockerWall(Point playerPosition, Point objectivePoint) {
-        return getBlockerWall(playerPosition, objectivePoint) != null;
+    private boolean isABlockerWall(Point playerPosition, Point objectivePoint, Player player) {
+        final Wall wall = getBlockerWall(playerPosition, objectivePoint);
+        if (wall == null) {
+            return false;
+        } else if (wall.getIsAlly() && wall.getOwner().equals(player)) {
+            return false;
+        }
+        return true;
     }
 
     private boolean isOccupiedPoint(Point point) {
@@ -222,7 +228,7 @@ public class MatchManager {
                 for (Point direction : directions) {
                     final int dirY = currPoint.y + direction.y;
                     final int dirX = currPoint.x + direction.x;
-                    if (dirY < height && dirX < width && dirY >= 0 && dirX >= 0 && wantedBoard[dirX][dirY] == 1 && !visited[dirX][dirY]) {
+                    if (dirY < height && dirX < width && dirY >= 0 && dirX >= 0 && wantedBoard[dirX][dirY] == 1 && !visited[dirX][dirY]) { //TODO : ally walls are blockers?
                         deque.add(new Point(dirX, dirY)); // Save the point for searching here later
                         visited[dirX][dirY] = true;
                     }

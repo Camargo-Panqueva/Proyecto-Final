@@ -18,6 +18,8 @@ public class TemporalWall extends Wall {
         super.wallData.getWallShape()[2][0] = WallType.TEMPORAL_WALL;
 
         turnRemaining = 4;
+
+        super.wallData.setAlly(false);
     }
 
     @Override

@@ -1,8 +1,9 @@
 package model.wall;
 
-public enum WallType {
+public enum WallType { // TODO : String Array Implementation
     NORMAL,
     LARGE,
-    TEMPORAL_WALL;
+    TEMPORAL_WALL,
+    ALLY;
 
 }

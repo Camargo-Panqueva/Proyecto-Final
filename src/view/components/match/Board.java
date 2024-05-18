@@ -219,7 +219,8 @@ public final class Board extends GameComponent {
             wall.rotate();
         }
 
-        ServiceResponse<Void> response = this.globalContext.controller().placeWall(this.matchContext.playerInTurn().id(), wall);
+        //TODO : Check creation of walls ;)
+        ServiceResponse<Void> response = this.globalContext.controller().placeWall(this.matchContext.playerInTurn().id(), new Point(this.matchContext.mousePosition().x, this.matchContext.mousePosition().y), this.matchContext.selectedWallType());
 
         if (!response.ok) {
             //TODO: Handle error

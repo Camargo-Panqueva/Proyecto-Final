@@ -4,7 +4,7 @@ import controller.dto.*;
 import controller.logic.MatchManager;
 import controller.states.GlobalState;
 import controller.states.GlobalStateManager;
-import controller.wall.Wall;
+import controller.wall.*;
 import model.GameModel;
 import model.cell.CellType;
 import model.modes.GameModes;
@@ -57,27 +57,27 @@ public final class GameController {
         final int heightCenterPosition = heightIsEven ? (height / 2) - 1 : (height / 2);
 
         if (widthIsEven) {
-            this.model.addPlayer(0, new Player(new Point(widthCenterPosition + 1, 0), "Player 1", allowedWallsPerPlayer, -1, height, timeLimitPerPlayer));
-            this.model.addPlayer(1, new Player(new Point(widthCenterPosition + 2, height), "Player 2", allowedWallsPerPlayer, -1, 0, timeLimitPerPlayer));
+            this.model.addPlayer(0, new Player(new Point(widthCenterPosition + 1, 0), "Player 1", allowedWallsPerPlayer, -1, height));
+            this.model.addPlayer(1, new Player(new Point(widthCenterPosition + 2, height), "Player 2", allowedWallsPerPlayer, -1, 0));
         } else {
-            this.model.addPlayer(0, new Player(new Point(widthCenterPosition, 0), "Player 1", allowedWallsPerPlayer, -1, height, timeLimitPerPlayer));
-            this.model.addPlayer(1, new Player(new Point(widthCenterPosition, height), "Player 2", allowedWallsPerPlayer, -1, 0, timeLimitPerPlayer));
+            this.model.addPlayer(0, new Player(new Point(widthCenterPosition, 0), "Player 1", allowedWallsPerPlayer, -1, height));
+            this.model.addPlayer(1, new Player(new Point(widthCenterPosition, height), "Player 2", allowedWallsPerPlayer, -1, 0));
         }
 
         if (heightIsEven) {
             if (this.model.getPlayerCount() > 2) {
-                this.model.addPlayer(2, new Player(new Point(0, heightCenterPosition + 2), "Player 3", allowedWallsPerPlayer, width, -1, timeLimitPerPlayer));
+                this.model.addPlayer(2, new Player(new Point(0, heightCenterPosition + 2), "Player 3", allowedWallsPerPlayer, width, -1));
             }
             if (this.model.getPlayerCount() > 3) {
-                this.model.addPlayer(3, new Player(new Point(width, heightCenterPosition + 1), "Player 4", allowedWallsPerPlayer, 0, -1, timeLimitPerPlayer));
+                this.model.addPlayer(3, new Player(new Point(width, heightCenterPosition + 1), "Player 4", allowedWallsPerPlayer, 0, -1));
             }
         } else {
 
             if (this.model.getPlayerCount() > 2) {
-                this.model.addPlayer(2, new Player(new Point(0, heightCenterPosition), "Player 3", allowedWallsPerPlayer, width, -1, timeLimitPerPlayer));
+                this.model.addPlayer(2, new Player(new Point(0, heightCenterPosition), "Player 3", allowedWallsPerPlayer, width, -1));
             }
             if (this.model.getPlayerCount() > 3) {
-                this.model.addPlayer(3, new Player(new Point(width, heightCenterPosition), "Player 4", allowedWallsPerPlayer, 0, -1, timeLimitPerPlayer));
+                this.model.addPlayer(3, new Player(new Point(width, heightCenterPosition), "Player 4", allowedWallsPerPlayer, 0, -1));
 
             }
         }
@@ -151,7 +151,8 @@ public final class GameController {
         this.model.getPlayers().forEach(((id, player) -> {
             playerTransferObjectArrayList.add(new PlayerTransferObject(id, player.getName(), new Point(player.getPosition()),
                     this.model.getPlayerInTurnId() == id, this.matchManager.getPossibleMovements(player), player.getWallsInField(),
-                    this.model.getGameModeManager().getBaseParameters().timeLimitPerPlayer -  player.getTimePlayed()));
+                    this.model.getGameModeManager().getBaseParameters().timeLimitPerPlayer - player.getTimePlayed(),
+                    this.model.getGameModeManager().getBaseParameters().wallsPerPlayer - player.getWallsInField()));
         }));
 
         return new SuccessResponse<>(
@@ -178,7 +179,27 @@ public final class GameController {
         return new SuccessResponse<>(null, "Updated position in the model");
     }
 
-    private ServiceResponse<Void> placeWallProcess(final int playerId, final Wall wall, final boolean placeIt) {
+    private Wall createNewWall(final Point positionOnBoard, final WallType wallType) {
+        Wall newWall;
+        switch (wallType) {
+            case LARGE -> newWall = new LargeWall();
+            case TEMPORAL_WALL -> newWall = new TemporalWall();
+            case ALLY -> newWall = new AllyWall();
+            default -> newWall = new NormalWall();// NORMAL
+        }
+        newWall.setPositionOnBoard(positionOnBoard);
+
+        if (positionOnBoard.y % 2 == 0 && positionOnBoard.x % 2 == 1) {
+            newWall.rotate();
+        }
+
+        return newWall;
+    }
+
+    private ServiceResponse<Void> placeWallProcess(final int playerId, final Point positionOnBoard, final WallType wallType, boolean placeIt) {
+
+        final Wall wall = this.createNewWall(positionOnBoard, wallType);
+
         final ServiceResponse<Void> assertion = this.validBasicParameters(playerId);
         if (this.validBasicParameters(playerId) != null) {
             return assertion;
@@ -188,6 +209,10 @@ public final class GameController {
         }
         if (wall.getPositionOnBoard().x % 2 == 1 && wall.getPositionOnBoard().y % 2 == 1) {
             return new ErrorResponse<>("Walls cannot be placed in corners");
+        }
+        final Player player = this.model.getPlayers().get(playerId);
+        if (player.getAllowedWalls() - player.getWallsInField() <= 0) {
+            return new ErrorResponse<>(player.getName() + " already placed all of his Walls: " + player.getAllowedWalls() + "/" + player.getWallsInField());
         }
 
         final ArrayList<Point> newWalls = new ArrayList<>();
@@ -237,8 +262,8 @@ public final class GameController {
         return new SuccessResponse<>(null, "Can place the Wall");
     }
 
-    public ServiceResponse<Boolean> canPlaceWall(final int playerId, final Wall wall) {
-        ServiceResponse<Void> response = this.placeWallProcess(playerId, wall, false);
+    public ServiceResponse<Boolean> canPlaceWall(final int playerId, final Point positionOnBoard, final WallType wallType) {  //TODO : return a copy of the board with the new wall?
+        ServiceResponse<Void> response = this.placeWallProcess(playerId, positionOnBoard, wallType, false);
         if (response.ok) {
             return new SuccessResponse<>(true, response.message);
         }
@@ -247,8 +272,8 @@ public final class GameController {
 
     }
 
-    public ServiceResponse<Void> placeWall(final int playerId, final Wall wall) {
-        return this.placeWallProcess(playerId, wall, true);
+    public ServiceResponse<Void> placeWall(final int playerId, final Point positionOnBoard, final WallType wallType) {
+        return this.placeWallProcess(playerId, positionOnBoard, wallType, true);
     }
 
     public boolean isPointInsideBoard(final int x, final int y) {
