@@ -1,6 +1,7 @@
 package view.themes;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -90,10 +91,24 @@ public abstract class Theme {
             put(ColorVariant.BRIGHT, purpleBright);
             put(ColorVariant.DIMMED, purpleDimmed);
         }});
+
+        this.colors.put(ColorName.TRANSPARENT, new HashMap<>() {{
+            put(ColorVariant.NORMAL, new Color(0, 0, 0, 0));
+            put(ColorVariant.BRIGHT, new Color(0, 0, 0, 0));
+            put(ColorVariant.DIMMED, new Color(0, 0, 0, 0));
+        }});
     }
 
     public Color getColor(ColorName colorName, ColorVariant colorVariant) {
         return colors.get(colorName).get(colorVariant);
+    }
+
+    public ArrayList<Color> getColors() {
+        ArrayList<Color> colorList = new ArrayList<>();
+        for (HashMap<ColorVariant, Color> colorVariant : colors.values()) {
+            colorList.addAll(colorVariant.values());
+        }
+        return colorList;
     }
 
     public enum ColorName {
@@ -103,7 +118,8 @@ public abstract class Theme {
         RED,
         GREEN,
         BLUE,
-        PURPLE
+        PURPLE,
+        TRANSPARENT
     }
 
     public enum ColorVariant {

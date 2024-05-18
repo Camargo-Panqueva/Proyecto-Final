@@ -50,8 +50,26 @@ public final class Text extends GameComponent {
         graphics.setFont(this.style.font);
         FontMetrics fontMetrics = this.globalContext.window().getCanvas().getFontMetrics(this.style.font);
 
+        graphics.setColor(this.style.backgroundColor);
+        graphics.fillRoundRect(
+                this.style.x,
+                this.style.y,
+                this.style.width,
+                this.style.height,
+                this.style.borderRadius,
+                this.style.borderRadius
+        );
+
+        int textWidth = fontMetrics.stringWidth(this.text);
+        int textHeight = fontMetrics.getHeight();
+        int adjust = 8;
+
         graphics.setColor(this.style.foregroundColor);
-        graphics.drawString(this.text, this.style.x, this.style.y + this.style.height - fontMetrics.getDescent());
+        graphics.drawString(
+                this.text,
+                this.style.x + (this.style.width - textWidth) / 2,
+                this.style.y + (this.style.height + textHeight - adjust) / 2
+        );
     }
 
     /**
@@ -94,6 +112,8 @@ public final class Text extends GameComponent {
     protected void setupDefaultStyle() {
         this.style.font = this.globalContext.window().getCanvas().getFont().deriveFont(16.0f);
         this.style.foregroundColor = this.globalContext.currentTheme().getColor(Theme.ColorName.FOREGROUND, Theme.ColorVariant.NORMAL);
+        this.style.backgroundColor = this.globalContext.currentTheme().getColor(Theme.ColorName.TRANSPARENT, Theme.ColorVariant.NORMAL);
+        this.style.borderRadius = 16;
     }
 
     /**

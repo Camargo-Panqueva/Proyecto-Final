@@ -56,7 +56,7 @@ public final class TextInput extends GameComponent {
         if (this.hasFocus) {
             int borderWidth = 4;
 
-            graphics.setColor(this.style.backgroundColor);
+            graphics.setColor(this.globalContext.currentTheme().getColor(Theme.ColorName.BACKGROUND, Theme.ColorVariant.NORMAL));
             graphics.fillRoundRect(
                     this.style.x + borderWidth,
                     this.style.y + borderWidth,
@@ -91,6 +91,7 @@ public final class TextInput extends GameComponent {
         this.style.height = 60;
         this.style.width = 300;
         this.style.borderRadius = 16;
+        this.style.paddingX = 16;
     }
 
     @Override

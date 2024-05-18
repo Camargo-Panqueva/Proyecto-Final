@@ -112,6 +112,12 @@ public final class Window {
         this.frame.setLocationRelativeTo(null);
     }
 
+    public void setCanvasHeight(int height) {
+        this.canvas.setPreferredSize(new Dimension(this.canvas.getWidth(), height));
+        this.frame.pack();
+        this.frame.setLocationRelativeTo(null);
+    }
+
     /**
      * Gets the JFrame of the window.
      * @return the JFrame of the window.

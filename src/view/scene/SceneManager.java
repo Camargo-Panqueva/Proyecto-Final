@@ -29,9 +29,10 @@ public final class SceneManager {
 
                 this.currentScene = this.scenes.get(GlobalState.WELCOME);
             }
+            //TODO: Change scene name to settings
             case SELECTING_GAME_MODE -> {
                 if (!this.scenes.containsKey(GlobalState.SELECTING_GAME_MODE)) {
-                    this.scenes.put(GlobalState.SELECTING_GAME_MODE, new SelectModeScene(this.globalContext));
+                    this.scenes.put(GlobalState.SELECTING_GAME_MODE, new SettingsScene(this.globalContext));
                 }
 
                 this.currentScene = this.scenes.get(GlobalState.SELECTING_GAME_MODE);

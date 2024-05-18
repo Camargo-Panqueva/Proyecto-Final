@@ -14,25 +14,57 @@ import java.util.ArrayList;
  * This class represents a selector component that allows the user to select an option from a list of options.
  * It provides a basic structure for rendering a selector component on the screen.
  * </p>
+ *
+ * @param <T> the type of the options in the selector.
  */
-public final class Selector extends GameComponent {
+public final class Selector<T> extends GameComponent {
 
-    private final ArrayList<String> options;
+    private final ArrayList<T> options;
+    private final SelectorType type;
+    private final int min;
+    private final int max;
     private int selectedOption;
 
     /**
      * Creates a new Selector with the given options and context provider.
      *
-     * @param options         the list of options for the selector.
+     * @param options       the list of options for the selector.
      * @param globalContext the context provider for the selector.
      */
-    public Selector(ArrayList<String> options, GlobalContext globalContext) {
+    public Selector(ArrayList<T> options, GlobalContext globalContext) {
         super(globalContext);
 
         this.options = options;
         this.selectedOption = 0;
+        this.min = 0;
+        this.max = options.size() - 1;
 
         this.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        this.type = SelectorType.OBJECT;
+    }
+
+    public Selector(int min, int max, GlobalContext globalContext) {
+        super(globalContext);
+
+        this.options = null;
+        this.selectedOption = min;
+        this.min = min;
+        this.max = max;
+
+        this.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        this.type = SelectorType.NUMBER;
+    }
+
+    public Selector(boolean defaultValue, GlobalContext globalContext) {
+        super(globalContext);
+
+        this.options = null;
+        this.selectedOption = defaultValue ? 1 : 0;
+        this.min = 0;
+        this.max = 1;
+
+        this.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        this.type = SelectorType.BOOLEAN;
     }
 
     /**
@@ -57,6 +89,7 @@ public final class Selector extends GameComponent {
     public void render(Graphics2D graphics) {
         //TODO: Remove code duplication with Button render method
         graphics.setFont(this.style.font);
+        FontMetrics fontMetrics = this.globalContext.window().getCanvas().getFontMetrics(this.style.font);
 
         graphics.setColor(this.style.backgroundColor);
         graphics.fillRoundRect(
@@ -68,14 +101,27 @@ public final class Selector extends GameComponent {
                 this.style.borderRadius
         );
 
-        Point center = this.getCenter();
-        Rectangle textBounds = graphics.getFontMetrics().getStringBounds(this.getSelectedOption(), graphics).getBounds();
+        int textWidth = fontMetrics.stringWidth(this.getStringValue());
+        int textHeight = fontMetrics.getHeight();
+        int adjust = 8;
 
         graphics.setColor(this.style.foregroundColor);
-        graphics.drawString(this.getSelectedOption(), center.x - textBounds.width / 2, center.y + textBounds.height / 4);
+        graphics.drawString(
+                this.getStringValue(),
+                this.style.x + (this.style.width - textWidth) / 2,
+                this.style.y + (this.style.height + textHeight - adjust) / 2
+        );
 
-        graphics.drawString(">", this.style.x + this.style.width - 32, center.y + textBounds.height / 4);
-        graphics.drawString("<", this.style.x + 16, center.y + textBounds.height / 4);
+        graphics.drawString(
+                ">",
+                this.style.x + this.style.width - 32,
+                this.style.y + (this.style.height + textHeight - adjust) / 2
+        );
+        graphics.drawString(
+                "<",
+                this.style.x + 16,
+                this.style.y + (this.style.height + textHeight - adjust) / 2
+        );
     }
 
     /**
@@ -142,11 +188,31 @@ public final class Selector extends GameComponent {
         this.addMouseListener(MouseEvent.EventType.RELEASED, event -> {
             Point relativePoint = event.relativeMousePosition;
             if (relativePoint.x < this.style.width / 2) {
-                this.selectedOption = (this.selectedOption - 1 + this.options.size()) % this.options.size();
+                this.decrementSelectedOption();
             } else {
-                this.selectedOption = (this.selectedOption + 1) % this.options.size();
+                this.incrementSelectedOption();
             }
         });
+    }
+
+    private void incrementSelectedOption() {
+        if (this.type == SelectorType.OBJECT)
+            this.selectedOption = (this.selectedOption + 1) % this.options.size();
+        else if (this.type == SelectorType.NUMBER)
+            this.selectedOption += this.selectedOption < this.max ? 1 : 0;
+        else {
+            this.selectedOption = this.selectedOption == 0 ? 1 : 0;
+        }
+    }
+
+    private void decrementSelectedOption() {
+        if (this.type == SelectorType.OBJECT)
+            this.selectedOption = (this.selectedOption - 1 + this.options.size()) % this.options.size();
+        else if (this.type == SelectorType.NUMBER)
+            this.selectedOption -= this.selectedOption > this.min ? 1 : 0;
+        else {
+            this.selectedOption = this.selectedOption == 1 ? 0 : 1;
+        }
     }
 
     /**
@@ -154,7 +220,26 @@ public final class Selector extends GameComponent {
      *
      * @return the selected option from the selector.
      */
-    public String getSelectedOption() {
-        return this.options.get(this.selectedOption);
+    public T getSelectedOption() {
+
+        return switch (this.type) {
+            case OBJECT -> this.options.get(this.selectedOption);
+            case NUMBER -> (T) Integer.valueOf(this.selectedOption);
+            case BOOLEAN -> (T) Boolean.valueOf(this.selectedOption == 1);
+        };
+    }
+
+    private String getStringValue() {
+        return switch (this.type) {
+            case OBJECT -> this.options.get(this.selectedOption).toString();
+            case NUMBER -> Integer.toString(this.selectedOption);
+            case BOOLEAN -> this.selectedOption == 1 ? "Yes" : "No";
+        };
+    }
+
+    public enum SelectorType {
+        OBJECT,
+        NUMBER,
+        BOOLEAN
     }
 }
