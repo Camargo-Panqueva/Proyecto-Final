@@ -2,9 +2,9 @@ package model.difficulty;
 
 public enum DifficultyType {
 
-    NORMAL("NORMAL"),
-    AGAINST_THE_CLOCK("AGAINST_THE_CLOCK"),
-    TIMED("TIMED");
+    NORMAL("Normal"),
+    AGAINST_THE_CLOCK("Against the Clock"),
+    TIMED("Dead Zone !");
 
     private final String typeString;
 

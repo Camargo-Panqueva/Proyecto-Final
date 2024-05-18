@@ -1,7 +1,8 @@
 package model;
 
 import model.board.Board;
-import model.modes.GameModeManager;
+import model.difficulty.Difficulty;
+import model.modes.GameBaseParameters;
 import model.modes.GameModes;
 import model.player.Player;
 import model.wall.WallData;
@@ -25,12 +26,15 @@ public final class GameModel {
 
     private Player winningPlayer;
 
-    private final GameModeManager gameModeManager;
+    private final GameBaseParameters gameBaseParameters;
+
+    protected final Difficulty difficulty;
 
     private short turnCount;
 
     public GameModel() {
-        this.gameModeManager = new GameModeManager();
+        this.gameBaseParameters = new GameBaseParameters();
+        this.difficulty = new Difficulty();
         this.players = new HashMap<>();
         this.walls = new HashMap<>();
         this.matchState = MatchState.INITIALIZED;
@@ -69,7 +73,7 @@ public final class GameModel {
     }
 
     public int getPlayerCount() {
-        return this.gameModeManager.getBaseParameters().playersCount;
+        return this.gameBaseParameters.getPlayerCount();
     }
 
     public short getTurnCount() {
@@ -84,13 +88,16 @@ public final class GameModel {
         return wallCount;
     }
 
+    public Difficulty getDifficulty(){
+        return this.difficulty;
+    }
 
-    public GameModeManager getGameModeManager() {
-        return gameModeManager;
+    public GameBaseParameters getGameBaseParameters() {
+        return gameBaseParameters;
     }
 
     public GameModes getGameMode() {
-        return gameModeManager.getCurrentGameMode();
+        return gameBaseParameters.getGameMode();
     }
 
     public int getPlayerInTurnId() {

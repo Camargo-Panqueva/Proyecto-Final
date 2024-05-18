@@ -15,7 +15,6 @@ import model.wall.WallType;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Optional;
 
 public final class GameController {
 
@@ -31,8 +30,8 @@ public final class GameController {
 
 
     private void buildGame() {
-        this.model.setWallCount(this.model.getGameModeManager().getBaseParameters().wallsPerPlayer);
-        this.model.setBoard(this.model.getGameModeManager().getBaseParameters().boardWidth, this.model.getGameModeManager().getBaseParameters().boardHeight);
+        this.model.setWallCount(this.model.getGameBaseParameters().getWallsPerPlayer());
+        this.model.setBoard(this.model.getGameBaseParameters().getBoardWidth(), this.model.getGameBaseParameters().getBoardHeight());
 
         this.setupPlayers();
 
@@ -40,8 +39,7 @@ public final class GameController {
     }
 
     private void setupPlayers() {
-        final int allowedWallsPerPlayer = this.model.getGameModeManager().getBaseParameters().wallsPerPlayer;
-        final int timeLimitPerPlayer = this.model.getGameModeManager().getBaseParameters().timeLimitPerPlayer;
+        final int allowedWallsPerPlayer = this.model.getGameBaseParameters().getWallsPerPlayer();
 
         final int width = this.model.getBoard().getWidth() - 1;
         final int height = this.model.getBoard().getHeight() - 1;
@@ -81,43 +79,33 @@ public final class GameController {
 
     }
 
-    public ServiceResponse<Void> setGameMode(String selection) {
-
+    public ServiceResponse<Void> createMatch(final int playerCount, final int boardWidth, final int boardHeight, final int wallsPerPlayer){
         if (!this.model.getMatchState().equals(GameModel.MatchState.INITIALIZED)) {
             return new ErrorResponse<>("Cannot change the Game Mode after started");
         }
 
-        Optional<GameModes> gameMode = Arrays.stream(GameModes.values()).filter(c -> c.getMode().equals(selection)).findAny();
-        if (gameMode.isEmpty()) {
-            return new ErrorResponse<>("Invalid Game Mode");
-        }
-
-        if (this.model.getGameModeManager().getHasBeenSet()) {
+        if (this.model.getGameBaseParameters().getHasBeenSet()) {
             return new ErrorResponse<>("There already a game with parameters set");
         }
 
-        this.model.getGameModeManager().setCurrentGameMode(gameMode.get());
-        return new SuccessResponse<>(null, "Ok");
-    }
-
-    public ServiceResponse<Void> setInitialCustomParameters(final int width, final int height, final int playerCount, final int wallsPerPlayer,
-                                                            final int timeLimitP1) {
         if (playerCount < 2 || playerCount > 4) {
             return new ErrorResponse<>("Our Quoridor accept just 2, 3 and 4 players");
         }
-        if (width < 0 || height < 0 || width > 21 || height > 21) {
+
+        if (boardWidth < 0 || boardHeight < 0 || boardWidth > 21 || boardHeight > 21) {
             return new ErrorResponse<>("Out of limits, the size must be between 0 and 21");
         }
-        this.model.getGameModeManager().setCurrentGameMode(GameModes.CUSTOM, width, height, playerCount, wallsPerPlayer, timeLimitP1);
-        return new SuccessResponse<>(null, "Custom initial parameters were established");
+
+        this.model.getGameBaseParameters().setBaseParameters(GameModes.CUSTOM, boardWidth, boardHeight, playerCount, wallsPerPlayer);
+
+        return this.startGame();
     }
 
-    public ServiceResponse<Void> startGame() {
+    private ServiceResponse<Void> startGame() {
         if (this.model.getMatchState() == GameModel.MatchState.PLAYING) {
             return new ErrorResponse<>("The game already started");
         }
 
-        this.model.getGameModeManager().setCurrentParameters();
         this.buildGame();
         this.matchManager = new MatchManager(this.model);
 
@@ -152,8 +140,8 @@ public final class GameController {
         this.model.getPlayers().forEach(((id, player) -> {
             playerTransferObjectArrayList.add(new PlayerTransferObject(id, player.getName(), new Point(player.getPosition()),
                     this.model.getPlayerInTurnId() == id, this.matchManager.getPossibleMovements(player), player.getWallsInField(),
-                    this.model.getGameModeManager().getBaseParameters().timeLimitPerPlayer - player.getTimePlayed(),
-                    this.model.getGameModeManager().getBaseParameters().wallsPerPlayer - player.getWallsInField()));
+                    this.model.getDifficulty().getTimePerTurn() - player.getTimePlayed(),
+                    this.model.getGameBaseParameters().getWallsPerPlayer() - player.getWallsInField()));
         }));
 
         return new SuccessResponse<>(
@@ -315,12 +303,8 @@ public final class GameController {
         return new SuccessResponse<>(null, "The Wall was deleted");
     }
 
-    public GlobalState getGlobalCurrentState() {
-        return this.globalStateManager.getCurrentState();
-    }
-
-    public ServiceResponse<ArrayList<String>> getGameModes() {
-        return new SuccessResponse<>(GameModes.getModes(), "Game Mode List Obtained Successfully");
+    public ServiceResponse<GlobalState> getGlobalCurrentState() {
+        return new SuccessResponse<>(this.globalStateManager.getCurrentState(), "ok") ;
     }
 
     public ServiceResponse<Void> setGlobalState(GlobalState globalState) {

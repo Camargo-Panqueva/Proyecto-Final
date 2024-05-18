@@ -3,7 +3,6 @@ package controller.logic;
 import controller.wall.Wall;
 import controller.wall.WallManager;
 import model.GameModel;
-import model.modes.GameModes;
 import model.player.Player;
 import model.wall.WallData;
 import util.ConcurrentLoop;
@@ -17,15 +16,13 @@ import java.util.stream.Collectors;
 public class MatchManager {
     private final GameModel model;
     private final HashMap<UUID, Wall> walls;
-    private final int[][] abstractBoard;
+    private final HashMap<Player, AIPlayer> aiPlayers;
     private int indexCurrentIndex;
-
     private Instant secondCount;
 
     public MatchManager(final GameModel gameModel) {
         this.model = gameModel;
         this.walls = new HashMap<>();
-        this.abstractBoard = new int[gameModel.getBoard().getWidth() * 2 - 1][gameModel.getBoard().getHeight() * 2 - 1];
 
         if (!gameModel.getWalls().isEmpty()) {
             WallManager wallManager = new WallManager();
@@ -33,6 +30,10 @@ public class MatchManager {
                 this.walls.put(wallData.getWallId(), wallManager.getWallInstance(wallData));
             }
         }
+
+        this.aiPlayers = new HashMap<>();
+
+        this.model.getPlayers().values().stream().filter(Player::getIsAI).forEach(player -> this.aiPlayers.put(player, new AIPlayer(player, this)));
 
         this.startTimer();
 
@@ -241,20 +242,9 @@ public class MatchManager {
         return playersThatGoalIsReachable.size() != this.model.getPlayerCount(); //if at least one player misses his goal -> true
     }
 
-    private void AIMove() {
-
-    }
-
-    private void startTimer() {
-        ConcurrentLoop clockCurrentTurn = new ConcurrentLoop(this::clockPerTurn, 10, "Time Limit per Turn");
-        this.secondCount = Instant.now();
-        clockCurrentTurn.start();
-    }
-
-    private void newTime() {
-        Player playerInTurn = this.model.getPlayers().get(model.getPlayerInTurnId());
-        playerInTurn.setTimePlayed(0);
-        this.secondCount = Instant.now();
+    private int[][] getAbstractBoard(final Player player){
+        final int[][] abstractBoard = new int[model.getBoard().getWidth() * 2 - 1][model.getBoard().getHeight() * 2 - 1];
+        return abstractBoard;
     }
 
     private void nextTurn() {
@@ -270,19 +260,28 @@ public class MatchManager {
             this.model.setPlayerInTurn(0);
 
         } else {
-
             this.model.setPlayerInTurn(this.indexCurrentIndex);
+        }
 
-            //hardcode, the IA always is the player 2
-            if (this.model.getGameModeManager().getCurrentGameMode() == GameModes.NORMAL_PLAYER_IA && this.indexCurrentIndex == 1) {
-
-            }
+        if (!this.aiPlayers.isEmpty() && this.aiPlayers.containsKey(this.getPlayerInTurn())) {
+            this.aiPlayers.get(this.getPlayerInTurn()).executeMove(this.getAbstractBoard(this.getPlayerInTurn()));
         }
 
         this.model.setTurnCount((short) (model.getTurnCount() + 1));
 
         this.triggerActionBeforeTurn();
 
+    }
+    private void startTimer() {
+        ConcurrentLoop clockCurrentTurn = new ConcurrentLoop(this::clockPerTurn, 10, "Time Limit per Turn");
+        this.secondCount = Instant.now();
+        clockCurrentTurn.start();
+    }
+
+    private void newTime() {
+        Player playerInTurn = getPlayerInTurn();
+        playerInTurn.setTimePlayed(0);
+        this.secondCount = Instant.now();
     }
 
     private void triggerActionBeforeTurn() {
@@ -295,15 +294,19 @@ public class MatchManager {
         wallHashMap.values().forEach(wall -> wall.actionAtFinishTurn(this));
     }
 
+    public Player getPlayerInTurn(){
+        return this.model.getPlayers().get(this.model.getPlayerInTurnId());
+    }
+
     public short getTurnCount() {
         return this.model.getTurnCount();
     }
 
     private void clockPerTurn() {
-        final Player playerInTurn = this.model.getPlayers().get(model.getPlayerInTurnId());
+        final Player playerInTurn = this.getPlayerInTurn();
         playerInTurn.setTimePlayed((int) Duration.between(this.secondCount, Instant.now()).getSeconds());
 
-        if (playerInTurn.getTimePlayed() >= this.model.getGameModeManager().getBaseParameters().timeLimitPerPlayer) {
+        if (playerInTurn.getTimePlayed() >= this.model.getDifficulty().getTimePerTurn()) {
             this.nextTurn();
         }
     }

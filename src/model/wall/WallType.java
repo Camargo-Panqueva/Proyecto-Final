@@ -1,10 +1,10 @@
 package model.wall;
 
 public enum WallType {
-    NORMAL("NORMAL"),
-    LARGE("LARGE"),
-    TEMPORAL_WALL("TEMPORAL"),
-    ALLY("ALLY");
+    NORMAL("Normal"),
+    LARGE("Large"),
+    TEMPORAL_WALL("Temporal"),
+    ALLY("Ally");
 
     private final String typeString;
 
