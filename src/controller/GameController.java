@@ -29,9 +29,6 @@ public final class GameController {
         this.globalStateManager = new GlobalStateManager();
     }
 
-    public ServiceResponse<ArrayList<String>> getGameModes() {
-        return new SuccessResponse<>(GameModes.getModes(), "Game Mode List Obtained Successfully");
-    }
 
     private void buildGame() {
         this.model.setWallCount(this.model.getGameModeManager().getBaseParameters().wallsPerPlayer);
@@ -93,6 +90,10 @@ public final class GameController {
         Optional<GameModes> gameMode = Arrays.stream(GameModes.values()).filter(c -> c.getMode().equals(selection)).findAny();
         if (gameMode.isEmpty()) {
             return new ErrorResponse<>("Invalid Game Mode");
+        }
+
+        if (this.model.getGameModeManager().getHasBeenSet()) {
+            return new ErrorResponse<>("There already a game with parameters set");
         }
 
         this.model.getGameModeManager().setCurrentGameMode(gameMode.get());
@@ -314,9 +315,12 @@ public final class GameController {
         return new SuccessResponse<>(null, "The Wall was deleted");
     }
 
-
     public GlobalState getGlobalCurrentState() {
         return this.globalStateManager.getCurrentState();
+    }
+
+    public ServiceResponse<ArrayList<String>> getGameModes() {
+        return new SuccessResponse<>(GameModes.getModes(), "Game Mode List Obtained Successfully");
     }
 
     public ServiceResponse<Void> setGlobalState(GlobalState globalState) {

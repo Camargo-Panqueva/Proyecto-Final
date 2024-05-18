@@ -12,6 +12,7 @@ import java.awt.*;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class MatchManager {
     private final GameModel model;
@@ -75,7 +76,7 @@ public class MatchManager {
         basicDirections.add(new Point(0, -1));
         basicDirections.add(new Point(-1, 0));
         this.lookForwardMoves(player, basicDirections, possibleMoves, player);
-        return possibleMoves;
+        return possibleMoves.stream().distinct().collect(Collectors.toCollection(ArrayList::new));
     }
 
     private Player getPlayer(Point point) {

@@ -35,6 +35,10 @@ public final class GameModeManager {
         }
     }
 
+    public boolean getHasBeenSet(){
+        return this.hasBeenSet;
+    }
+
     public void setCurrentParameters() {
         this.hasBeenSet = true;
     }

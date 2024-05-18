@@ -1,14 +1,14 @@
-package model.wall;
+package model.difficulty;
 
-public enum WallType {
+public enum DifficultyTypes {
+
     NORMAL("NORMAL"),
-    LARGE("LARGE"),
-    TEMPORAL_WALL("TEMPORAL"),
-    ALLY("ALLY");
+    AGAINST_THE_CLOCK("AGAINST_THE_CLOCK"),
+    TIMED("TIMED");
 
     private final String typeString;
 
-    WallType(String type) {
+    DifficultyTypes(String type) {
         this.typeString = type;
     }
 
@@ -16,4 +16,5 @@ public enum WallType {
     public String toString() {
         return typeString;
     }
+
 }
