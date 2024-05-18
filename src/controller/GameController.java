@@ -32,10 +32,10 @@ public final class GameController {
 
 
     public ServiceResponse<Void> createMatch(SetupTransferObject setupSettings) {
-        final int playerCount = setupSettings.playerCount();
+        final int playerCount = setupSettings.players().size();
         final int boardWidth = setupSettings.boardWidth();
         final int boardHeight = setupSettings.boardHeight();
-        final int wallsPerPlayer = setupSettings.wallsPerPlayer();
+        final int wallsPerPlayer = setupSettings.wallTypeCount().values().stream().mapToInt(Integer::intValue).sum()
 
         final int time = setupSettings.time();
         final DifficultyType difficultyType = setupSettings.difficultyType();
@@ -75,10 +75,6 @@ public final class GameController {
             }
         } else {
             this.model.getDifficulty().setDifficulty(difficultyType, 0, 0);
-        }
-
-        if (wallsPerPlayer != Math.min(boardHeight, boardWidth) + 1) {
-            return new ErrorResponse<>("Walls count must be: " + playerWallQuota);
         }
 
         if (setupSettings.wallTypeCount().values().stream().mapToInt(Integer::intValue).sum() != playerWallQuota) {
