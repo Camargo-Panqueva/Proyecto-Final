@@ -53,6 +53,9 @@ public final class CellRenderer {
 
         switch (cellType) {
             case NORMAL -> drawNormalCell(graphics);
+            case DOUBLE_TURN -> drawDoubleTurnCell(graphics);
+            case TELEPORT -> drawTeleportCell(graphics);
+            case RETURN -> drawReturnCell(graphics);
             default ->
                 //TODO: Handle this case or throw
                     throw new IllegalArgumentException("Invalid cell type: " + cellType);
@@ -64,7 +67,22 @@ public final class CellRenderer {
     }
 
     private void drawNormalCell(Graphics2D graphics) {
-        graphics.setColor(this.globalContext.currentTheme().getColor(ColorName.BACKGROUND, ColorVariant.NORMAL));
+        graphics.setColor(this.globalContext.currentTheme().getColor(ColorName.BACKGROUND, ColorVariant.DIMMED));
+        graphics.fillRoundRect(0, 0, CELL_SIZE, CELL_SIZE, 8, 8);
+    }
+
+    private void drawDoubleTurnCell(Graphics2D graphics) {
+        graphics.setColor(this.globalContext.currentTheme().getColor(ColorName.GREEN, ColorVariant.DIMMED));
+        graphics.fillRoundRect(0, 0, CELL_SIZE, CELL_SIZE, 8, 8);
+    }
+
+    private void drawTeleportCell(Graphics2D graphics) {
+        graphics.setColor(this.globalContext.currentTheme().getColor(ColorName.PURPLE, ColorVariant.DIMMED));
+        graphics.fillRoundRect(0, 0, CELL_SIZE, CELL_SIZE, 8, 8);
+    }
+
+    private void drawReturnCell(Graphics2D graphics) {
+        graphics.setColor(this.globalContext.currentTheme().getColor(ColorName.RED, ColorVariant.DIMMED));
         graphics.fillRoundRect(0, 0, CELL_SIZE, CELL_SIZE, 8, 8);
     }
 }

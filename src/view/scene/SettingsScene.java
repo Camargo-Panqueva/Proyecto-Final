@@ -523,6 +523,11 @@ public final class SettingsScene extends Scene {
 
         for (int index = 0; index < this.playerNameInputs.size(); index++) {
             TextInput playerNameInput = this.playerNameInputs.get(index);
+
+            if (playerNameInput.getValue().isEmpty()) {
+                continue;
+            }
+
             Selector<PlayerType> playerTypeSelect = this.playerTypeSelects.get(index);
             Selector<AIProfile> aiProfileSelect = this.aiProfileSelects.get(index);
 

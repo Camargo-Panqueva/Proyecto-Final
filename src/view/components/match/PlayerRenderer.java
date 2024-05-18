@@ -79,6 +79,10 @@ public final class PlayerRenderer {
                 CELL_SIZE - 4 * PLAYER_PADDING
         );
 
+        if (player.name().isEmpty()) {
+            return;
+        }
+
         graphics.setColor(color);
         graphics.drawString(player.name(), x + CELL_SIZE, y - 3);
 
