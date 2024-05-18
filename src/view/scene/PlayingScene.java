@@ -57,4 +57,13 @@ public final class PlayingScene extends Scene {
     protected void setupEvents() {
 
     }
+
+    @Override
+    protected void fixCanvasSize() {
+        int margin = this.board.getStyle().paddingX * 2;
+
+        if (this.board.getStyle().width + margin > this.globalContext.window().getCanvasSize()) {
+            this.globalContext.window().setCanvasSize(this.board.getStyle().width + margin);
+        }
+    }
 }

@@ -76,8 +76,6 @@ public final class SettingsScene extends Scene {
         this.componentHeight = 46;
         this.componentWidth = (int) (componentHeight * 7.5);
         this.colonWidth = 6;
-
-        this.fixCanvasSize();
     }
 
     /**
@@ -165,6 +163,16 @@ public final class SettingsScene extends Scene {
         this.backButton.addMouseListener(MouseEvent.EventType.RELEASED, event -> {
             this.globalContext.controller().setGlobalState(GlobalState.WELCOME);
         });
+    }
+
+    @Override
+    protected void fixCanvasSize() {
+        int expectedHeight = this.startButton.getStyle().y + this.startButton.getStyle().height + this.margin;
+
+        int expectedWidth = this.startButton.getStyle().x + this.startButton.getStyle().width + this.margin;
+
+        this.globalContext.window().setCanvasHeight(expectedHeight);
+        this.globalContext.window().setCanvasWidth(expectedWidth);
     }
 
     private void setupBasicComponents() {
@@ -376,14 +384,5 @@ public final class SettingsScene extends Scene {
         this.startButton.getStyle().height = this.componentHeight;
         this.startButton.getStyle().width = 4 * this.componentWidth / 5;
         this.startButton.getStyle().font = this.componentFont;
-    }
-
-    private void fixCanvasSize() {
-        int expectedHeight = this.startButton.getStyle().y + this.startButton.getStyle().height + this.margin;
-
-        int expectedWidth = this.startButton.getStyle().x + this.startButton.getStyle().width + this.margin;
-
-        this.globalContext.window().setCanvasHeight(expectedHeight);
-        this.globalContext.window().setCanvasWidth(expectedWidth);
     }
 }

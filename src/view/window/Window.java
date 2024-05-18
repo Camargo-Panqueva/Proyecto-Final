@@ -102,18 +102,21 @@ public final class Window {
      */
     public void setCanvasSize(int size) {
         this.canvas.setPreferredSize(new Dimension(size, size));
+        this.canvas.setSize(new Dimension(size, size));
         this.frame.pack();
         this.frame.setLocationRelativeTo(null);
     }
 
     public void setCanvasWidth(int width) {
         this.canvas.setPreferredSize(new Dimension(width, this.canvas.getHeight()));
+        this.canvas.setSize(new Dimension(width, this.canvas.getHeight()));
         this.frame.pack();
         this.frame.setLocationRelativeTo(null);
     }
 
     public void setCanvasHeight(int height) {
         this.canvas.setPreferredSize(new Dimension(this.canvas.getWidth(), height));
+        this.canvas.setSize(new Dimension(this.canvas.getWidth(), height));
         this.frame.pack();
         this.frame.setLocationRelativeTo(null);
     }

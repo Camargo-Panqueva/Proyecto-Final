@@ -35,7 +35,6 @@ public final class Board extends GameComponent {
      */
     public Board(GlobalContext globalContext, MatchContext matchContext) {
 
-        //TODO : fit canvas size for the height
         super(globalContext);
         this.matchContext = matchContext;
         this.lastTurnCount = -1;
@@ -141,14 +140,8 @@ public final class Board extends GameComponent {
         int widthCells = this.matchContext.cells().length;
         int heightCells = this.matchContext.cells()[0].length;
 
-        int margin = this.style.paddingX * 2;
-
         this.style.width = this.style.paddingX * 2 + CELL_SIZE * widthCells + WALL_SIZE * (widthCells - 1);
         this.style.height = this.style.paddingY * 2 + CELL_SIZE * heightCells + WALL_SIZE * (heightCells - 1);
-
-        if (this.style.width + margin > this.globalContext.window().getCanvasSize()) {
-            this.globalContext.window().setCanvasSize(this.style.width + margin);
-        }
     }
 
     @Override
