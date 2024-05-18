@@ -214,6 +214,4 @@ public abstract class GameComponent {
     public Style getStyle() {
         return style;
     }
-
-
 }

@@ -51,6 +51,7 @@ public final class PlayerRenderer {
     }
 
     private void renderPlayer(Graphics2D graphics, PlayerTransferObject player) {
+        graphics.setFont(this.globalContext.window().getCanvas().getFont().deriveFont(16.0f));
 
         Theme.ColorVariant variant = player.isInTurn() ? Theme.ColorVariant.NORMAL : Theme.ColorVariant.DIMMED;
 

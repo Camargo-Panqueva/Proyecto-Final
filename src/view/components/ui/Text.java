@@ -15,12 +15,12 @@ import java.awt.*;
  */
 public final class Text extends GameComponent {
 
-    private final String text;
+    private String text;
 
     /**
      * Creates a new Text component with the given text and context provider.
      *
-     * @param text            the text to render.
+     * @param text          the text to render.
      * @param globalContext the context provider for the component.
      */
     public Text(String text, GlobalContext globalContext) {
@@ -94,5 +94,15 @@ public final class Text extends GameComponent {
     protected void setupDefaultStyle() {
         this.style.font = this.globalContext.window().getCanvas().getFont().deriveFont(16.0f);
         this.style.foregroundColor = this.globalContext.currentTheme().getColor(Theme.ColorName.FOREGROUND, Theme.ColorVariant.NORMAL);
+    }
+
+    /**
+     * Sets the text of the component.
+     *
+     * @param text the new text to render.
+     */
+    public void setText(String text) {
+        this.text = text;
+        this.fitSize();
     }
 }

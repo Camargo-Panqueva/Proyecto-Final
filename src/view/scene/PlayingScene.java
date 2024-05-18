@@ -42,7 +42,7 @@ public final class PlayingScene extends Scene {
         this.board.getStyle().centerHorizontally(this.globalContext);
         this.board.getStyle().centerVertically(this.globalContext);
 
-        this.controlPanel = new ControlPanel(this.globalContext);
+        this.controlPanel = new ControlPanel(this.globalContext, this.matchContext);
         this.controlPanel.getStyle().x = this.board.getStyle().x + this.board.getStyle().width + padding;
         this.controlPanel.getStyle().width = controlPanelWidth;
         this.controlPanel.getStyle().height = this.board.getStyle().height;

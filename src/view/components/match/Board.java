@@ -92,7 +92,9 @@ public final class Board extends GameComponent {
 
         boolean inAllowedAction = this.matchContext.mouseOverWall() || this.matchContext.playerInTurn().allowedMoves().contains(movementPoint);
 
-        if (!this.matchContext.mouseOutOfBounds() && inAllowedAction) {
+        if (this.matchContext.mouseOutOfBounds()) return;
+
+        if (inAllowedAction) {
             this.globalContext.window().getCanvas().setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         } else {
             this.globalContext.window().getCanvas().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
@@ -211,7 +213,7 @@ public final class Board extends GameComponent {
 
         //TODO: Change to wall factory
         Wall wall = this.matchContext.selectedWallType() == WallType.NORMAL ? new NormalWall() : new LargeWall();
-        wall.setPositionOnBoard(new Point(matchContext.mousePosition().x, matchContext.mousePosition().y));
+        wall.setPositionOnBoard(new Point(this.matchContext.mousePosition().x, this.matchContext.mousePosition().y));
 
         if (this.matchContext.mousePosition().y % 2 == 0) {
             wall.rotate();
