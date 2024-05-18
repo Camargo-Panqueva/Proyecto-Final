@@ -269,7 +269,7 @@ public final class SettingsScene extends Scene {
         this.timeLimitLabel.getStyle().backgroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.DIMMED);
         this.timeLimitLabel.getStyle().foregroundColor = new ThemeColor(ColorName.FOREGROUND, ColorVariant.NORMAL);
 
-        this.minutesInput = new TextInput(this.globalContext);
+        this.minutesInput = new TextInput(this.globalContext, "0");
         this.minutesInput.getStyle().x = this.paddingX + this.timeLimitLabel.getStyle().width + this.timeLimitLabel.getStyle().x;
         this.minutesInput.getStyle().y = this.timeLimitLabel.getStyle().y;
         this.minutesInput.getStyle().height = this.componentHeight;
@@ -284,7 +284,7 @@ public final class SettingsScene extends Scene {
         this.colonText.getStyle().width = this.colonWidth;
         this.colonText.getStyle().font = this.componentFont;
 
-        this.secondsInput = new TextInput(this.globalContext);
+        this.secondsInput = new TextInput(this.globalContext, "0");
         this.secondsInput.getStyle().x = this.colonWidth + this.colonText.getStyle().width + this.colonText.getStyle().x;
         this.secondsInput.getStyle().y = this.minutesInput.getStyle().y;
         this.secondsInput.getStyle().height = this.componentHeight;
@@ -355,7 +355,7 @@ public final class SettingsScene extends Scene {
 
         for (int index = 0; index < playerCount; index++) {
 
-            TextInput playerNameInput = new TextInput(this.globalContext);
+            TextInput playerNameInput = new TextInput(this.globalContext, "Player " + (index + 1));
             playerNameInput.getStyle().x = this.componentWidth + 2 * this.margin;
             playerNameInput.getStyle().y = this.margin + 2 * index * (this.paddingY + this.componentHeight);
             applyFirstRowStyle.run(playerNameInput);
@@ -414,6 +414,7 @@ public final class SettingsScene extends Scene {
     private void updatePlayerFieldColor(int index, ColorName previousColorName, ColorName colorName) {
 
         this.playerNameInputs.get(index).getStyle().foregroundColor = new ThemeColor(colorName, ColorVariant.NORMAL);
+        this.playerNameInputs.get(index).getStyle().borderColor = new ThemeColor(colorName, ColorVariant.NORMAL);
         this.playerColorSelects.get(index).getStyle().foregroundColor = new ThemeColor(colorName, ColorVariant.NORMAL);
         this.playerTypeSelects.get(index).getStyle().foregroundColor = new ThemeColor(colorName, ColorVariant.NORMAL);
         this.aiProfileSelects.get(index).getStyle().foregroundColor = new ThemeColor(colorName, ColorVariant.NORMAL);
