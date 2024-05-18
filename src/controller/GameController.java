@@ -156,7 +156,7 @@ public final class GameController {
         return new SuccessResponse<>(
                 new BoardTransferObject(
                         cellTypesCopy,
-                        wallTypesCopy, this.model.getTurnCount(),
+                        wallTypesCopy, this.model.getGameModeManager().getBaseParameters().timeLimitPerPlayer - this.model.getTurnCount(),
                         playerTransferObjectArrayList,
                         playerTransferObjectArrayList.stream().filter(PlayerTransferObject::isInTurn).findFirst().orElse(null) //TODO : check if this is correct
                 ), "Ok");

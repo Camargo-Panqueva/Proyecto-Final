@@ -239,7 +239,7 @@ public class MatchManager {
     }
 
     private void startTimer() {
-        ConcurrentLoop clockCurrentTurn = new ConcurrentLoop(this::clockPerTurn, 5, "Time Limit per Turn");
+        ConcurrentLoop clockCurrentTurn = new ConcurrentLoop(this::clockPerTurn, 10, "Time Limit per Turn");
         this.secondCount = Instant.now();
         clockCurrentTurn.start();
     }
