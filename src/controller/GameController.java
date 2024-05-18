@@ -89,7 +89,13 @@ public final class GameController {
 
         this.buildBoard(setupSettings.randomCells());
 
-        return this.startGame();
+        this.setupPlayers();
+
+        this.matchManager = new MatchManager(this.model);
+
+        this.globalStateManager.setCurrentState(GlobalState.PLAYING);
+        this.model.setMatchState(GameModel.MatchState.PLAYING);
+        return new SuccessResponse<>(null, "Game Started");
     }
 
     private void buildBoard(final boolean isRandom) {
@@ -106,8 +112,6 @@ public final class GameController {
             this.createCells();
         }
 
-        System.out.println(Arrays.deepToString(this.model.getBoard().getBoardCells()));
-        this.setupPlayers();
         this.model.setMatchState(GameModel.MatchState.STARTED);
     }
 
@@ -181,16 +185,6 @@ public final class GameController {
             }
         }
 
-    }
-
-    private ServiceResponse<Void> startGame() {
-
-
-        this.matchManager = new MatchManager(this.model);
-
-        this.globalStateManager.setCurrentState(GlobalState.PLAYING);
-        this.model.setMatchState(GameModel.MatchState.PLAYING);
-        return new SuccessResponse<>(null, "Game Started");
     }
 
     public ServiceResponse<BoardTransferObject> getBoardState() {
