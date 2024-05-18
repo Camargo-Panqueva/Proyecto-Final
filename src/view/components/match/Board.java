@@ -11,7 +11,9 @@ import view.context.GlobalContext;
 import view.context.MatchContext;
 import view.input.KeyboardEvent;
 import view.input.MouseEvent;
-import view.themes.Theme;
+import view.themes.ThemeColor;
+import view.themes.ThemeColor.ColorName;
+import view.themes.ThemeColor.ColorVariant;
 
 import java.awt.*;
 
@@ -75,7 +77,7 @@ public final class Board extends GameComponent {
     }
 
     private void renderBackground(Graphics2D graphics) {
-        graphics.setColor(this.style.backgroundColor);
+        graphics.setColor(this.globalContext.currentTheme().getColor(this.style.backgroundColor));
         graphics.fillRoundRect(this.style.x, this.style.y, this.style.width, this.style.height, this.style.borderRadius, this.style.borderRadius);
     }
 
@@ -83,8 +85,8 @@ public final class Board extends GameComponent {
 
         Point relativePosition = this.globalContext.mouse().getMouseRelativePosition(this.getBounds());
 
-        relativePosition.x -= this.style.paddingX;
-        relativePosition.y -= this.style.paddingY;
+        relativePosition.x -= this.style.borderWidth;
+        relativePosition.y -= this.style.borderWidth;
 
         int parsedX = ((relativePosition.x) / (CELL_SIZE + WALL_SIZE)) * 2;
         int parsedY = ((relativePosition.y) / (CELL_SIZE + WALL_SIZE)) * 2;
@@ -140,21 +142,15 @@ public final class Board extends GameComponent {
         int widthCells = this.matchContext.cells().length;
         int heightCells = this.matchContext.cells()[0].length;
 
-        this.style.width = this.style.paddingX * 2 + CELL_SIZE * widthCells + WALL_SIZE * (widthCells - 1);
-        this.style.height = this.style.paddingY * 2 + CELL_SIZE * heightCells + WALL_SIZE * (heightCells - 1);
-    }
-
-    @Override
-    protected void handleThemeChange(Theme theme) {
-
+        this.style.width = this.style.borderWidth * 2 + CELL_SIZE * widthCells + WALL_SIZE * (widthCells - 1);
+        this.style.height = this.style.borderWidth * 2 + CELL_SIZE * heightCells + WALL_SIZE * (heightCells - 1);
     }
 
     @Override
     protected void setupDefaultStyle() {
-
         this.style.width = this.globalContext.window().getCanvasSize();
         this.style.height = this.globalContext.window().getCanvasSize();
-        this.style.backgroundColor = this.globalContext.currentTheme().getColor(Theme.ColorName.BACKGROUND, Theme.ColorVariant.DIMMED);
+        this.style.backgroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.DIMMED);
     }
 
     @Override

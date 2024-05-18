@@ -3,7 +3,9 @@ package view.components.ui;
 import view.components.GameComponent;
 import view.context.GlobalContext;
 import view.input.MouseEvent;
-import view.themes.Theme;
+import view.themes.ThemeColor;
+import view.themes.ThemeColor.ColorName;
+import view.themes.ThemeColor.ColorVariant;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -89,9 +91,12 @@ public final class Selector<T> extends GameComponent {
     public void render(Graphics2D graphics) {
         //TODO: Remove code duplication with Button render method
         graphics.setFont(this.style.font);
-        FontMetrics fontMetrics = this.globalContext.window().getCanvas().getFontMetrics(this.style.font);
 
-        graphics.setColor(this.style.backgroundColor);
+        FontMetrics fontMetrics = this.globalContext.window().getCanvas().getFontMetrics(this.style.font);
+        Color backgroundColor = this.globalContext.currentTheme().getColor(this.getStyle().backgroundColor);
+        Color foregroundColor = this.globalContext.currentTheme().getColor(this.getStyle().foregroundColor);
+
+        graphics.setColor(backgroundColor);
         graphics.fillRoundRect(
                 this.style.x,
                 this.style.y,
@@ -105,7 +110,7 @@ public final class Selector<T> extends GameComponent {
         int textHeight = fontMetrics.getHeight();
         int adjust = 8;
 
-        graphics.setColor(this.style.foregroundColor);
+        graphics.setColor(foregroundColor);
         graphics.drawString(
                 this.getStringValue(),
                 this.style.x + (this.style.width - textWidth) / 2,
@@ -135,19 +140,6 @@ public final class Selector<T> extends GameComponent {
     public void fitSize() {
     }
 
-    /**
-     * Handles a theme change event.
-     * <p>
-     * This method updates the background color of the selector to match the new theme.
-     * It sets the background color of the selector to the new theme's primary color.
-     * It also sets the foreground color of the selector to the new theme's background color.
-     * </p>
-     */
-    @Override
-    protected void handleThemeChange(Theme theme) {
-        this.style.backgroundColor = theme.getColor(Theme.ColorName.PRIMARY, Theme.ColorVariant.NORMAL);
-        this.style.foregroundColor = theme.getColor(Theme.ColorName.BACKGROUND, Theme.ColorVariant.NORMAL);
-    }
 
     /**
      * Sets up the default style for the component.
@@ -164,8 +156,8 @@ public final class Selector<T> extends GameComponent {
     @Override
     protected void setupDefaultStyle() {
         //TODO: Remove code duplication with Button default style
-        this.style.backgroundColor = this.globalContext.currentTheme().getColor(Theme.ColorName.PRIMARY, Theme.ColorVariant.NORMAL);
-        this.style.foregroundColor = this.globalContext.currentTheme().getColor(Theme.ColorName.BACKGROUND, Theme.ColorVariant.NORMAL);
+        this.style.backgroundColor = new ThemeColor(ColorName.PRIMARY, ColorVariant.NORMAL);
+        this.style.foregroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.NORMAL);
         this.style.font = this.globalContext.window().getCanvas().getFont().deriveFont(26.0f);
         this.style.height = 60;
         this.style.width = 300;

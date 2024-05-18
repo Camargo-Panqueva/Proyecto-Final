@@ -8,7 +8,8 @@ import view.input.Keyboard;
 import view.input.Mouse;
 import view.scene.SceneManager;
 import view.themes.DarkTheme;
-import view.themes.Theme;
+import view.themes.ThemeColor.ColorName;
+import view.themes.ThemeColor.ColorVariant;
 import view.themes.ThemeManager;
 import view.window.Window;
 
@@ -91,12 +92,12 @@ public final class GameView {
 
     private void renderBackground(Graphics2D graphics) {
         graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        graphics.setColor(this.globalContext.currentTheme().getColor(Theme.ColorName.BACKGROUND, Theme.ColorVariant.NORMAL));
+        graphics.setColor(this.globalContext.currentTheme().getColor(ColorName.BACKGROUND, ColorVariant.NORMAL));
         graphics.fillRect(0, 0, this.window.getCanvasSize(), this.window.getCanvasSize());
     }
 
     private void renderPerformance(Graphics2D graphics) {
-        graphics.setColor(this.globalContext.currentTheme().getColor(Theme.ColorName.FOREGROUND, Theme.ColorVariant.NORMAL));
+        graphics.setColor(this.globalContext.currentTheme().getColor(ColorName.FOREGROUND, ColorVariant.NORMAL));
         graphics.setFont(new Font("Arial", Font.PLAIN, 12));
 
         FontMetrics fontMetrics = graphics.getFontMetrics();

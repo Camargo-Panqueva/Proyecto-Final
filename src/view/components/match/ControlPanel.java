@@ -6,7 +6,9 @@ import view.components.ui.Selector;
 import view.components.ui.Text;
 import view.context.GlobalContext;
 import view.context.MatchContext;
-import view.themes.Theme;
+import view.themes.ThemeColor;
+import view.themes.ThemeColor.ColorName;
+import view.themes.ThemeColor.ColorVariant;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -34,7 +36,7 @@ public final class ControlPanel extends GameComponent {
     }
 
     private void renderBackground(Graphics2D graphics) {
-        graphics.setColor(this.globalContext.currentTheme().getColor(Theme.ColorName.BACKGROUND, Theme.ColorVariant.DIMMED));
+        graphics.setColor(this.globalContext.currentTheme().getColor(ColorName.BACKGROUND, ColorVariant.DIMMED));
         graphics.fillRoundRect(
                 this.style.x,
                 this.style.y,
@@ -44,7 +46,7 @@ public final class ControlPanel extends GameComponent {
                 this.style.borderRadius
         );
 
-        graphics.setColor(this.globalContext.currentTheme().getColor(Theme.ColorName.BACKGROUND, Theme.ColorVariant.NORMAL));
+        graphics.setColor(this.globalContext.currentTheme().getColor(ColorName.BACKGROUND, ColorVariant.NORMAL));
         graphics.fillRoundRect(
                 this.style.x + this.style.borderWidth,
                 this.style.y + this.style.borderWidth,
@@ -73,22 +75,11 @@ public final class ControlPanel extends GameComponent {
 
     @Override
     public void fitSize() {
-
-        int expectedWidth = this.style.x + this.style.width + this.style.paddingX;
-
-        if (expectedWidth > this.globalContext.window().getCanvas().getWidth()) {
-            this.globalContext.window().setCanvasWidth(expectedWidth);
-        }
-
         for (GameComponent component : this.components) {
             component.getStyle().centerHorizontally(this.getBounds());
         }
 
         this.wallSelector.getStyle().y = this.style.y + this.style.height - 60;
-    }
-
-    @Override
-    protected void handleThemeChange(Theme theme) {
     }
 
     @Override
@@ -101,8 +92,8 @@ public final class ControlPanel extends GameComponent {
         this.playerName.setText(text);
         this.playerName.getStyle().centerHorizontally(this.getBounds());
 
-        this.playerName.getStyle().foregroundColor = this.matchContext.getPlayerColor(this.matchContext.playerInTurn(), Theme.ColorVariant.NORMAL);
-        this.wallSelector.getStyle().backgroundColor = this.matchContext.getPlayerColor(this.matchContext.playerInTurn(), Theme.ColorVariant.NORMAL);
+        this.playerName.getStyle().foregroundColor = this.matchContext.getPlayerColor(this.matchContext.playerInTurn(), ColorVariant.NORMAL);
+        this.wallSelector.getStyle().backgroundColor = this.matchContext.getPlayerColor(this.matchContext.playerInTurn(), ColorVariant.NORMAL);
     }
 
     private void updateTimer() {
@@ -110,16 +101,9 @@ public final class ControlPanel extends GameComponent {
         String text = String.format("%d Sec.", this.matchContext.playerInTurn().secondRemaining());
 
         if (timeRemaining > 15) {
-            this.timer.getStyle().foregroundColor = this.globalContext.currentTheme().getColor(
-                Theme.ColorName.GREEN,
-                Theme.ColorVariant.NORMAL
-            );
+            this.timer.getStyle().foregroundColor = new ThemeColor(ColorName.GREEN, ColorVariant.NORMAL);
         } else {
-            this.timer.getStyle().foregroundColor = this.globalContext.currentTheme().getColor(
-                Theme.ColorName.RED,
-                Theme.ColorVariant.NORMAL
-            );
-
+            this.timer.getStyle().foregroundColor = new ThemeColor(ColorName.RED, ColorVariant.NORMAL);
             text += " Hurry up!";
         }
 

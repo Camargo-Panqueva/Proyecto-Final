@@ -2,7 +2,9 @@ package view.components.ui;
 
 import view.components.GameComponent;
 import view.context.GlobalContext;
-import view.themes.Theme;
+import view.themes.ThemeColor;
+import view.themes.ThemeColor.ColorName;
+import view.themes.ThemeColor.ColorVariant;
 
 import java.awt.*;
 
@@ -51,8 +53,10 @@ public final class Button extends GameComponent {
     @Override
     public void render(Graphics2D graphics) {
         graphics.setFont(this.style.font);
+        Color backgroundColor = this.globalContext.currentTheme().getColor(this.style.backgroundColor);
+        Color foregroundColor = this.globalContext.currentTheme().getColor(this.style.foregroundColor);
 
-        graphics.setColor(this.style.backgroundColor);
+        graphics.setColor(backgroundColor);
         graphics.fillRoundRect(
                 this.style.x,
                 this.style.y,
@@ -65,7 +69,7 @@ public final class Button extends GameComponent {
         Point center = this.getCenter();
         Rectangle textBounds = graphics.getFontMetrics().getStringBounds(this.text, graphics).getBounds();
 
-        graphics.setColor(this.style.foregroundColor);
+        graphics.setColor(foregroundColor);
         graphics.drawString(this.text, center.x - textBounds.width / 2, center.y + textBounds.height / 4);
     }
 
@@ -78,22 +82,6 @@ public final class Button extends GameComponent {
      */
     @Override
     public void fitSize() {
-    }
-
-    /**
-     * Handles a change in the theme.
-     * <p>
-     * This method updates the background color of the button to match the new theme.
-     * It sets the background color of the button to the new theme's primary color.
-     * It also sets the foreground color of the button to the new theme's background color.
-     * </p>
-     *
-     * @param theme the new theme.
-     */
-    @Override
-    protected void handleThemeChange(Theme theme) {
-        this.style.backgroundColor = theme.getColor(Theme.ColorName.PRIMARY, Theme.ColorVariant.NORMAL);
-        this.style.foregroundColor = theme.getColor(Theme.ColorName.BACKGROUND, Theme.ColorVariant.NORMAL);
     }
 
     /**
@@ -110,8 +98,8 @@ public final class Button extends GameComponent {
      */
     @Override
     protected void setupDefaultStyle() {
-        this.style.backgroundColor = this.globalContext.currentTheme().getColor(Theme.ColorName.PRIMARY, Theme.ColorVariant.NORMAL);
-        this.style.foregroundColor = this.globalContext.currentTheme().getColor(Theme.ColorName.BACKGROUND, Theme.ColorVariant.NORMAL);
+        this.style.backgroundColor = new ThemeColor(ColorName.PRIMARY, ColorVariant.NORMAL);
+        this.style.foregroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.NORMAL);
         this.style.font = this.globalContext.window().getCanvas().getFont().deriveFont(26.0f);
         this.style.height = 60;
         this.style.width = 300;

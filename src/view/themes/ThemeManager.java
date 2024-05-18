@@ -1,9 +1,5 @@
 package view.themes;
 
-import util.ConsumerFunction;
-
-import java.util.ArrayList;
-
 /**
  * Represents a theme manager that can be used to manage themes in the game view.
  * <p>
@@ -13,14 +9,6 @@ import java.util.ArrayList;
  */
 public final class ThemeManager {
 
-    /**
-     * A list of listeners that are notified when the theme changes.
-     * <p>
-     * This list contains all listeners that are notified when the theme changes.
-     * Each listener is a function that takes a theme as an argument.
-     * </p>
-     */
-    private final ArrayList<ConsumerFunction<Theme>> listeners;
     private Theme currentTheme;
 
     /**
@@ -28,7 +16,6 @@ public final class ThemeManager {
      */
     public ThemeManager() {
         this.currentTheme = new LightTheme();
-        this.listeners = new ArrayList<>();
     }
 
     /**
@@ -38,7 +25,6 @@ public final class ThemeManager {
      */
     public ThemeManager(Theme theme) {
         this.currentTheme = theme;
-        this.listeners = new ArrayList<>();
     }
 
     /**
@@ -60,7 +46,6 @@ public final class ThemeManager {
      */
     public void setTheme(Theme theme) {
         this.currentTheme = theme;
-        this.notifyListeners();
     }
 
     /**
@@ -75,33 +60,6 @@ public final class ThemeManager {
             this.currentTheme = new DarkTheme();
         } else {
             this.currentTheme = new LightTheme();
-        }
-        this.notifyListeners();
-    }
-
-    /**
-     * Adds a listener to the manager.
-     * <p>
-     * This method adds a listener to the manager.
-     * The listener is notified when the theme changes.
-     * </p>
-     *
-     * @param listener the listener to add to the manager.
-     */
-    public void addListener(ConsumerFunction<Theme> listener) {
-        this.listeners.add(listener);
-    }
-
-    /**
-     * Notifies all listeners of the manager.
-     * <p>
-     * This method notifies all listeners of the manager.
-     * It runs each listener with the current theme as an argument.
-     * </p>
-     */
-    private void notifyListeners() {
-        for (ConsumerFunction<Theme> listener : this.listeners) {
-            listener.run(this.currentTheme);
         }
     }
 }
