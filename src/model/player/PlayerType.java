@@ -1,12 +1,12 @@
 package model.player;
 
-public enum PlayerTypes {
+public enum PlayerType {
     PLAYER("Player"),
     AI("AI");
 
     private final String playerString;
 
-    PlayerTypes(final String playerString) {
+    PlayerType(final String playerString) {
         this.playerString = playerString;
     }
 

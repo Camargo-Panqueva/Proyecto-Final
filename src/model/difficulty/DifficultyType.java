@@ -1,6 +1,6 @@
 package model.difficulty;
 
-public enum DifficultyTypes {
+public enum DifficultyType {
 
     NORMAL("NORMAL"),
     AGAINST_THE_CLOCK("AGAINST_THE_CLOCK"),
@@ -8,7 +8,7 @@ public enum DifficultyTypes {
 
     private final String typeString;
 
-    DifficultyTypes(String type) {
+    DifficultyType(String type) {
         this.typeString = type;
     }
 

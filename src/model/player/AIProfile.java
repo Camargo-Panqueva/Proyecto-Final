@@ -1,13 +1,13 @@
 package model.player;
 
-public enum AIProfiles {
+public enum AIProfile {
     BEGINNER("Beginner &"),
     INTERMEDIATE("Intermediate #"),
     ADVANCED("Advanced !");
 
     private final String stringAIProfile;
 
-    AIProfiles(final String stringAIProfile) {
+    AIProfile(final String stringAIProfile) {
         this.stringAIProfile = stringAIProfile;
 
 
