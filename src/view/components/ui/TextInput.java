@@ -162,4 +162,9 @@ public final class TextInput extends GameComponent {
     public String getValue() {
         return this.value;
     }
+
+    public void setValue(String value) {
+        this.dispatchComponentEvent(ComponentEvent.VALUE_CHANGED, this.value, value);
+        this.value = value;
+    }
 }
