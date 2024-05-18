@@ -6,6 +6,7 @@ import view.context.Style;
 import view.input.KeyboardEvent;
 import view.input.Mouse;
 import view.input.MouseEvent;
+import view.themes.ThemeColor;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ public abstract class GameComponent {
     protected Style style;
     protected boolean isMouseEntered;
     protected boolean isMousePressed;
+    protected boolean isDisabled;
     protected boolean hasFocus;
 
     /**
@@ -87,6 +89,9 @@ public abstract class GameComponent {
      * </p>
      */
     protected void pollMouseEvents() {
+        if (this.isDisabled) {
+            return;
+        }
         Mouse mouse = this.globalContext.mouse();
         GameComponent component = this;
 
@@ -214,6 +219,17 @@ public abstract class GameComponent {
      */
     public void setCursor(Cursor cursor) {
         this.style.cursor = cursor;
+    }
+
+    /**
+     * Sets the disabled state of the component.
+     *
+     * @param disabled the disabled state of the component.
+     */
+    public void setDisabled(boolean disabled) {
+        this.setCursor(disabled ? Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR) : this.style.cursor);
+        this.isDisabled = disabled;
+        this.style.foregroundColor = new ThemeColor(this.style.foregroundColor.name(), disabled ? ThemeColor.ColorVariant.DIMMED : ThemeColor.ColorVariant.NORMAL);
     }
 
     /**

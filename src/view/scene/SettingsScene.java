@@ -187,6 +187,10 @@ public final class SettingsScene extends Scene {
             this.globalContext.controller().setGlobalState(GlobalState.WELCOME);
         });
 
+        this.difficultySelect.addComponentListener(GameComponent.ComponentEvent.VALUE_CHANGED, (previousValue, currentValue) -> {
+            this.updateDisabledTime();
+        });
+
         for (int index = 0; index < this.playerColorSelects.size(); index++) {
             Selector<ColorName> colorNameSelector = this.playerColorSelects.get(index);
 
@@ -194,6 +198,18 @@ public final class SettingsScene extends Scene {
 
             colorNameSelector.addComponentListener(GameComponent.ComponentEvent.VALUE_CHANGED, (previousValue, currentValue) -> {
                 this.updatePlayerFieldColor(finalIndex, (ColorName) previousValue, (ColorName) currentValue);
+            });
+        }
+
+        for (int index = 2; index < this.playerNameInputs.size(); index++) {
+            this.playerNameInputs.get(index).addComponentListener(GameComponent.ComponentEvent.VALUE_CHANGED, (previousValue, currentValue) -> {
+                this.updateDisabledPlayers();
+            });
+        }
+
+        for (Selector<Integer> wallCountSelector : this.wallCountSelects) {
+            wallCountSelector.addComponentListener(GameComponent.ComponentEvent.VALUE_CHANGED, (previousValue, currentValue) -> {
+                this.updateMaxWallCount(this.getMaxWallCount());
             });
         }
     }
@@ -291,6 +307,7 @@ public final class SettingsScene extends Scene {
         this.minutesInput.getStyle().font = this.componentFont;
         this.minutesInput.getStyle().paddingX = 13;
         this.minutesInput.getStyle().textAlignment = Style.TextAlignment.CENTER;
+        this.minutesInput.setValue("1");
 
         this.colonText = new Text(":", this.globalContext);
         this.colonText.getStyle().x = this.colonWidth + this.minutesInput.getStyle().width + this.minutesInput.getStyle().x;
@@ -307,6 +324,9 @@ public final class SettingsScene extends Scene {
         this.secondsInput.getStyle().font = this.componentFont;
         this.secondsInput.getStyle().paddingX = 13;
         this.secondsInput.getStyle().textAlignment = Style.TextAlignment.CENTER;
+        this.secondsInput.setValue("0");
+
+        this.updateDisabledTime();
     }
 
     private void setupWallCountComponents() {
@@ -402,6 +422,7 @@ public final class SettingsScene extends Scene {
             this.aiProfileSelects.add(aiProfileSelect);
 
             this.updatePlayerFieldColor(index, null, colorNames.get(index % colorNames.size()));
+            this.updateDisabledPlayers();
         }
     }
 
@@ -455,6 +476,35 @@ public final class SettingsScene extends Scene {
         }
     }
 
+    private void updateMaxWallCount(int maxWallCount) {
+
+        for (Selector<Integer> wallCountSelector : this.wallCountSelects) {
+            if (wallCountSelector.getSelectedOption() > 0) {
+                wallCountSelector.setMax(maxWallCount - this.getCurrentWallCount() + wallCountSelector.getSelectedOption());
+            }
+        }
+    }
+
+    private void updateDisabledPlayers() {
+        for (int index = 2; index < this.playerNameInputs.size(); index++) {
+            TextInput playerNameInput = this.playerNameInputs.get(index);
+
+            boolean isDisabled = playerNameInput.getValue().isEmpty();
+
+            this.playerColorSelects.get(index).setDisabled(isDisabled);
+            this.playerTypeSelects.get(index).setDisabled(isDisabled);
+            this.aiProfileSelects.get(index).setDisabled(isDisabled);
+        }
+    }
+
+    private void updateDisabledTime() {
+        boolean timeDisabled = this.difficultySelect.getSelectedOption().equals(DifficultyType.NORMAL);
+        this.timeLimitLabel.setDisabled(timeDisabled);
+        this.colonText.setDisabled(timeDisabled);
+        this.minutesInput.setDisabled(timeDisabled);
+        this.secondsInput.setDisabled(timeDisabled);
+    }
+
     private HashMap<WallType, Integer> getWallCounts() {
         HashMap<WallType, Integer> wallCounts = new HashMap<>();
 
@@ -493,5 +543,22 @@ public final class SettingsScene extends Scene {
         int seconds = Integer.parseInt(this.secondsInput.getValue());
 
         return minutes * 60 + seconds;
+    }
+
+    private int getMaxWallCount() {
+        int width = this.widthCellsSelect.getSelectedOption();
+        int height = this.heightCellsSelect.getSelectedOption();
+
+        return Math.min(width, height) + 1;
+    }
+
+    private int getCurrentWallCount() {
+        int wallCount = 0;
+
+        for (Selector<Integer> wallCountSelector : this.wallCountSelects) {
+            wallCount += wallCountSelector.getSelectedOption();
+        }
+
+        return wallCount;
     }
 }

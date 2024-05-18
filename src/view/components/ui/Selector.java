@@ -257,6 +257,18 @@ public final class Selector<T> extends GameComponent {
         };
     }
 
+    public void setMax(int max) {
+        if (this.type != SelectorType.NUMBER) {
+            throw new UnsupportedOperationException("Max value can only be set for number selectors");
+        }
+
+        if (max < this.min) {
+            throw new IllegalArgumentException("Max value cannot be less than min value");
+        }
+
+        this.selectedOption = Math.min(max, this.selectedOption);
+    }
+
     public enum SelectorType {
         OBJECT,
         NUMBER,
