@@ -33,13 +33,13 @@ public final class PlayingScene extends Scene {
         this.margin = 46;
 
         int controlPanelWidth = 440;
-        int borderRadius = 16;
+        int borderRadius = 26;
         int borderWidth = 16;
 
         this.matchContext = new MatchContext(this.globalContext);
 
         this.board = new Board(this.globalContext, this.matchContext);
-        this.board.getStyle().borderRadius = 26;
+        this.board.getStyle().borderRadius = borderRadius;
         this.board.getStyle().borderWidth = borderWidth;
         this.board.getStyle().x = this.margin;
         this.board.getStyle().y = this.margin;

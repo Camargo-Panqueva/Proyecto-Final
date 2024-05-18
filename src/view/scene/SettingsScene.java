@@ -160,8 +160,12 @@ public final class SettingsScene extends Scene {
 
         this.startButton.addMouseListener(MouseEvent.EventType.RELEASED, event -> {
             //TODO: Implement game start
-            this.globalContext.controller().setGameMode("4 Players");
-            this.globalContext.controller().startGame();
+            this.globalContext.controller().createMatch(
+                    4,
+                    this.widthCellsSelect.getSelectedOption(),
+                    this.heightCellsSelect.getSelectedOption(),
+                    10
+            );
             this.globalContext.controller().setGlobalState(GlobalState.PLAYING);
         });
 
@@ -216,7 +220,7 @@ public final class SettingsScene extends Scene {
         this.widthCellsLabel.getStyle().backgroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.DIMMED);
         this.widthCellsLabel.getStyle().foregroundColor = new ThemeColor(ColorName.PURPLE, ColorVariant.NORMAL);
 
-        this.widthCellsSelect = new Selector<>(5, 20, this.globalContext);
+        this.widthCellsSelect = new Selector<>(5, 14, this.globalContext);
         this.widthCellsSelect.getStyle().x = this.paddingX + this.widthCellsLabel.getStyle().width + this.widthCellsLabel.getStyle().x;
         this.widthCellsSelect.getStyle().y = this.widthCellsLabel.getStyle().y;
         this.widthCellsSelect.getStyle().height = this.componentHeight;
@@ -234,7 +238,7 @@ public final class SettingsScene extends Scene {
         this.heightCellsLabel.getStyle().backgroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.DIMMED);
         this.heightCellsLabel.getStyle().foregroundColor = new ThemeColor(ColorName.PURPLE, ColorVariant.NORMAL);
 
-        this.heightCellsSelect = new Selector<>(5, 20, this.globalContext);
+        this.heightCellsSelect = new Selector<>(5, 14, this.globalContext);
         this.heightCellsSelect.getStyle().x = this.paddingX + this.heightCellsLabel.getStyle().width + this.heightCellsLabel.getStyle().x;
         this.heightCellsSelect.getStyle().y = this.heightCellsLabel.getStyle().y;
         this.heightCellsSelect.getStyle().height = this.componentHeight;

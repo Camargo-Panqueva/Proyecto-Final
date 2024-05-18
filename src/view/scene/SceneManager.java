@@ -1,5 +1,6 @@
 package view.scene;
 
+import controller.dto.ServiceResponse;
 import controller.states.GlobalState;
 import view.context.GlobalContext;
 
@@ -20,7 +21,14 @@ public final class SceneManager {
     }
 
     public void fetchCurrentGlobalState() {
-        GlobalState state = this.globalContext.controller().getGlobalCurrentState();
+        ServiceResponse<GlobalState> stateResponse = this.globalContext.controller().getGlobalCurrentState();
+
+        if (!stateResponse.ok) {
+            //TODO: Handle error
+            throw new RuntimeException("Failed to get current global state: " + stateResponse.message);
+        }
+
+        GlobalState state = stateResponse.payload;
 
         if (state == this.lastState) {
             return;
