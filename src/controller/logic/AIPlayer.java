@@ -21,9 +21,7 @@ public class AIPlayer {
 
     public void executeMove(final int[][] abstractBoard) {
         this.abstractBoard = abstractBoard;
-        switch (profile) {
-            case BEGINNER -> beginnerMove();
-        }
+        this.beginnerMove();
     }
 
     private void beginnerMove() {

@@ -3,7 +3,6 @@ package model;
 import model.board.Board;
 import model.difficulty.Difficulty;
 import model.modes.GameBaseParameters;
-import model.modes.GameModes;
 import model.player.Player;
 import model.wall.WallData;
 
@@ -96,9 +95,6 @@ public final class GameModel {
         return gameBaseParameters;
     }
 
-    public GameModes getGameMode() {
-        return gameBaseParameters.getGameMode();
-    }
 
     public int getPlayerInTurnId() {
         return playerInTurn;
@@ -133,7 +129,6 @@ public final class GameModel {
     }
 
     public enum MatchState {
-        STARTED,
         INITIALIZED,
         PLAYING,
         WINNER;

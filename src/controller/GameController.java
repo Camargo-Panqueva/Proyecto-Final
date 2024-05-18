@@ -8,8 +8,8 @@ import controller.wall.*;
 import model.GameModel;
 import model.cell.CellType;
 import model.difficulty.DifficultyType;
-import model.modes.GameModes;
 import model.player.Player;
+import model.player.PlayerType;
 import model.wall.WallData;
 import model.wall.WallType;
 
@@ -81,11 +81,11 @@ public final class GameController {
             return new ErrorResponse<>("The sum of walls at most it should be: " + playerWallQuota);
         }
 
-        this.model.getGameBaseParameters().setBaseParameters(GameModes.CUSTOM, boardWidth, boardHeight, playerCount, wallsPerPlayer);
+        this.model.getGameBaseParameters().setBaseParameters(boardWidth, boardHeight, playerCount, wallsPerPlayer);
 
         this.buildBoard(setupSettings.randomCells());
 
-        this.setupPlayers();
+        this.setupPlayers(setupSettings.players());
 
         this.matchManager = new MatchManager(this.model);
 
@@ -107,8 +107,6 @@ public final class GameController {
         } else {
             this.createCells();
         }
-
-        this.model.setMatchState(GameModel.MatchState.STARTED);
     }
 
     private void createRandomlyCells() {
@@ -142,7 +140,7 @@ public final class GameController {
         }
     }
 
-    private void setupPlayers() {
+    private void setupPlayers(ArrayList<PlayerSetupTransferObject> players) {
         final int allowedWallsPerPlayer = this.model.getGameBaseParameters().getWallsPerPlayer();
 
         final int width = this.model.getBoard().getWidth() - 1;
@@ -156,31 +154,37 @@ public final class GameController {
         final int heightCenterPosition = heightIsEven ? (height / 2) - 1 : (height / 2);
 
         if (widthIsEven) {
-            this.model.addPlayer(0, new Player(new Point(widthCenterPosition + 1, 0), "Player 1", allowedWallsPerPlayer, -1, height));
-            this.model.addPlayer(1, new Player(new Point(widthCenterPosition + 2, height), "Player 2", allowedWallsPerPlayer, -1, 0));
+            this.model.addPlayer(0, new Player(new Point(widthCenterPosition + 1, 0), players.get(0).name(), allowedWallsPerPlayer, -1, height));
+            this.model.addPlayer(1, new Player(new Point(widthCenterPosition + 2, height), players.get(1).name(), allowedWallsPerPlayer, -1, 0));
         } else {
-            this.model.addPlayer(0, new Player(new Point(widthCenterPosition, 0), "Player 1", allowedWallsPerPlayer, -1, height));
-            this.model.addPlayer(1, new Player(new Point(widthCenterPosition, height), "Player 2", allowedWallsPerPlayer, -1, 0));
+            this.model.addPlayer(0, new Player(new Point(widthCenterPosition, 0), players.get(0).name(), allowedWallsPerPlayer, -1, height));
+            this.model.addPlayer(1, new Player(new Point(widthCenterPosition, height), players.get(1).name(), allowedWallsPerPlayer, -1, 0));
         }
 
         if (heightIsEven) {
             if (this.model.getPlayerCount() > 2) {
-                this.model.addPlayer(2, new Player(new Point(0, heightCenterPosition + 2), "Player 3", allowedWallsPerPlayer, width, -1));
+                this.model.addPlayer(2, new Player(new Point(0, heightCenterPosition + 2), players.get(2).name(), allowedWallsPerPlayer, width, -1));
             }
             if (this.model.getPlayerCount() > 3) {
-                this.model.addPlayer(3, new Player(new Point(width, heightCenterPosition + 1), "Player 4", allowedWallsPerPlayer, 0, -1));
+                this.model.addPlayer(3, new Player(new Point(width, heightCenterPosition + 1), players.get(3).name(), allowedWallsPerPlayer, 0, -1));
             }
         } else {
 
             if (this.model.getPlayerCount() > 2) {
-                this.model.addPlayer(2, new Player(new Point(0, heightCenterPosition), "Player 3", allowedWallsPerPlayer, width, -1));
+                this.model.addPlayer(2, new Player(new Point(0, heightCenterPosition), players.get(2).name(), allowedWallsPerPlayer, width, -1));
             }
             if (this.model.getPlayerCount() > 3) {
-                this.model.addPlayer(3, new Player(new Point(width, heightCenterPosition), "Player 4", allowedWallsPerPlayer, 0, -1));
-
+                this.model.addPlayer(3, new Player(new Point(width, heightCenterPosition), players.get(3).name(), allowedWallsPerPlayer, 0, -1));
             }
         }
 
+        for (int i = 0; i < this.model.getPlayerCount(); i++) {
+            if (players.get(i).playerType() == PlayerType.AI){
+                this.model.getPlayers().get(i).setAsAI();
+                this.model.getPlayers().get(i).setAiProfile(players.get(i).aiProfile());
+            }
+            // TODO : set color
+        }
     }
 
     public ServiceResponse<BoardTransferObject> getBoardState() {

@@ -29,7 +29,6 @@ public class Player {
         this.wallsPlaced = 0;
         this.timePlayed = 0;
         this.isAI = false;
-        this.aiProfile = AIProfile.BEGINNER;
     }
 
     private Point generateWinDirection() {
@@ -91,16 +90,24 @@ public class Player {
         return aiProfile;
     }
 
+    public ArrayList<WallData> getPlayerWalls() {
+        return new ArrayList<>(playerWalls);
+    }
+
+    public void setAsAI(){
+        this.isAI = true;
+    }
+
     public void setPosition(Point position) {
         this.position = position;
     }
 
-    public void setTimePlayed(int timePlayed) {
-        this.timePlayed = timePlayed;
+    public void setAiProfile(AIProfile aiProfile) {
+        this.aiProfile = aiProfile;
     }
 
-    public ArrayList<WallData> getPlayerWalls() {
-        return new ArrayList<>(playerWalls);
+    public void setTimePlayed(int timePlayed) {
+        this.timePlayed = timePlayed;
     }
 
     public void addWallPlaced(WallData newAddedWall) {
