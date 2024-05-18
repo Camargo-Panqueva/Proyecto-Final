@@ -25,6 +25,9 @@ public final class Board extends GameComponent {
     private final WallRenderer wallRenderer;
     private final MatchContext matchContext;
 
+    private int lastTurnCount;
+    private int lastSecondsRemaining;
+
     /**
      * Creates a new Board component with the given context provider.
      *
@@ -35,6 +38,8 @@ public final class Board extends GameComponent {
         //TODO : fit canvas size for the height
         super(globalContext);
         this.matchContext = matchContext;
+        this.lastTurnCount = -1;
+        this.lastSecondsRemaining = -1;
 
         this.fetchBoardState();
 
@@ -57,6 +62,17 @@ public final class Board extends GameComponent {
         this.matchContext.setPlayers(boardState.players());
         this.matchContext.setWalls(boardState.walls());
         this.matchContext.setPlayerInTurn(boardState.playerInTurn());
+        this.matchContext.setTurnCount(boardState.turnCount());
+
+        if (this.lastTurnCount != boardState.turnCount()) {
+            this.lastTurnCount = boardState.turnCount();
+            this.matchContext.dispatchEvent(MatchContext.MatchEvent.TURN_CHANGED, this.matchContext.playerInTurn());
+        }
+
+        if (this.lastSecondsRemaining != this.matchContext.playerInTurn().secondRemaining()) {
+            this.lastSecondsRemaining = this.matchContext.playerInTurn().secondRemaining();
+            this.matchContext.dispatchEvent(MatchContext.MatchEvent.REMAINING_TIME_CHANGED, this.matchContext.playerInTurn());
+        }
     }
 
     private void renderBackground(Graphics2D graphics) {
@@ -226,6 +242,8 @@ public final class Board extends GameComponent {
             //TODO: Handle error
             System.out.println("Failed to place wall: " + response.message);
         }
+
+        this.matchContext.dispatchEvent(MatchContext.MatchEvent.WALL_PLACED, this.matchContext.playerInTurn());
     }
 
     private void tryMovePlayer(Point newPosition) {
@@ -240,5 +258,7 @@ public final class Board extends GameComponent {
             //TODO: Handle error
             throw new RuntimeException("Failed to process player move: " + movementResponse.message);
         }
+
+        this.matchContext.dispatchEvent(MatchContext.MatchEvent.PLAYER_MOVED, this.matchContext.playerInTurn());
     }
 }

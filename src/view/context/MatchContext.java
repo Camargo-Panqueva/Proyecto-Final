@@ -3,12 +3,16 @@ package view.context;
 import controller.dto.PlayerTransferObject;
 import model.cell.CellType;
 import model.wall.WallType;
+import util.ConsumerFunction;
 import view.themes.Theme;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public final class MatchContext {
+
+    private final HashMap<MatchEvent, ArrayList<ConsumerFunction<PlayerTransferObject>>> eventListeners;
 
     private final GlobalContext globalContext;
     private final Point mousePosition;
@@ -22,6 +26,7 @@ public final class MatchContext {
 
     private int boardWidth;
     private int boardHeight;
+    private int turnCount;
 
     private boolean mouseOutOfBounds;
     private boolean mouseOverWall;
@@ -29,11 +34,13 @@ public final class MatchContext {
     private boolean mouseOverFilledWall;
 
     public MatchContext(GlobalContext globalContext) {
+        this.eventListeners = new HashMap<>();
 
         this.mousePosition = new Point(0, 0);
         this.players = new ArrayList<>();
         this.cells = new CellType[0][0];
         this.walls = new WallType[0][0];
+        this.turnCount = 0;
 
         this.selectedWallType = WallType.NORMAL;
         this.playerInTurn = null;
@@ -86,6 +93,10 @@ public final class MatchContext {
         return boardHeight;
     }
 
+    public int turnCount() {
+        return turnCount;
+    }
+
     public boolean mouseOutOfBounds() {
         return mouseOutOfBounds;
     }
@@ -121,6 +132,10 @@ public final class MatchContext {
         this.playerInTurn = playerInTurn;
     }
 
+    public void setTurnCount(int turnCount) {
+        this.turnCount = turnCount;
+    }
+
     public void toggleWallType() {
         if (this.selectedWallType == WallType.NORMAL) {
             this.selectedWallType = WallType.LARGE;
@@ -152,5 +167,29 @@ public final class MatchContext {
         this.mouseOverWall = (evenX && !evenY) || (!evenX && evenY);
         this.mouseOverEmptyWall = this.mouseOverWall && this.walls[this.mousePosition.x][this.mousePosition.y] == null;
         this.mouseOverFilledWall = this.mouseOverWall && this.walls[this.mousePosition.x][this.mousePosition.y] != null;
+    }
+
+    public void addEventListener(MatchEvent eventType, ConsumerFunction<PlayerTransferObject> handler) {
+        if (!this.eventListeners.containsKey(eventType)) {
+            this.eventListeners.put(eventType, new ArrayList<>());
+        }
+
+        this.eventListeners.get(eventType).add(handler);
+    }
+
+    public void dispatchEvent(MatchEvent eventType, PlayerTransferObject payload) {
+        if (this.eventListeners.containsKey(eventType)) {
+            for (ConsumerFunction<PlayerTransferObject> function : this.eventListeners.get(eventType)) {
+                function.run(payload);
+            }
+        }
+    }
+
+    public enum MatchEvent {
+        PLAYER_MOVED,
+        WALL_PLACED,
+        PLAYER_WON,
+        TURN_CHANGED,
+        REMAINING_TIME_CHANGED,
     }
 }
