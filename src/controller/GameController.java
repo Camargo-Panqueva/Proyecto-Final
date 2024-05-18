@@ -7,6 +7,7 @@ import controller.states.GlobalStateManager;
 import controller.wall.*;
 import model.GameModel;
 import model.cell.CellType;
+import model.difficulty.DifficultyType;
 import model.modes.GameModes;
 import model.player.Player;
 import model.wall.WallData;
@@ -15,6 +16,7 @@ import model.wall.WallType;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Random;
 
 public final class GameController {
 
@@ -29,13 +31,115 @@ public final class GameController {
     }
 
 
-    private void buildGame() {
+    public ServiceResponse<Void> createMatch(SetupTransferObject setupSettings) {
+        final int playerCount = setupSettings.playerCount();
+        final int boardWidth = setupSettings.boardWidth();
+        final int boardHeight = setupSettings.boardHeight();
+        final int wallsPerPlayer = setupSettings.wallsPerPlayer();
+
+        final int time = setupSettings.time();
+        final DifficultyType difficultyType = setupSettings.difficultyType();
+
+        final int playerWallQuota = Math.min(boardHeight, boardWidth) + 1;
+
+        if (this.model.getMatchState() == GameModel.MatchState.PLAYING) {
+            return new ErrorResponse<>("The game already started");
+        }
+
+        if (this.model.getGameBaseParameters().getHasBeenSet()) {
+            return new ErrorResponse<>("There already a game with parameters set");
+        }
+
+        if (playerCount < 2 || playerCount > 4) {
+            return new ErrorResponse<>("Our Quoridor accept just 2, 3 and 4 players");
+        }
+
+        if (boardWidth < 0 || boardHeight < 0 || boardWidth > 21 || boardHeight > 21) {
+            return new ErrorResponse<>("Out of limits, the size must be between 0 and 21");
+        }
+
+        if (time <= 0) {
+            return new ErrorResponse<>("Negative times? ;:l");
+        }
+
+        if (difficultyType != DifficultyType.NORMAL) {
+            if (difficultyType == DifficultyType.AGAINST_THE_CLOCK && time > 600) {
+                return new ErrorResponse<>("Turns must be between 1 second & 10 minutes");
+            } else if (difficultyType == DifficultyType.AGAINST_THE_CLOCK) {
+                this.model.getDifficulty().setDifficulty(setupSettings.difficultyType(), time, 0);
+            }
+            if (difficultyType == DifficultyType.TIMED && time > 1800) {
+                return new ErrorResponse<>("Total time must be between 1 second & 30 minutes");
+            } else if (difficultyType == DifficultyType.TIMED) {
+                this.model.getDifficulty().setDifficulty(difficultyType, 0, time);
+            }
+        } else {
+            this.model.getDifficulty().setDifficulty(difficultyType, 0, 0);
+        }
+
+        if (wallsPerPlayer != Math.min(boardHeight, boardWidth) + 1) {
+            return new ErrorResponse<>("Walls count must be: " + playerWallQuota);
+        }
+
+        if (setupSettings.wallTypeCount().values().stream().mapToInt(Integer::intValue).sum() != playerWallQuota) {
+            return new ErrorResponse<>("The sum of walls must be: " + playerWallQuota);
+        }
+
+        this.model.getGameBaseParameters().setBaseParameters(GameModes.CUSTOM, boardWidth, boardHeight, playerCount, wallsPerPlayer);
+
+        this.buildBoard(setupSettings.randomCells());
+
+        return this.startGame();
+    }
+
+    private void buildBoard(final boolean isRandom) {
         this.model.setWallCount(this.model.getGameBaseParameters().getWallsPerPlayer());
+
+        if (isRandom) {
+            this.model.getBoard().setAsRandomly();
+        }
         this.model.setBoard(this.model.getGameBaseParameters().getBoardWidth(), this.model.getGameBaseParameters().getBoardHeight());
 
-        this.setupPlayers();
+        if (this.model.getBoard().getIsRandomly()) {
+            this.createRandomlyCells();
+        } else {
+            this.createCells();
+        }
 
+        System.out.println(Arrays.deepToString(this.model.getBoard().getBoardCells()));
+        this.setupPlayers();
         this.model.setMatchState(GameModel.MatchState.STARTED);
+    }
+
+    private void createRandomlyCells() {
+        Random random = new Random();
+        final double SPECIAL_CELL_PROBABILITY = 0.15;
+
+        for (int x = 0; x < this.model.getBoard().getWidth(); x++) {
+            for (int y = 0; y < this.model.getBoard().getHeight(); y++) {
+                if (random.nextDouble() < SPECIAL_CELL_PROBABILITY) {
+                    this.model.getBoard().getBoardCells()[x][y] = getRandomSpecialCell(random);
+                } else {
+                    this.model.getBoard().getBoardCells()[x][y] = CellType.NORMAL;
+                }
+            }
+        }
+    }
+
+    private CellType getRandomSpecialCell(Random random) {
+        CellType[] specialCells = {CellType.TELEPORT, CellType.RETURN, CellType.DOUBLE_TURN};
+        return specialCells[random.nextInt(specialCells.length)];
+    }
+
+
+    private void createCells() {
+        final int width = this.model.getBoard().getWidth();
+        final int height = this.model.getBoard().getHeight();
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                this.model.getBoard().getBoardCells()[x][y] = CellType.NORMAL;
+            }
+        }
     }
 
     private void setupPlayers() {
@@ -79,34 +183,9 @@ public final class GameController {
 
     }
 
-    public ServiceResponse<Void> createMatch(final int playerCount, final int boardWidth, final int boardHeight, final int wallsPerPlayer){
-        if (!this.model.getMatchState().equals(GameModel.MatchState.INITIALIZED)) {
-            return new ErrorResponse<>("Cannot change the Game Mode after started");
-        }
-
-        if (this.model.getGameBaseParameters().getHasBeenSet()) {
-            return new ErrorResponse<>("There already a game with parameters set");
-        }
-
-        if (playerCount < 2 || playerCount > 4) {
-            return new ErrorResponse<>("Our Quoridor accept just 2, 3 and 4 players");
-        }
-
-        if (boardWidth < 0 || boardHeight < 0 || boardWidth > 21 || boardHeight > 21) {
-            return new ErrorResponse<>("Out of limits, the size must be between 0 and 21");
-        }
-
-        this.model.getGameBaseParameters().setBaseParameters(GameModes.CUSTOM, boardWidth, boardHeight, playerCount, wallsPerPlayer);
-
-        return this.startGame();
-    }
-
     private ServiceResponse<Void> startGame() {
-        if (this.model.getMatchState() == GameModel.MatchState.PLAYING) {
-            return new ErrorResponse<>("The game already started");
-        }
 
-        this.buildGame();
+
         this.matchManager = new MatchManager(this.model);
 
         this.globalStateManager.setCurrentState(GlobalState.PLAYING);
@@ -304,7 +383,7 @@ public final class GameController {
     }
 
     public ServiceResponse<GlobalState> getGlobalCurrentState() {
-        return new SuccessResponse<>(this.globalStateManager.getCurrentState(), "ok") ;
+        return new SuccessResponse<>(this.globalStateManager.getCurrentState(), "ok");
     }
 
     public ServiceResponse<Void> setGlobalState(GlobalState globalState) {

@@ -15,21 +15,15 @@ public final class Board {
     private final int height;
     private final int width;
 
+    private boolean isRandomly;
+
     public Board(final int width, final int height) {
         this.height = height;
         this.width = width;
 
         this.boardWalls = new WallData[2 * width - 1][2 * height - 1];
         this.boardCells = new CellType[width][height];
-        this.createCells();
-    }
-
-    private void createCells() {
-        for (int x = 0; x < this.width; x++) {
-            for (int y = 0; y < this.height; y++) {
-                this.boardCells[x][y] = CellType.NORMAL;
-            }
-        }
+        this.isRandomly = false;
     }
 
     public CellType getCell(final int x, final int y) {
@@ -58,6 +52,14 @@ public final class Board {
 
     public int getWidth() {
         return width;
+    }
+
+    public void setAsRandomly() {
+        this.isRandomly = true;
+    }
+
+    public boolean getIsRandomly() {
+        return this.isRandomly;
     }
 
     @Override

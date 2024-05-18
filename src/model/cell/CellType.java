@@ -1,5 +1,8 @@
 package model.cell;
 
 public enum CellType {
-    NORMAL;
+    NORMAL,
+    TELEPORT,
+    RETURN,
+    DOUBLE_TURN;
 }
