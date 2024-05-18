@@ -150,13 +150,14 @@ public final class GameController {
 
         this.model.getPlayers().forEach(((id, player) -> {
             playerTransferObjectArrayList.add(new PlayerTransferObject(id, player.getName(), new Point(player.getPosition()),
-                    this.model.getPlayerInTurnId() == id, this.matchManager.getPossibleMovements(player), player.getWallsInField(), player.getTimePlayed()));
+                    this.model.getPlayerInTurnId() == id, this.matchManager.getPossibleMovements(player), player.getWallsInField(),
+                    this.model.getGameModeManager().getBaseParameters().timeLimitPerPlayer -  player.getTimePlayed()));
         }));
 
         return new SuccessResponse<>(
                 new BoardTransferObject(
                         cellTypesCopy,
-                        wallTypesCopy, this.model.getGameModeManager().getBaseParameters().timeLimitPerPlayer - this.model.getTurnCount(),
+                        wallTypesCopy, this.model.getTurnCount(),
                         playerTransferObjectArrayList,
                         playerTransferObjectArrayList.stream().filter(PlayerTransferObject::isInTurn).findFirst().orElse(null) //TODO : check if this is correct
                 ), "Ok");
