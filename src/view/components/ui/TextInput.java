@@ -100,6 +100,8 @@ public final class TextInput extends GameComponent {
     }
 
     private void handleKeyTyped(KeyboardEvent event) {
+        String lastValue = this.value;
+
         if (!this.hasFocus) {
             return;
         }
@@ -115,9 +117,18 @@ public final class TextInput extends GameComponent {
         if (event.keyCode == KeyboardEvent.VK_BACKSPACE && !this.value.isEmpty()) {
             this.value = this.value.substring(0, this.value.length() - 1);
         }
+
+        if (!this.value.equals(lastValue)) {
+            this.dispatchComponentEvent(ComponentEvent.VALUE_CHANGED, lastValue, this.value);
+        }
     }
 
     public void setMaxLength(int maxLength) {
         this.maxLength = maxLength;
+
+        if (this.value.length() > maxLength) {
+            this.value = this.value.substring(0, maxLength);
+            this.dispatchComponentEvent(ComponentEvent.VALUE_CHANGED, this.value, this.value);
+        }
     }
 }

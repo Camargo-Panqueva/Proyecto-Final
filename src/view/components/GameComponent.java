@@ -10,6 +10,7 @@ import view.input.MouseEvent;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.function.BiConsumer;
 
 /**
  * Represents a component that can be rendered on the screen and interacted with.
@@ -22,6 +23,7 @@ public abstract class GameComponent {
 
     protected final GlobalContext globalContext;
     private final HashMap<MouseEvent.EventType, ArrayList<ConsumerFunction<MouseEvent>>> mouseEventHandlers;
+    private final HashMap<ComponentEvent, ArrayList<BiConsumer<Object, Object>>> componentEventHandlers;
     protected Style style;
     protected boolean isMouseEntered;
     protected boolean isMousePressed;
@@ -34,6 +36,7 @@ public abstract class GameComponent {
      */
     public GameComponent(GlobalContext globalContext) {
         this.mouseEventHandlers = new HashMap<>();
+        this.componentEventHandlers = new HashMap<>();
         this.globalContext = globalContext;
         this.style = new Style();
 
@@ -174,16 +177,32 @@ public abstract class GameComponent {
         this.globalContext.keyboard().addEventHandler(eventType, handler);
     }
 
+    public void addComponentListener(ComponentEvent eventType, BiConsumer<Object, Object> handler) {
+        if (!this.componentEventHandlers.containsKey(eventType)) {
+            this.componentEventHandlers.put(eventType, new ArrayList<>());
+        }
+
+        this.componentEventHandlers.get(eventType).add(handler);
+    }
+
     /**
      * Dispatches a mouse event to the event handlers.
      *
      * @param eventType the type of the mouse event.
      * @param event     the mouse event to dispatch.
      */
-    public void dispatchMouseEvent(MouseEvent.EventType eventType, MouseEvent event) {
+    protected void dispatchMouseEvent(MouseEvent.EventType eventType, MouseEvent event) {
         if (this.mouseEventHandlers.containsKey(eventType)) {
             for (ConsumerFunction<MouseEvent> function : this.mouseEventHandlers.get(eventType)) {
                 function.run(event);
+            }
+        }
+    }
+
+    protected void dispatchComponentEvent(ComponentEvent eventType, Object previousValue, Object newValue) {
+        if (this.componentEventHandlers.containsKey(eventType)) {
+            for (BiConsumer<Object, Object> function : this.componentEventHandlers.get(eventType)) {
+                function.accept(previousValue, newValue);
             }
         }
     }
@@ -204,5 +223,9 @@ public abstract class GameComponent {
      */
     public Style getStyle() {
         return style;
+    }
+
+    public enum ComponentEvent {
+        VALUE_CHANGED
     }
 }
