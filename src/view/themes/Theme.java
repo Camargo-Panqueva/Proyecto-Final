@@ -1,6 +1,10 @@
 package view.themes;
 
+import view.themes.ThemeColor.ColorName;
+import view.themes.ThemeColor.ColorVariant;
+
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -90,25 +94,30 @@ public abstract class Theme {
             put(ColorVariant.BRIGHT, purpleBright);
             put(ColorVariant.DIMMED, purpleDimmed);
         }});
+
+        this.colors.put(ColorName.TRANSPARENT, new HashMap<>() {{
+            put(ColorVariant.NORMAL, new Color(0, 0, 0, 0));
+            put(ColorVariant.BRIGHT, new Color(0, 0, 0, 0));
+            put(ColorVariant.DIMMED, new Color(0, 0, 0, 0));
+        }});
     }
 
     public Color getColor(ColorName colorName, ColorVariant colorVariant) {
         return colors.get(colorName).get(colorVariant);
     }
 
-    public enum ColorName {
-        PRIMARY,
-        BACKGROUND,
-        FOREGROUND,
-        RED,
-        GREEN,
-        BLUE,
-        PURPLE
+    public Color getColor(ThemeColor themeColor) {
+        return colors.get(themeColor.name()).get(themeColor.variant());
     }
 
-    public enum ColorVariant {
-        NORMAL,
-        BRIGHT,
-        DIMMED
+    public ArrayList<ColorName> getPlayerColors() {
+        ArrayList<ColorName> colorList = new ArrayList<>();
+
+        colorList.add(ColorName.RED);
+        colorList.add(ColorName.GREEN);
+        colorList.add(ColorName.BLUE);
+        colorList.add(ColorName.PURPLE);
+
+        return colorList;
     }
 }

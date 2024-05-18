@@ -4,7 +4,8 @@ import controller.dto.PlayerTransferObject;
 import view.context.GlobalContext;
 import view.context.MatchContext;
 import view.context.Style;
-import view.themes.Theme;
+import view.themes.ThemeColor.ColorName;
+import view.themes.ThemeColor.ColorVariant;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ public final class PlayerRenderer {
     private final GlobalContext globalContext;
     private final MatchContext matchContext;
 
-    public PlayerRenderer(Style boardStyle, GlobalContext globalContext, MatchContext matchContext){
+    public PlayerRenderer(Style boardStyle, GlobalContext globalContext, MatchContext matchContext) {
         this.boardStyle = boardStyle;
         this.globalContext = globalContext;
         this.matchContext = matchContext;
@@ -38,13 +39,13 @@ public final class PlayerRenderer {
 
 
     private void renderAllowedMoves(Graphics2D graphics, PlayerTransferObject player) {
-        Theme.ColorVariant variant = player.isInTurn() ? Theme.ColorVariant.NORMAL : Theme.ColorVariant.DIMMED;
+        ColorVariant variant = player.isInTurn() ? ColorVariant.NORMAL : ColorVariant.DIMMED;
+        Color color = this.globalContext.currentTheme().getColor(this.matchContext.getPlayerColor(player, variant));
 
-        graphics.setColor(this.matchContext.getPlayerColor(player, variant));
-
+        graphics.setColor(color);
         for (Point move : player.allowedMoves()) {
-            int x = move.x * (CELL_SIZE + WALL_SIZE) + this.boardStyle.x + this.boardStyle.paddingX;
-            int y = move.y * (CELL_SIZE + WALL_SIZE) + this.boardStyle.y + this.boardStyle.paddingY;
+            int x = move.x * (CELL_SIZE + WALL_SIZE) + this.boardStyle.x + this.boardStyle.borderWidth;
+            int y = move.y * (CELL_SIZE + WALL_SIZE) + this.boardStyle.y + this.boardStyle.borderWidth;
 
             graphics.drawOval(x, y, CELL_SIZE, CELL_SIZE);
         }
@@ -53,15 +54,16 @@ public final class PlayerRenderer {
     private void renderPlayer(Graphics2D graphics, PlayerTransferObject player) {
         graphics.setFont(this.globalContext.window().getCanvas().getFont().deriveFont(16.0f));
 
-        Theme.ColorVariant variant = player.isInTurn() ? Theme.ColorVariant.NORMAL : Theme.ColorVariant.DIMMED;
+        ColorVariant variant = player.isInTurn() ? ColorVariant.NORMAL : ColorVariant.DIMMED;
+        Color color = this.globalContext.currentTheme().getColor(this.matchContext.getPlayerColor(player, variant));
 
-        int x = player.position().x * (CELL_SIZE + WALL_SIZE) + this.boardStyle.x + this.boardStyle.paddingX;
-        int y = player.position().y * (CELL_SIZE + WALL_SIZE) + this.boardStyle.y + this.boardStyle.paddingY;
+        int x = player.position().x * (CELL_SIZE + WALL_SIZE) + this.boardStyle.x + this.boardStyle.borderWidth;
+        int y = player.position().y * (CELL_SIZE + WALL_SIZE) + this.boardStyle.y + this.boardStyle.borderWidth;
 
-        graphics.setColor(this.matchContext.getPlayerColor(player, variant));
+        graphics.setColor(color);
         graphics.fillOval(x, y, CELL_SIZE, CELL_SIZE);
 
-        graphics.setColor(this.globalContext.currentTheme().getColor(Theme.ColorName.BACKGROUND, Theme.ColorVariant.NORMAL));
+        graphics.setColor(this.globalContext.currentTheme().getColor(ColorName.BACKGROUND, ColorVariant.NORMAL));
         graphics.fillOval(
                 x + PLAYER_PADDING,
                 y + PLAYER_PADDING,
@@ -69,7 +71,7 @@ public final class PlayerRenderer {
                 CELL_SIZE - 2 * PLAYER_PADDING
         );
 
-        graphics.setColor(this.matchContext.getPlayerColor(player, variant));
+        graphics.setColor(color);
         graphics.fillOval(
                 x + 2 * PLAYER_PADDING,
                 y + 2 * PLAYER_PADDING,
@@ -77,10 +79,10 @@ public final class PlayerRenderer {
                 CELL_SIZE - 4 * PLAYER_PADDING
         );
 
-        graphics.setColor(this.matchContext.getPlayerColor(player, variant));
+        graphics.setColor(color);
         graphics.drawString(player.name(), x + CELL_SIZE, y - 3);
 
-        graphics.setColor(this.globalContext.currentTheme().getColor(Theme.ColorName.BACKGROUND, Theme.ColorVariant.NORMAL));
+        graphics.setColor(this.globalContext.currentTheme().getColor(ColorName.BACKGROUND, ColorVariant.NORMAL));
         graphics.drawString(
                 player.name().substring(0, 1),
                 x + CELL_SIZE / 2 - 5,

@@ -4,7 +4,9 @@ import controller.dto.PlayerTransferObject;
 import model.cell.CellType;
 import model.wall.WallType;
 import util.ConsumerFunction;
-import view.themes.Theme;
+import view.themes.ThemeColor;
+import view.themes.ThemeColor.ColorName;
+import view.themes.ThemeColor.ColorVariant;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -72,15 +74,14 @@ public final class MatchContext {
         return mousePosition;
     }
 
-    public Color getPlayerColor(PlayerTransferObject player, Theme.ColorVariant variant) {
+    public ThemeColor getPlayerColor(PlayerTransferObject player, ColorVariant variant) {
         int playerId = player.id();
-        Theme theme = this.globalContext.currentTheme();
 
         return switch (playerId) {
-            case 0 -> theme.getColor(Theme.ColorName.RED, variant);
-            case 1 -> theme.getColor(Theme.ColorName.PURPLE, variant);
-            case 2 -> theme.getColor(Theme.ColorName.BLUE, variant);
-            case 3 -> theme.getColor(Theme.ColorName.GREEN, variant);
+            case 0 -> new ThemeColor(ColorName.RED, variant);
+            case 1 -> new ThemeColor(ColorName.PURPLE, variant);
+            case 2 -> new ThemeColor(ColorName.BLUE, variant);
+            case 3 -> new ThemeColor(ColorName.GREEN, variant);
             default -> throw new IllegalArgumentException("Invalid player id: " + playerId);
         };
     }

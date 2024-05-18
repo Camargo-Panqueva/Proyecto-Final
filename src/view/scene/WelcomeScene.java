@@ -89,4 +89,9 @@ public final class WelcomeScene extends Scene {
         this.startButton.addMouseListener(MouseEvent.EventType.RELEASED, _event -> this.globalContext.controller().setGlobalState(GlobalState.SELECTING_GAME_MODE));
         this.themeButton.addMouseListener(MouseEvent.EventType.RELEASED, _event -> this.globalContext.themeManager().toggleTheme());
     }
+
+    @Override
+    public void fixCanvasSize() {
+        this.globalContext.window().setCanvasSize(600);
+    }
 }

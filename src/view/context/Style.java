@@ -1,5 +1,9 @@
 package view.context;
 
+import view.themes.ThemeColor;
+import view.themes.ThemeColor.ColorName;
+import view.themes.ThemeColor.ColorVariant;
+
 import java.awt.*;
 
 /**
@@ -15,17 +19,17 @@ public final class Style {
     /**
      * The color of the component's border.
      */
-    public Color borderColor;
+    public ThemeColor borderColor;
 
     /**
      * The color of the component's background.
      */
-    public Color backgroundColor;
+    public ThemeColor backgroundColor;
 
     /**
      * The color of the component's foreground.
      */
-    public Color foregroundColor;
+    public ThemeColor foregroundColor;
 
     /**
      * The font of the component's text.
@@ -81,9 +85,9 @@ public final class Style {
      * Creates a new style object with default values.
      */
     public Style() {
-        this.borderColor = Color.BLACK;
-        this.backgroundColor = Color.WHITE;
-        this.foregroundColor = Color.BLACK;
+        this.borderColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.NORMAL);
+        this.backgroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.NORMAL);
+        this.foregroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.NORMAL);
         this.paddingX = 0;
         this.paddingY = 0;
         this.borderRadius = 0;

@@ -11,6 +11,7 @@ public final class SceneManager {
     private final GlobalContext globalContext;
     private final HashMap<GlobalState, Scene> scenes;
     private Scene currentScene;
+    private GlobalState lastState;
 
     public SceneManager(GlobalContext globalContext) {
         this.scenes = new HashMap<>();
@@ -21,6 +22,10 @@ public final class SceneManager {
     public void fetchCurrentGlobalState() {
         GlobalState state = this.globalContext.controller().getGlobalCurrentState();
 
+        if (state == this.lastState) {
+            return;
+        }
+
         switch (state) {
             case WELCOME -> {
                 if (!this.scenes.containsKey(GlobalState.WELCOME)) {
@@ -29,9 +34,10 @@ public final class SceneManager {
 
                 this.currentScene = this.scenes.get(GlobalState.WELCOME);
             }
+            //TODO: Change scene name to settings
             case SELECTING_GAME_MODE -> {
                 if (!this.scenes.containsKey(GlobalState.SELECTING_GAME_MODE)) {
-                    this.scenes.put(GlobalState.SELECTING_GAME_MODE, new SelectModeScene(this.globalContext));
+                    this.scenes.put(GlobalState.SELECTING_GAME_MODE, new SettingsScene(this.globalContext));
                 }
 
                 this.currentScene = this.scenes.get(GlobalState.SELECTING_GAME_MODE);
@@ -44,10 +50,13 @@ public final class SceneManager {
                 this.currentScene = this.scenes.get(GlobalState.PLAYING);
             }
             default -> {
-                //TODO: Handle invalid state error
-                System.out.println("Invalid state");
+                //TODO: Handle error
+                throw new RuntimeException("Unknown state: " + state);
             }
         }
+
+        this.lastState = state;
+        this.currentScene.fixCanvasSize();
     }
 
     public void update() {

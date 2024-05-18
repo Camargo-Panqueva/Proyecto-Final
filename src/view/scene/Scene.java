@@ -96,4 +96,14 @@ public abstract class Scene {
      * </p>
      */
     protected abstract void setupEvents();
+
+    /**
+     * Fixes the size of the canvas to match the components total size.
+     * <p>
+     * This method is called when all components have been added to the scene.
+     * It should be used to fix resize the canvas to match the total size of the components.
+     * It's called automatically by Scene Manager when the scene is changed.
+     * </p>
+     */
+    protected abstract void fixCanvasSize();
 }

@@ -4,7 +4,8 @@ import model.wall.WallType;
 import view.context.GlobalContext;
 import view.context.MatchContext;
 import view.context.Style;
-import view.themes.Theme;
+import view.themes.ThemeColor.ColorName;
+import view.themes.ThemeColor.ColorVariant;
 
 import java.awt.*;
 
@@ -38,7 +39,7 @@ public final class WallRenderer {
                     continue;
                 }
 
-                this.renderWall(graphics, x, y, null, this.globalContext.currentTheme().getColor(Theme.ColorName.PRIMARY, Theme.ColorVariant.NORMAL));
+                this.renderWall(graphics, x, y, null, this.globalContext.currentTheme().getColor(ColorName.PRIMARY, ColorVariant.NORMAL));
             }
         }
     }
@@ -62,7 +63,7 @@ public final class WallRenderer {
             scaleParams[1] = scale;
         }
 
-        this.renderWall(graphics, x, y, scaleParams, this.globalContext.currentTheme().getColor(Theme.ColorName.PRIMARY, Theme.ColorVariant.DIMMED));
+        this.renderWall(graphics, x, y, scaleParams, this.globalContext.currentTheme().getColor(ColorName.PRIMARY, ColorVariant.DIMMED));
     }
 
     private void renderWall(Graphics2D graphics, int x, int y, int[] scaleParams, Color color) {
@@ -92,8 +93,8 @@ public final class WallRenderer {
         }
 
         graphics.fillRect(
-                this.boardStyle.x + this.boardStyle.paddingX + CELL_SIZE * cellsCountX + WALL_SIZE * wallsCountX,
-                this.boardStyle.y + this.boardStyle.paddingY + CELL_SIZE * cellsCountY + WALL_SIZE * wallsCountY,
+                this.boardStyle.x + this.boardStyle.borderWidth + CELL_SIZE * cellsCountX + WALL_SIZE * wallsCountX,
+                this.boardStyle.y + this.boardStyle.borderWidth + CELL_SIZE * cellsCountY + WALL_SIZE * wallsCountY,
                 width,
                 height
         );

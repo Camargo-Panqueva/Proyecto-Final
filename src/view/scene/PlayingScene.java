@@ -11,6 +11,8 @@ public final class PlayingScene extends Scene {
     private ControlPanel controlPanel;
     private MatchContext matchContext;
 
+    private int margin;
+
     /**
      * Creates a new PlayingScene with the given context provider.
      *
@@ -28,33 +30,42 @@ public final class PlayingScene extends Scene {
 
     @Override
     protected void setupComponents() {
-        int padding = 16;
+        this.margin = 46;
+
         int controlPanelWidth = 440;
         int borderRadius = 16;
+        int borderWidth = 16;
 
         this.matchContext = new MatchContext(this.globalContext);
 
         this.board = new Board(this.globalContext, this.matchContext);
-        this.board.getStyle().paddingX = padding;
-        this.board.getStyle().paddingY = padding;
         this.board.getStyle().borderRadius = 26;
+        this.board.getStyle().borderWidth = borderWidth;
+        this.board.getStyle().x = this.margin;
+        this.board.getStyle().y = this.margin;
         this.board.fitSize();
-        this.board.getStyle().centerHorizontally(this.globalContext);
-        this.board.getStyle().centerVertically(this.globalContext);
 
         this.controlPanel = new ControlPanel(this.globalContext, this.matchContext);
-        this.controlPanel.getStyle().x = this.board.getStyle().x + this.board.getStyle().width + padding;
+        this.controlPanel.getStyle().x = this.board.getStyle().x + this.board.getStyle().width + this.margin;
+        this.controlPanel.getStyle().y = this.board.getStyle().y;
         this.controlPanel.getStyle().width = controlPanelWidth;
         this.controlPanel.getStyle().height = this.board.getStyle().height;
-        this.controlPanel.getStyle().paddingX = padding;
-        this.controlPanel.getStyle().borderWidth = padding;
+        this.controlPanel.getStyle().borderWidth = borderWidth;
         this.controlPanel.getStyle().borderRadius = borderRadius;
         this.controlPanel.fitSize();
-        this.controlPanel.getStyle().centerVertically(this.globalContext);
     }
 
     @Override
     protected void setupEvents() {
 
+    }
+
+    @Override
+    protected void fixCanvasSize() {
+        int expectedWidth = this.controlPanel.getStyle().x + this.controlPanel.getStyle().width + this.margin;
+        int expectedHeight = this.board.getStyle().y + this.board.getStyle().height + this.margin;
+
+        this.globalContext.window().setCanvasWidth(expectedWidth);
+        this.globalContext.window().setCanvasHeight(expectedHeight);
     }
 }

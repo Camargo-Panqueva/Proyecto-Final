@@ -3,6 +3,9 @@ package view.components.ui;
 import view.components.GameComponent;
 import view.context.GlobalContext;
 import view.themes.Theme;
+import view.themes.ThemeColor;
+import view.themes.ThemeColor.ColorName;
+import view.themes.ThemeColor.ColorVariant;
 
 import java.awt.*;
 
@@ -49,9 +52,29 @@ public final class Text extends GameComponent {
     public void render(Graphics2D graphics) {
         graphics.setFont(this.style.font);
         FontMetrics fontMetrics = this.globalContext.window().getCanvas().getFontMetrics(this.style.font);
+        Color backgroundColor = this.globalContext.currentTheme().getColor(this.style.backgroundColor);
+        Color foregroundColor = this.globalContext.currentTheme().getColor(this.style.foregroundColor);
 
-        graphics.setColor(this.style.foregroundColor);
-        graphics.drawString(this.text, this.style.x, this.style.y + this.style.height - fontMetrics.getDescent());
+        graphics.setColor(backgroundColor);
+        graphics.fillRoundRect(
+                this.style.x,
+                this.style.y,
+                this.style.width,
+                this.style.height,
+                this.style.borderRadius,
+                this.style.borderRadius
+        );
+
+        int textWidth = fontMetrics.stringWidth(this.text);
+        int textHeight = fontMetrics.getHeight();
+        int adjust = 8;
+
+        graphics.setColor(foregroundColor);
+        graphics.drawString(
+                this.text,
+                this.style.x + (this.style.width - textWidth) / 2,
+                this.style.y + (this.style.height + textHeight - adjust) / 2
+        );
     }
 
     /**
@@ -71,19 +94,6 @@ public final class Text extends GameComponent {
     }
 
     /**
-     * Handles a theme change event.
-     * <p>
-     * This method updates the foreground color of the text component to match the new theme.
-     * </p>
-     *
-     * @param theme the new theme.
-     */
-    @Override
-    protected void handleThemeChange(Theme theme) {
-        this.style.foregroundColor = theme.getColor(Theme.ColorName.FOREGROUND, Theme.ColorVariant.NORMAL);
-    }
-
-    /**
      * Sets up the default style for the component.
      * <p>
      * This method sets up the default style for the text component.
@@ -93,7 +103,9 @@ public final class Text extends GameComponent {
     @Override
     protected void setupDefaultStyle() {
         this.style.font = this.globalContext.window().getCanvas().getFont().deriveFont(16.0f);
-        this.style.foregroundColor = this.globalContext.currentTheme().getColor(Theme.ColorName.FOREGROUND, Theme.ColorVariant.NORMAL);
+        this.style.foregroundColor = new ThemeColor(ColorName.FOREGROUND, ColorVariant.NORMAL);
+        this.style.backgroundColor = new ThemeColor(ColorName.TRANSPARENT, ColorVariant.NORMAL);
+        this.style.borderRadius = 16;
     }
 
     /**

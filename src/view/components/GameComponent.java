@@ -6,7 +6,6 @@ import view.context.Style;
 import view.input.KeyboardEvent;
 import view.input.Mouse;
 import view.input.MouseEvent;
-import view.themes.Theme;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -40,7 +39,6 @@ public abstract class GameComponent {
 
         this.setupDefaultEventListeners();
         this.setupDefaultStyle();
-        this.globalContext.themeManager().addListener(this::handleThemeChange);
     }
 
     /**
@@ -59,13 +57,6 @@ public abstract class GameComponent {
      * Fits the component's size to its content.
      */
     public abstract void fitSize();
-
-    /**
-     * Handles a theme change event.
-     *
-     * @param theme the new theme.
-     */
-    protected abstract void handleThemeChange(Theme theme);
 
     /**
      * Sets up the default style for the component.
