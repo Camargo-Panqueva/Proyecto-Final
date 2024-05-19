@@ -5,6 +5,7 @@ import model.player.Player;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class AIPlayer {
 
@@ -26,6 +27,8 @@ public class AIPlayer {
 
     private void beginnerMove() {
         ArrayList<Point> possibleMoves = this.matchManager.getPossibleMovements(this.aiPlayer);
-        this.matchManager.executeMove(this.aiPlayer, possibleMoves.get(0));
+        Random random = new Random();
+        int randomIndex = random.nextInt(possibleMoves.size());
+        this.matchManager.executeMove(this.aiPlayer, possibleMoves.get(randomIndex));
     }
 }

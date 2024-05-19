@@ -108,10 +108,6 @@ public final class GameModel {
         return this.walls.get(uuid);
     }
 
-    public void setWallCount(int wallCount) {
-        this.wallCount = wallCount;
-    }
-
     public HashMap<UUID, WallData> getWalls() {
         return walls;
     }

@@ -16,6 +16,7 @@ import model.wall.WallType;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Random;
 
 public final class GameController {
@@ -35,7 +36,6 @@ public final class GameController {
         final int playerCount = setupSettings.players().size();
         final int boardWidth = setupSettings.boardWidth();
         final int boardHeight = setupSettings.boardHeight();
-        final int wallsPerPlayer = setupSettings.wallTypeCount().values().stream().mapToInt(Integer::intValue).sum();
 
         final int time = setupSettings.time();
         final DifficultyType difficultyType = setupSettings.difficultyType();
@@ -81,7 +81,7 @@ public final class GameController {
             return new ErrorResponse<>("The sum of walls at most it should be: " + playerWallQuota);
         }
 
-        this.model.getGameBaseParameters().setBaseParameters(boardWidth, boardHeight, playerCount, wallsPerPlayer);
+        this.model.getGameBaseParameters().setBaseParameters(boardWidth, boardHeight, playerCount, setupSettings.wallTypeCount());
 
         this.buildBoard(setupSettings.randomCells());
 
@@ -95,7 +95,6 @@ public final class GameController {
     }
 
     private void buildBoard(final boolean isRandom) {
-        this.model.setWallCount(this.model.getGameBaseParameters().getWallsPerPlayer());
         this.model.setBoard(this.model.getGameBaseParameters().getBoardWidth(), this.model.getGameBaseParameters().getBoardHeight());
 
         if (isRandom) {
@@ -109,7 +108,7 @@ public final class GameController {
         }
     }
 
-    private void createRandomlyCells() {
+    private void createRandomlyCells() { // TODO : check if cell spawn in spawn player
         Random random = new Random();
         final double SPECIAL_CELL_PROBABILITY = 0.15;
 
@@ -141,7 +140,7 @@ public final class GameController {
     }
 
     private void setupPlayers(ArrayList<PlayerSetupTransferObject> players) {
-        final int allowedWallsPerPlayer = this.model.getGameBaseParameters().getWallsPerPlayer();
+        final HashMap<WallType, Integer> allowedWallsPerPlayer = this.model.getGameBaseParameters().getWallsCountPerPlayer();
 
         final int width = this.model.getBoard().getWidth() - 1;
         final int height = this.model.getBoard().getHeight() - 1;
@@ -154,32 +153,32 @@ public final class GameController {
         final int heightCenterPosition = heightIsEven ? (height / 2) - 1 : (height / 2);
 
         if (widthIsEven) {
-            this.model.addPlayer(0, new Player(new Point(widthCenterPosition + 1, 0), players.get(0).name(), allowedWallsPerPlayer, -1, height));
-            this.model.addPlayer(1, new Player(new Point(widthCenterPosition + 2, height), players.get(1).name(), allowedWallsPerPlayer, -1, 0));
+            this.model.addPlayer(0, new Player(new Point(widthCenterPosition + 1, 0), players.get(0).name(), new HashMap<>(allowedWallsPerPlayer), -1, height));
+            this.model.addPlayer(1, new Player(new Point(widthCenterPosition + 2, height), players.get(1).name(), new HashMap<>(allowedWallsPerPlayer), -1, 0));
         } else {
-            this.model.addPlayer(0, new Player(new Point(widthCenterPosition, 0), players.get(0).name(), allowedWallsPerPlayer, -1, height));
-            this.model.addPlayer(1, new Player(new Point(widthCenterPosition, height), players.get(1).name(), allowedWallsPerPlayer, -1, 0));
+            this.model.addPlayer(0, new Player(new Point(widthCenterPosition, 0), players.get(0).name(), new HashMap<>(allowedWallsPerPlayer), -1, height));
+            this.model.addPlayer(1, new Player(new Point(widthCenterPosition, height), players.get(1).name(), new HashMap<>(allowedWallsPerPlayer), -1, 0));
         }
 
         if (heightIsEven) {
             if (this.model.getPlayerCount() > 2) {
-                this.model.addPlayer(2, new Player(new Point(0, heightCenterPosition + 2), players.get(2).name(), allowedWallsPerPlayer, width, -1));
+                this.model.addPlayer(2, new Player(new Point(0, heightCenterPosition + 2), players.get(2).name(), new HashMap<>(allowedWallsPerPlayer), width, -1));
             }
             if (this.model.getPlayerCount() > 3) {
-                this.model.addPlayer(3, new Player(new Point(width, heightCenterPosition + 1), players.get(3).name(), allowedWallsPerPlayer, 0, -1));
+                this.model.addPlayer(3, new Player(new Point(width, heightCenterPosition + 1), players.get(3).name(), new HashMap<>(allowedWallsPerPlayer), 0, -1));
             }
         } else {
 
             if (this.model.getPlayerCount() > 2) {
-                this.model.addPlayer(2, new Player(new Point(0, heightCenterPosition), players.get(2).name(), allowedWallsPerPlayer, width, -1));
+                this.model.addPlayer(2, new Player(new Point(0, heightCenterPosition), players.get(2).name(), new HashMap<>(allowedWallsPerPlayer), width, -1));
             }
             if (this.model.getPlayerCount() > 3) {
-                this.model.addPlayer(3, new Player(new Point(width, heightCenterPosition), players.get(3).name(), allowedWallsPerPlayer, 0, -1));
+                this.model.addPlayer(3, new Player(new Point(width, heightCenterPosition), players.get(3).name(), new HashMap<>(allowedWallsPerPlayer), 0, -1));
             }
         }
 
         for (int i = 0; i < this.model.getPlayerCount(); i++) {
-            if (players.get(i).playerType() == PlayerType.AI){
+            if (players.get(i).playerType() == PlayerType.AI) {
                 this.model.getPlayers().get(i).setAsAI();
                 this.model.getPlayers().get(i).setAiProfile(players.get(i).aiProfile());
             }
@@ -214,7 +213,7 @@ public final class GameController {
             playerTransferObjectArrayList.add(new PlayerTransferObject(id, player.getName(), new Point(player.getPosition()),
                     this.model.getPlayerInTurnId() == id, this.matchManager.getPossibleMovements(player), player.getWallsInField(),
                     this.model.getDifficulty().getTimePerTurn() - player.getTimePlayed(),
-                    this.model.getGameBaseParameters().getWallsPerPlayer() - player.getWallsInField()));
+                    player.getPlayerWalls()));
         }));
 
         return new SuccessResponse<>(
@@ -273,8 +272,8 @@ public final class GameController {
             return new ErrorResponse<>("Walls cannot be placed in corners");
         }
         final Player player = this.model.getPlayers().get(playerId);
-        if (player.getAllowedWalls() - player.getWallsInField() <= 0) {
-            return new ErrorResponse<>(player.getName() + " already placed all of his Walls: " + player.getAllowedWalls() + "/" + player.getWallsInField());
+        if (player.getPlayerWalls().get(wall.getWallType()) <= 0) {
+            return new ErrorResponse<>(player.getName() + " already placed all of his " + wall.getWallType().toString() + " Walls");
         }
 
         final ArrayList<Point> newWalls = new ArrayList<>();

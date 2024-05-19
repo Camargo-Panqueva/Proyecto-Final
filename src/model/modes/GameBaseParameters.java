@@ -1,20 +1,25 @@
 package model.modes;
 
+import model.wall.WallType;
+
+import java.util.HashMap;
+
 public final class GameBaseParameters {
     private int boardHeight;
     private int boardWidth;
     private int playerCount;
-    private int wallsPerPlayer;
+    private HashMap<WallType, Integer> wallsPerPlayer;
     private boolean hasBeenSet;
 
     public GameBaseParameters() {
         this.boardWidth = 9;
         this.boardHeight = 9;
-        this.wallsPerPlayer = 10;
+        this.wallsPerPlayer = new HashMap<>();
+        this.wallsPerPlayer.put(WallType.NORMAL, 10);
         this.hasBeenSet = false;
     }
 
-    public void setBaseParameters(int boardWidth, int boardHeight, int playerCount, int wallsPerPlayer) {
+    public void setBaseParameters(int boardWidth, int boardHeight, int playerCount, HashMap<WallType, Integer> wallsPerPlayer) {
         if (!hasBeenSet) {
             this.boardHeight = boardHeight;
             this.boardWidth = boardWidth;
@@ -36,7 +41,11 @@ public final class GameBaseParameters {
         return playerCount;
     }
 
-    public int getWallsPerPlayer() {
+    public HashMap<WallType, Integer> getWallsPerPlayer(){
+        return this.wallsPerPlayer;
+    }
+
+    public HashMap<WallType, Integer> getWallsCountPerPlayer() {
         return wallsPerPlayer;
     }
 

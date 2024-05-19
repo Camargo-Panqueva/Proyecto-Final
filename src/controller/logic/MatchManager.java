@@ -44,6 +44,8 @@ public class MatchManager {
         this.model.setPlayerInTurn(0);
         this.indexCurrentIndex = 0;
 
+        //TODO : if start AI player???
+
         this.triggerActionBeforeTurn();
     }
 
@@ -152,6 +154,7 @@ public class MatchManager {
         player.addWallPlaced(wall.getWallData());
         this.walls.put(wallUuid, wall);
         this.model.addWall(wallUuid, wall.getWallData());
+        player.subtractWall(wall.getWallType());
         this.nextTurn();
     }
 

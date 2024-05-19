@@ -1,32 +1,32 @@
 package model.player;
 
 import model.wall.WallData;
+import model.wall.WallType;
 
-import java.awt.Point;
+import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Player {
     private Point position;
-    private int wallsPlaced;
     private final String name;
-    private final int allowedWalls;
+    private final HashMap<WallType, Integer> playerWalls;
     private final int xWinPosition;
     private final int yWinPosition;
     private final Point winDirection;
-    private final ArrayList<WallData> playerWalls;
+    private final ArrayList<WallData> PlayerWallsPlaced;
     private int timePlayed;
     private boolean isAI;
     private AIProfile aiProfile;
 
-    public Player(final Point initialPosition, final String name, final int allowedWalls, final int xWinner, final int yWinner) {
+    public Player(final Point initialPosition, final String name, final HashMap<WallType, Integer> allowedWalls, final int xWinner, final int yWinner) {
         this.name = name;
         this.position = initialPosition;
-        this.allowedWalls = allowedWalls;
-        this.playerWalls = new ArrayList<>();
+        this.playerWalls = allowedWalls;
+        this.PlayerWallsPlaced = new ArrayList<>();
         this.xWinPosition = xWinner;
         this.yWinPosition = yWinner;
         this.winDirection = this.generateWinDirection();
-        this.wallsPlaced = 0;
         this.timePlayed = 0;
         this.isAI = false;
     }
@@ -54,16 +54,20 @@ public class Player {
         return this.winDirection;
     }
 
-    public int getAllowedWalls() {
-        return allowedWalls;
+    public int getRemainingWallsCount() {
+        return playerWalls.values().stream().mapToInt(Integer::intValue).sum();
+    }
+
+    public HashMap<WallType, Integer> getPlayerWalls() {
+        return playerWalls;
     }
 
     public int getWallsInField() {
-        return playerWalls.size();
+        return PlayerWallsPlaced.size();
     }
 
     public int getWallsPlaced() {
-        return wallsPlaced;
+        return getPlayerWallsPlaced().size();
     }
 
     public int getTimePlayed() {
@@ -82,7 +86,7 @@ public class Player {
         return name;
     }
 
-    public boolean getIsAI(){
+    public boolean getIsAI() {
         return this.isAI;
     }
 
@@ -90,11 +94,11 @@ public class Player {
         return aiProfile;
     }
 
-    public ArrayList<WallData> getPlayerWalls() {
-        return new ArrayList<>(playerWalls);
+    public ArrayList<WallData> getPlayerWallsPlaced() {
+        return new ArrayList<>(PlayerWallsPlaced);
     }
 
-    public void setAsAI(){
+    public void setAsAI() {
         this.isAI = true;
     }
 
@@ -111,11 +115,15 @@ public class Player {
     }
 
     public void addWallPlaced(WallData newAddedWall) {
-        this.playerWalls.add(newAddedWall);
-        this.wallsPlaced++;
+        this.PlayerWallsPlaced.add(newAddedWall);
     }
 
-    public void removeWallPlaced(WallData wallData){
-        this.playerWalls.remove(wallData);
+    public void subtractWall(WallType wallType){
+        final Integer newValue = this.playerWalls.get(wallType) - 1;
+        this.getPlayerWalls().put(wallType, newValue);
+    }
+
+    public void removeWallPlaced(WallData wallData) {
+        this.PlayerWallsPlaced.remove(wallData);
     }
 }
