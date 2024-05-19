@@ -38,6 +38,8 @@ public final class WelcomeScene extends Scene {
      * This method adds all components to the scene.
      * It's a protected and self-implemented method by the class.
      * </p>
+     *
+     * @see Scene#addAllComponents()
      */
     @Override
     protected void addAllComponents() {
@@ -53,6 +55,8 @@ public final class WelcomeScene extends Scene {
      * This method sets up the components for the scene.
      * It's a protected and self-implemented method by the class.
      * </p>
+     *
+     * @see Scene#setupComponents()
      */
     @Override
     protected void setupComponents() {
@@ -83,13 +87,24 @@ public final class WelcomeScene extends Scene {
      * This method sets up the events for the scene.
      * It's a protected and self-implemented method by the class.
      * </p>
+     *
+     * @see Scene#setupEvents()
      */
     @Override
     protected void setupEvents() {
-        this.startButton.addMouseListener(MouseEvent.EventType.RELEASED, _event -> this.globalContext.controller().setGlobalState(GlobalState.SELECTING_GAME_MODE));
+        this.startButton.addMouseListener(MouseEvent.EventType.RELEASED, _event -> this.globalContext.controller().setGlobalState(GlobalState.SETUP_MATCH_SETTINGS));
         this.themeButton.addMouseListener(MouseEvent.EventType.RELEASED, _event -> this.globalContext.themeManager().toggleTheme());
     }
 
+    /**
+     * Fixes the canvas size for the scene.
+     * <p>
+     * This method fixes the canvas size for the scene.
+     * It's a protected and self-implemented method by the class.
+     * </p>
+     *
+     * @see Scene#fixCanvasSize()
+     */
     @Override
     public void fixCanvasSize() {
         this.globalContext.window().setCanvasSize(600);

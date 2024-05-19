@@ -16,7 +16,6 @@ public final class Window {
 
     private final JFrame frame;
     private final Canvas canvas;
-    private final String title;
 
     /**
      * Creates a new Window with the given size and title.
@@ -30,7 +29,6 @@ public final class Window {
      * @param title the title of the window.
      */
     public Window(final int size, final String title) {
-        this.title = title;
 
         this.frame = new JFrame();
         this.canvas = new Canvas();
@@ -80,16 +78,8 @@ public final class Window {
     }
 
     /**
-     * Gets the title of the window.
-     *
-     * @return the title of the window.
-     */
-    public String getTitle() {
-        return title;
-    }
-
-    /**
      * Gets the size of the canvas.
+     *
      * @return the size of the canvas.
      */
     public int getCanvasSize() {
@@ -98,6 +88,7 @@ public final class Window {
 
     /**
      * Sets the size of the canvas.
+     *
      * @param size the size of the canvas.
      */
     public void setCanvasSize(int size) {
@@ -107,6 +98,11 @@ public final class Window {
         this.frame.setLocationRelativeTo(null);
     }
 
+    /**
+     * Sets the width of the canvas.
+     *
+     * @param width the width of the canvas.
+     */
     public void setCanvasWidth(int width) {
         this.canvas.setPreferredSize(new Dimension(width, this.canvas.getHeight()));
         this.canvas.setSize(new Dimension(width, this.canvas.getHeight()));
@@ -114,6 +110,11 @@ public final class Window {
         this.frame.setLocationRelativeTo(null);
     }
 
+    /**
+     * Sets the height of the canvas.
+     *
+     * @param height the height of the canvas.
+     */
     public void setCanvasHeight(int height) {
         this.canvas.setPreferredSize(new Dimension(this.canvas.getWidth(), height));
         this.canvas.setSize(new Dimension(this.canvas.getWidth(), height));
@@ -122,15 +123,8 @@ public final class Window {
     }
 
     /**
-     * Gets the JFrame of the window.
-     * @return the JFrame of the window.
-     */
-    public JFrame getFrame() {
-        return frame;
-    }
-
-    /**
      * Gets the canvas of the window.
+     *
      * @return the canvas of the window.
      */
     public Canvas getCanvas() {

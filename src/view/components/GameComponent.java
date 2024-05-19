@@ -178,10 +178,22 @@ public abstract class GameComponent {
         this.mouseEventHandlers.get(eventType).add(handler);
     }
 
+    /**
+     * Adds an event listener for the given keyboard event.
+     *
+     * @param eventType the keyboard event type to listen for.
+     * @param handler   the event handler to run when the event is dispatched.
+     */
     public void addKeyListener(KeyboardEvent.EventType eventType, ConsumerFunction<KeyboardEvent> handler) {
         this.globalContext.keyboard().addEventHandler(eventType, handler);
     }
 
+    /**
+     * Adds an event listener for the given component event.
+     *
+     * @param eventType the component event type to listen for.
+     * @param handler   the event handler to run when the event is dispatched.
+     */
     public void addComponentListener(ComponentEvent eventType, BiConsumer<Object, Object> handler) {
         if (!this.componentEventHandlers.containsKey(eventType)) {
             this.componentEventHandlers.put(eventType, new ArrayList<>());
@@ -204,6 +216,13 @@ public abstract class GameComponent {
         }
     }
 
+    /**
+     * Dispatches a component event to the event handlers.
+     *
+     * @param eventType     the type of the component event.
+     * @param previousValue the previous value of the component.
+     * @param newValue      the new value of the component.
+     */
     protected void dispatchComponentEvent(ComponentEvent eventType, Object previousValue, Object newValue) {
         if (this.componentEventHandlers.containsKey(eventType)) {
             for (BiConsumer<Object, Object> function : this.componentEventHandlers.get(eventType)) {
@@ -249,7 +268,14 @@ public abstract class GameComponent {
         return style;
     }
 
+    /**
+     * Enum representing the different component events.
+     */
     public enum ComponentEvent {
+
+        /**
+         * The event that is dispatched when the value of the component changes.
+         */
         VALUE_CHANGED
     }
 }

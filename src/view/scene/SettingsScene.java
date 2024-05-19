@@ -163,9 +163,6 @@ public final class SettingsScene extends Scene {
     protected void setupEvents() {
 
         this.startButton.addMouseListener(MouseEvent.EventType.RELEASED, event -> {
-            //TODO: Implement game start
-
-
             SetupTransferObject setupTransferObject = new SetupTransferObject(
                     this.widthCellsSelect.getSelectedOption(),
                     this.heightCellsSelect.getSelectedOption(),
@@ -183,19 +180,17 @@ public final class SettingsScene extends Scene {
             }
         });
 
-        this.backButton.addMouseListener(MouseEvent.EventType.RELEASED, event -> {
-            this.globalContext.controller().setGlobalState(GlobalState.WELCOME);
-        });
+        this.backButton.addMouseListener(MouseEvent.EventType.RELEASED, event -> this.globalContext.controller().setGlobalState(GlobalState.WELCOME));
 
-        this.difficultySelect.addComponentListener(GameComponent.ComponentEvent.VALUE_CHANGED, (previousValue, currentValue) -> {
-            this.updateDisabledTime();
-        });
-        this.widthCellsSelect.addComponentListener(GameComponent.ComponentEvent.VALUE_CHANGED, (previousValue, currentValue) -> {
-            this.updateMaxWallCount(this.getMaxWallCount());
-        });
-        this.heightCellsSelect.addComponentListener(GameComponent.ComponentEvent.VALUE_CHANGED, (previousValue, currentValue) -> {
-            this.updateMaxWallCount(this.getMaxWallCount());
-        });
+        this.difficultySelect.addComponentListener(GameComponent.ComponentEvent.VALUE_CHANGED,
+                (_previousValue, _currentValue) -> this.updateDisabledTime()
+        );
+        this.widthCellsSelect.addComponentListener(GameComponent.ComponentEvent.VALUE_CHANGED,
+                (_previousValue, _currentValue) -> this.updateMaxWallCount(this.getMaxWallCount())
+        );
+        this.heightCellsSelect.addComponentListener(GameComponent.ComponentEvent.VALUE_CHANGED,
+                (_previousValue, _currentValue) -> this.updateMaxWallCount(this.getMaxWallCount())
+        );
 
         for (int index = 0; index < this.playerColorSelects.size(); index++) {
             Selector<ColorName> colorNameSelector = this.playerColorSelects.get(index);
@@ -204,27 +199,34 @@ public final class SettingsScene extends Scene {
 
             int finalIndex = index;
 
-            colorNameSelector.addComponentListener(GameComponent.ComponentEvent.VALUE_CHANGED, (previousValue, currentValue) -> {
-                this.updatePlayerFieldColor(finalIndex, (ColorName) previousValue, (ColorName) currentValue);
-            });
+            colorNameSelector.addComponentListener(GameComponent.ComponentEvent.VALUE_CHANGED,
+                    (previousValue, currentValue) -> this.updatePlayerFieldColor(finalIndex, (ColorName) previousValue, (ColorName) currentValue)
+            );
 
-            playerTypeSelect.addComponentListener(GameComponent.ComponentEvent.VALUE_CHANGED, (previousValue, currentValue) -> {
-                this.updateDisabledAiProfiles(finalIndex);
-            });
+            playerTypeSelect.addComponentListener(GameComponent.ComponentEvent.VALUE_CHANGED,
+                    (_previousValue, _currentValue) -> this.updateDisabledAiProfiles(finalIndex)
+            );
 
-            playerNameInput.addComponentListener(GameComponent.ComponentEvent.VALUE_CHANGED, (previousValue, currentValue) -> {
-                this.updateDisabledPlayers();
-            });
+            playerNameInput.addComponentListener(GameComponent.ComponentEvent.VALUE_CHANGED,
+                    (_previousValue, _currentValue) -> this.updateDisabledPlayers()
+            );
         }
 
 
         for (Selector<Integer> wallCountSelector : this.wallCountSelects) {
-            wallCountSelector.addComponentListener(GameComponent.ComponentEvent.VALUE_CHANGED, (previousValue, currentValue) -> {
-                this.updateMaxWallCount(this.getMaxWallCount());
-            });
+            wallCountSelector.addComponentListener(GameComponent.ComponentEvent.VALUE_CHANGED,
+                    (_previousValue, _currentValue) -> this.updateMaxWallCount(this.getMaxWallCount())
+            );
         }
     }
 
+    /**
+     * Updates the scene.
+     * <p>
+     * This method updates the scene.
+     * It's a protected and self-implemented method by the class.
+     * </p>
+     */
     @Override
     protected void fixCanvasSize() {
         int expectedHeight = this.startButton.getStyle().y + this.startButton.getStyle().height + this.margin;
@@ -235,6 +237,14 @@ public final class SettingsScene extends Scene {
         this.globalContext.window().setCanvasWidth(expectedWidth);
     }
 
+    /**
+     * Set up the basic components for the scene.
+     * <p>
+     * This method sets up the basic components for the scene.
+     * It creates the difficulty selector, special cells selector, width and height selectors.
+     * It also sets up the labels for each component.
+     * </p>
+     */
     private void setupBasicComponents() {
         ArrayList<DifficultyType> difficultyOptions = new ArrayList<>(Arrays.asList(DifficultyType.values()));
         this.difficultySelect = new Selector<>(difficultyOptions, this.globalContext);
@@ -301,6 +311,14 @@ public final class SettingsScene extends Scene {
         this.heightCellsSelect.setSelectedOption(9);
     }
 
+    /**
+     * Sets up the time selector components for the scene.
+     * <p>
+     * This method sets up the time selector components for the scene.
+     * It creates the time limit label, minutes and seconds input fields.
+     * It also sets up the style for each component.
+     * </p>
+     */
     private void setupTimeSelectorComponents() {
 
         this.timeLimitLabel = new Text("Time", this.globalContext);
@@ -342,6 +360,14 @@ public final class SettingsScene extends Scene {
         this.updateDisabledTime();
     }
 
+    /**
+     * Sets up the wall count components for the scene.
+     * <p>
+     * This method sets up the wall count components for the scene.
+     * It creates the wall count labels and selectors for each wall type.
+     * It also sets up the style for each component.
+     * </p>
+     */
     private void setupWallCountComponents() {
         ArrayList<WallType> wallTypes = new ArrayList<>(Arrays.asList(WallType.values()));
         this.wallCountLabels = new ArrayList<>();
@@ -350,7 +376,11 @@ public final class SettingsScene extends Scene {
         for (WallType wallType : wallTypes) {
             Text wallCountLabel = new Text(wallType.toString(), this.globalContext);
             wallCountLabel.getStyle().x = this.margin;
-            wallCountLabel.getStyle().y = this.paddingY + this.minutesInput.getStyle().height + this.minutesInput.getStyle().y + this.wallCountLabels.size() * (this.paddingY + this.componentHeight);
+            wallCountLabel.getStyle().y = this.paddingY +
+                    this.minutesInput.getStyle().height +
+                    this.minutesInput.getStyle().y +
+                    this.wallCountLabels.size() * (this.paddingY + this.componentHeight);
+
             wallCountLabel.getStyle().height = this.componentHeight;
             wallCountLabel.getStyle().width = 3 * (this.componentWidth - this.paddingX) / 5;
             wallCountLabel.getStyle().font = this.componentFont;
@@ -373,6 +403,14 @@ public final class SettingsScene extends Scene {
         this.updateMaxWallCount(this.getMaxWallCount());
     }
 
+    /**
+     * Sets up the player components for the scene.
+     * <p>
+     * This method sets up the player components for the scene.
+     * It creates the player name inputs, color selectors, player type selectors and AI profile selectors.
+     * It also sets up the style for each component.
+     * </p>
+     */
     private void setupPlayerComponents() {
         int playerCount = 4;
         this.playerNameInputs = new ArrayList<>();
@@ -443,6 +481,15 @@ public final class SettingsScene extends Scene {
         this.updateDisabledPlayers();
     }
 
+    /**
+     * Sets up the buttons for the scene.
+     *
+     * <p>
+     * This method sets up the buttons for the scene.
+     * It creates the start and back buttons.
+     * It also sets up the style for each component.
+     * <p>
+     */
     private void setupButtons() {
         this.backButton = new Button("Cancel", this.globalContext);
         this.backButton.getStyle().x = this.playerNameInputs.get(0).getStyle().x;
@@ -466,6 +513,18 @@ public final class SettingsScene extends Scene {
         this.startButton.getStyle().font = this.componentFont;
     }
 
+    /**
+     * Updates the player field color.
+     * <p>
+     * This method updates the player field color.
+     * It changes the color of the player field based on the selected color.
+     * It also updates the color of the other player fields if they have the same color.
+     * </p>
+     *
+     * @param index             the index of the player field.
+     * @param previousColorName the previous color name.
+     * @param colorName         the color name.
+     */
     private void updatePlayerFieldColor(int index, ColorName previousColorName, ColorName colorName) {
 
         this.playerNameInputs.get(index).getStyle().foregroundColor = new ThemeColor(colorName, ColorVariant.NORMAL);
@@ -497,6 +556,16 @@ public final class SettingsScene extends Scene {
         this.updateDisabledPlayers();
     }
 
+    /**
+     * Updates the maximum wall count.
+     * <p>
+     * This method updates the maximum wall count.
+     * It changes the maximum wall count based on the selected width and height.
+     * It also updates the maximum wall count for each wall type.
+     * </p>
+     *
+     * @param maxWallCount the maximum wall count.
+     */
     private void updateMaxWallCount(int maxWallCount) {
 
         for (Selector<Integer> wallCountSelector : this.wallCountSelects) {
@@ -506,6 +575,14 @@ public final class SettingsScene extends Scene {
         }
     }
 
+    /**
+     * Updates the disabled players.
+     * <p>
+     * This method updates the disabled players.
+     * It disables the player fields if the player name is empty.
+     * It also updates the disabled player fields based on the player type and AI profile.
+     * </p>
+     */
     private void updateDisabledPlayers() {
         for (int index = 0; index < this.playerNameInputs.size(); index++) {
             TextInput playerNameInput = this.playerNameInputs.get(index);
@@ -520,6 +597,13 @@ public final class SettingsScene extends Scene {
         }
     }
 
+    /**
+     * Updates the disabled time.
+     * <p>
+     * This method updates the disabled time.
+     * It disables the time limit fields if the difficulty is normal.
+     * </p>
+     */
     private void updateDisabledTime() {
         boolean timeDisabled = this.difficultySelect.getSelectedOption().equals(DifficultyType.NORMAL);
         this.timeLimitLabel.setDisabled(timeDisabled);
@@ -528,12 +612,30 @@ public final class SettingsScene extends Scene {
         this.secondsInput.setDisabled(timeDisabled);
     }
 
+    /**
+     * Updates the disabled AI profiles.
+     * <p>
+     * This method updates the disabled AI profiles.
+     * It disables the AI profile fields if the player type is not AI or the player name is empty.
+     * </p>
+     *
+     * @param index the index of the AI profile field.
+     */
     private void updateDisabledAiProfiles(int index) {
         Selector<AIProfile> aiProfileSelect = this.aiProfileSelects.get(index);
         PlayerType playerType = this.playerTypeSelects.get(index).getSelectedOption();
         aiProfileSelect.setDisabled(!playerType.equals(PlayerType.AI) || this.playerNameInputs.get(index).getValue().isEmpty());
     }
 
+    /**
+     * Gets the wall counts.
+     * <p>
+     * This method gets the wall counts.
+     * It returns a hash map with the wall type and the wall count.
+     * </p>
+     *
+     * @return the wall counts.
+     */
     private HashMap<WallType, Integer> getWallCounts() {
         HashMap<WallType, Integer> wallCounts = new HashMap<>();
 
@@ -547,6 +649,15 @@ public final class SettingsScene extends Scene {
         return wallCounts;
     }
 
+    /**
+     * Gets the player setups.
+     * <p>
+     * This method gets the player setups.
+     * It returns an array list with the player setups.
+     * </p>
+     *
+     * @return the player setups.
+     */
     private ArrayList<PlayerSetupTransferObject> getPlayerSetups() {
         ArrayList<PlayerSetupTransferObject> playerSetups = new ArrayList<>();
 
@@ -572,6 +683,15 @@ public final class SettingsScene extends Scene {
         return playerSetups;
     }
 
+    /**
+     * Gets the total seconds.
+     * <p>
+     * This method gets the total seconds.
+     * It returns the total seconds based on the minutes and seconds input fields.
+     * </p>
+     *
+     * @return the total seconds.
+     */
     private int getTotalSeconds() {
         int minutes = Integer.parseInt(this.minutesInput.getValue());
         int seconds = Integer.parseInt(this.secondsInput.getValue());
@@ -579,6 +699,15 @@ public final class SettingsScene extends Scene {
         return minutes * 60 + seconds;
     }
 
+    /**
+     * Gets the maximum wall count.
+     * <p>
+     * This method gets the maximum wall count.
+     * It returns the maximum wall count based on the selected width and height.
+     * </p>
+     *
+     * @return the maximum wall count.
+     */
     private int getMaxWallCount() {
         int width = this.widthCellsSelect.getSelectedOption();
         int height = this.heightCellsSelect.getSelectedOption();
@@ -586,6 +715,15 @@ public final class SettingsScene extends Scene {
         return Math.min(width, height) + 1;
     }
 
+    /**
+     * Gets the current wall count.
+     * <p>
+     * This method gets the current wall count.
+     * It returns the current wall count based on the selected wall counts.
+     * </p>
+     *
+     * @return the current wall count.
+     */
     private int getCurrentWallCount() {
         int wallCount = 0;
 

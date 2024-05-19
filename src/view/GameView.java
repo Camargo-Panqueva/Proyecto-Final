@@ -23,6 +23,14 @@ import java.lang.management.MemoryMXBean;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * The GameView class is responsible for rendering the game state and handling user input.
+ *
+ * <p>It uses a {@link GlobalContext} to store the game state and a {@link SceneManager} to manage the game scenes.
+ * It also uses a {@link ThemeManager} to manage the game themes and a {@link Window} to display the game.
+ * And it uses a {@link Mouse} and a {@link Keyboard} to handle user input.
+ * </p>
+ */
 public final class GameView {
 
     private final GlobalContext globalContext;
@@ -37,6 +45,11 @@ public final class GameView {
     private ConcurrentLoop updateLoop;
     private BufferStrategy bufferStrategy;
 
+    /**
+     * Creates a new GameView with the given controller.
+     *
+     * @param controller the controller for the view.
+     */
     public GameView(GameController controller) {
         this.setupGraphicsEnvironment();
 
@@ -53,6 +66,11 @@ public final class GameView {
         this.sceneManager = new SceneManager(this.globalContext);
     }
 
+    /**
+     * Starts the game view.
+     *
+     * <p>It makes the window visible and starts the render and update loops.</p>
+     */
     public void start() {
         this.window.makeVisible();
 
@@ -63,16 +81,31 @@ public final class GameView {
         this.updateLoop.start();
     }
 
+    /**
+     * Stops the game view.
+     *
+     * <p>It stops the render and update loops.</p>
+     */
     public void stop() {
         this.renderLoop.stop();
         this.updateLoop.stop();
     }
 
+    /**
+     * Updates the game view.
+     *
+     * <p>It updates the mouse, the scene manager and the window.</p>
+     */
     private void update() {
         this.mouse.update(this.window);
         this.sceneManager.update();
     }
 
+    /**
+     * Renders the game view.
+     *
+     * <p>It renders the background, the current state and the performance information.</p>
+     */
     private void render() {
 
         if (this.bufferStrategy == null) {
@@ -90,12 +123,26 @@ public final class GameView {
         bufferStrategy.show();
     }
 
+    /**
+     * Renders the background of the game view.
+     *
+     * <p>It renders the background with the current theme color.</p>
+     *
+     * @param graphics the graphics object to render the background.
+     */
     private void renderBackground(Graphics2D graphics) {
         graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         graphics.setColor(this.globalContext.currentTheme().getColor(ColorName.BACKGROUND, ColorVariant.NORMAL));
         graphics.fillRect(0, 0, this.window.getCanvasSize(), this.window.getCanvasSize());
     }
 
+    /**
+     * Renders the performance information of the game view.
+     *
+     * <p>It renders the frames per second, the ticks per second, the mouse position, the CPU load and the memory usage.</p>
+     *
+     * @param graphics the graphics object to render the performance information.
+     */
     private void renderPerformance(Graphics2D graphics) {
         graphics.setColor(this.globalContext.currentTheme().getColor(ColorName.FOREGROUND, ColorVariant.NORMAL));
         graphics.setFont(new Font("Arial", Font.PLAIN, 12));
@@ -135,10 +182,22 @@ public final class GameView {
         graphics.drawString(uptimeText, canvasSize - fontMetrics.stringWidth(uptimeText) - 6, 80);
     }
 
+    /**
+     * Renders the current state of the game view.
+     *
+     * <p>It renders the current state of the game using the scene manager.</p>
+     *
+     * @param graphics the graphics object to render the current state.
+     */
     private void renderCurrentState(Graphics2D graphics) {
         this.sceneManager.render(graphics);
     }
 
+    /**
+     * Sets up the graphics environment of the game view.
+     *
+     * <p>It sets the system look and feel and registers the game font.</p>
+     */
     private void setupGraphicsEnvironment() {
         try {
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

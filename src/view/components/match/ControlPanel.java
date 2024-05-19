@@ -15,6 +15,14 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+/**
+ * Represents a control panel for the game.
+ * <p>
+ * This class represents a control panel for the game.
+ * It provides a structure for displaying information about the game state and the players.
+ * The control panel is used to display information about the game state and the players.
+ * </p>
+ */
 public final class ControlPanel extends GameComponent {
 
     private final MatchContext matchContext;
@@ -29,6 +37,7 @@ public final class ControlPanel extends GameComponent {
      * Creates a new ControlPanel component with the given context provider.
      *
      * @param globalContext the context provider for the component.
+     * @param matchContext  the match context of the game.
      */
     public ControlPanel(GlobalContext globalContext, MatchContext matchContext) {
         super(globalContext);
@@ -38,6 +47,11 @@ public final class ControlPanel extends GameComponent {
         this.setupComponentEvents();
     }
 
+    /**
+     * Renders the background of the control panel.
+     *
+     * @param graphics the graphics object to render the background with.
+     */
     private void renderBackground(Graphics2D graphics) {
         graphics.setColor(this.globalContext.currentTheme().getColor(ColorName.BACKGROUND, ColorVariant.DIMMED));
         graphics.fillRoundRect(
@@ -60,6 +74,14 @@ public final class ControlPanel extends GameComponent {
         );
     }
 
+    /**
+     * Updates the control panel's logic.
+     *
+     * <p>
+     * This method updates the control panel's logic.
+     * It updates the player text, timer, and remaining walls.
+     * </p>
+     */
     @Override
     public void update() {
         for (GameComponent component : this.components) {
@@ -67,6 +89,15 @@ public final class ControlPanel extends GameComponent {
         }
     }
 
+    /**
+     * Renders the control panel on the screen.
+     * <p>
+     * This method renders the control panel on the screen.
+     * It renders the background and all the components of the control panel.
+     * </p>
+     *
+     * @param graphics the graphics object to render the control panel with.
+     */
     @Override
     public void render(Graphics2D graphics) {
         this.renderBackground(graphics);
@@ -76,6 +107,13 @@ public final class ControlPanel extends GameComponent {
         }
     }
 
+    /**
+     * Fits the control panel's size to its content.
+     * <p>
+     * This method fits the control panel's size to its content.
+     * It fits the size of the title, player name, timer, wall selector, and remaining walls.
+     * </p>
+     */
     @Override
     public void fitSize() {
         for (GameComponent component : this.components) {
@@ -97,10 +135,22 @@ public final class ControlPanel extends GameComponent {
         System.out.println(this.remainingWalls.getStyle().x + " " + this.remainingWalls.getStyle().y);
     }
 
+    /**
+     * Sets up the default style for the control panel.
+     */
     @Override
     protected void setupDefaultStyle() {
     }
 
+    /**
+     * Updates the player text.
+     *
+     * <p>
+     * This method updates the player text.
+     * It sets the text of the player name to the current player's name.
+     * It sets the color of the player name to the color of the current player.
+     * </p>
+     */
     private void updatePlayerText() {
         String text = String.format("Is the %s's turn!", this.matchContext.playerInTurn().name());
 
@@ -111,6 +161,15 @@ public final class ControlPanel extends GameComponent {
         this.wallSelector.getStyle().backgroundColor = this.matchContext.getPlayerColor(this.matchContext.playerInTurn(), ColorVariant.NORMAL);
     }
 
+    /**
+     * Updates the timer.
+     *
+     * <p>
+     * This method updates the timer.
+     * It sets the text of the timer to the remaining time of the current player.
+     * It sets the color of the timer to green if the remaining time is greater than 15 seconds, and red otherwise.
+     * </p>
+     */
     private void updateTimer() {
         int timeRemaining = this.matchContext.playerInTurn().secondRemaining();
         String text = String.format("%d Sec.", this.matchContext.playerInTurn().secondRemaining());
@@ -126,10 +185,29 @@ public final class ControlPanel extends GameComponent {
         this.timer.getStyle().centerHorizontally(this.getBounds());
     }
 
+    /**
+     * Updates the remaining walls.
+     *
+     * <p>
+     * This method updates the remaining walls.
+     * It sets the text of the remaining walls to the number of walls of the current player.
+     * It sets the color of the remaining walls to the color of the current player.
+     * </p>
+     */
     private void updateRemainingWalls() {
         this.remainingWalls.setText("x" + this.matchContext.playerInTurn().wallsRemaining().get(this.matchContext.selectedWallType()));
     }
 
+    /**
+     * Sets up the events for the control panel.
+     *
+     * <p>
+     * This method sets up the events for the control panel.
+     * It sets up the events for the turn changed, remaining time changed, and wall type changed events.
+     * It sets up the events for the wall selector value changed event.
+     * It sets up the event for the space key pressed event.
+     * </p>
+     */
     private void setupComponentEvents() {
         this.matchContext.addEventListener(MatchContext.MatchEvent.TURN_CHANGED, _event -> {
             this.updatePlayerText();
@@ -155,6 +233,14 @@ public final class ControlPanel extends GameComponent {
         });
     }
 
+    /**
+     * Sets up the components of the control panel.
+     *
+     * <p>
+     * This method sets up the components of the control panel.
+     * It sets up the title, player name, timer, wall selector, and remaining walls.
+     * </p>
+     */
     private void setupComponents() {
 
         this.components = new ArrayList<>();

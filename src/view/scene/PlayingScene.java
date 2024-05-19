@@ -5,6 +5,14 @@ import view.components.match.ControlPanel;
 import view.context.GlobalContext;
 import view.context.MatchContext;
 
+/**
+ * Represents a scene that is displayed when the game is being played.
+ * <p>
+ * This class represents a scene that is displayed when the game is being played.
+ * It provides a structure for displaying the game board and control panel.
+ * The scene is displayed when the game is being played and the player is making moves.
+ * </p>
+ */
 public final class PlayingScene extends Scene {
 
     private Board board;
@@ -22,12 +30,26 @@ public final class PlayingScene extends Scene {
         super(globalContext);
     }
 
+    /**
+     * Adds all components to the scene.
+     * <p>
+     * This method adds all components to the scene.
+     * It adds the control panel and board to the scene.
+     * </p>
+     */
     @Override
     protected void addAllComponents() {
         this.addComponent(this.controlPanel);
         this.addComponent(this.board);
     }
 
+    /**
+     * Sets up the components for the scene.
+     * <p>
+     * This method sets up the components for the scene.
+     * It sets up the board and control panel for the scene.
+     * </p>
+     */
     @Override
     protected void setupComponents() {
         this.margin = 46;
@@ -55,11 +77,25 @@ public final class PlayingScene extends Scene {
         this.controlPanel.fitSize();
     }
 
+    /**
+     * Sets up the events for the scene.
+     * <p>
+     * This method sets up the events for the scene.
+     * It sets up the events for the board and control panel.
+     * </p>
+     */
     @Override
     protected void setupEvents() {
 
     }
 
+    /**
+     * Fixes the canvas size for the scene.
+     * </p>
+     * This method fixes the canvas size for the scene.
+     * It sets the canvas width and height based on the board and control panel sizes.
+     * </p>
+     */
     @Override
     protected void fixCanvasSize() {
         int expectedWidth = this.controlPanel.getStyle().x + this.controlPanel.getStyle().width + this.margin;

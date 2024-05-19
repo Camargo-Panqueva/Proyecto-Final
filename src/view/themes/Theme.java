@@ -23,10 +23,26 @@ public abstract class Theme {
      * Creates a new Theme with the given colors.
      *
      * @param primary          the primary color of the theme.
+     * @param primaryBright    the primary contrast color of the theme.
      * @param primaryDimmed    the secondary color of the theme.
      * @param background       the background color of the theme.
+     * @param backgroundBright the background contrast color of the theme.
      * @param backgroundDimmed the background contrast color of the theme.
      * @param foreground       the foreground color of the theme.
+     * @param foregroundBright the foreground contrast color of the theme.
+     * @param foregroundDimmed the foreground contrast color of the theme.
+     * @param red              the red color of the theme.
+     * @param redBright        the red contrast color of the theme.
+     * @param redDimmed        the red contrast color of the theme.
+     * @param green            the green color of the theme.
+     * @param greenBright      the green contrast color of the theme.
+     * @param greenDimmed      the green contrast color of the theme.
+     * @param blue             the blue color of the theme.
+     * @param blueBright       the blue contrast color of the theme.
+     * @param blueDimmed       the blue contrast color of the theme.
+     * @param purple           the purple color of the theme.
+     * @param purpleBright     the purple contrast color of the theme.
+     * @param purpleDimmed     the purple contrast color of the theme.
      */
     public Theme(
             Color primary,
@@ -102,10 +118,23 @@ public abstract class Theme {
         }});
     }
 
+    /**
+     * Gets the color of the given name and variant.
+     *
+     * @param colorName    the name of the color.
+     * @param colorVariant the variant of the color.
+     * @return the color of the given name and variant.
+     */
     public Color getColor(ColorName colorName, ColorVariant colorVariant) {
         return colors.get(colorName).get(colorVariant);
     }
 
+    /**
+     * Gets the color of the given theme color.
+     *
+     * @param themeColor the theme color.
+     * @return the color of the given theme color.
+     */
     public Color getColor(ThemeColor themeColor) {
         return colors.get(themeColor.name()).get(themeColor.variant());
     }

@@ -11,10 +11,11 @@ import java.awt.*;
 import java.util.ArrayList;
 
 /**
- * A component that allows the user to select an option from a list of options.
+ * Represents a selector component that can be rendered on the screen.
  * <p>
- * This class represents a selector component that allows the user to select an option from a list of options.
- * It provides a basic structure for rendering a selector component on the screen.
+ * This class represents a selector component that can be rendered on the screen.
+ * It provides a basic structure for rendering selectors on the screen and
+ * handling mouse events.
  * </p>
  *
  * @param <T> the type of the options in the selector.
@@ -45,6 +46,13 @@ public final class Selector<T> extends GameComponent {
         this.type = SelectorType.OBJECT;
     }
 
+    /**
+     * Creates a new Selector with the given options, min, max, and context provider.
+     *
+     * @param min           the minimum value for the selector.
+     * @param max           the maximum value for the selector.
+     * @param globalContext the context provider for the selector.
+     */
     public Selector(int min, int max, GlobalContext globalContext) {
         super(globalContext);
 
@@ -57,6 +65,12 @@ public final class Selector<T> extends GameComponent {
         this.type = SelectorType.NUMBER;
     }
 
+    /**
+     * Creates a new Selector with the given default value and context provider.
+     *
+     * @param defaultValue  the default value for the selector.
+     * @param globalContext the context provider for the selector.
+     */
     public Selector(boolean defaultValue, GlobalContext globalContext) {
         super(globalContext);
 
@@ -140,7 +154,6 @@ public final class Selector<T> extends GameComponent {
     public void fitSize() {
     }
 
-
     /**
      * Sets up the default style for the component.
      * <p>
@@ -187,6 +200,18 @@ public final class Selector<T> extends GameComponent {
         });
     }
 
+    /**
+     * Increments the selected option in the selector.
+     *
+     * <p>
+     * This method increments the selected option in the selector.
+     * If the selector is an object selector, the selected option is incremented by one.
+     * If the selector is a number selector, the selected option is incremented by one if it is less than the maximum value.
+     * If the selector is a boolean selector, the selected option is toggled between true and false.
+     * <br>
+     * The {@link ComponentEvent#VALUE_CHANGED} event is dispatched with the previous and new selected options.
+     * </p>
+     */
     public void incrementSelectedOption() {
         T previousValue = this.getSelectedOption();
 
@@ -201,6 +226,18 @@ public final class Selector<T> extends GameComponent {
         this.dispatchComponentEvent(ComponentEvent.VALUE_CHANGED, previousValue, this.getSelectedOption());
     }
 
+    /**
+     * Decrements the selected option in the selector.
+     *
+     * <p>
+     * This method decrements the selected option in the selector.
+     * If the selector is an object selector, the selected option is decremented by one.
+     * If the selector is a number selector, the selected option is decremented by one if it is greater than the minimum value.
+     * If the selector is a boolean selector, the selected option is toggled between true and false.
+     * <br>
+     * The {@link ComponentEvent#VALUE_CHANGED} event is dispatched with the previous and new selected options.
+     * </p>
+     */
     public void decrementSelectedOption() {
         T previousValue = this.getSelectedOption();
 
@@ -228,6 +265,21 @@ public final class Selector<T> extends GameComponent {
         };
     }
 
+    /**
+     * Sets the selected option for the selector.
+     * <p>
+     * This method sets the selected option for the selector.
+     * If the selector is an object selector, the selected option is set to the given option.
+     * If the selector is a number selector, the selected option is set to the given number if it is within the range.
+     * If the selector is a boolean selector, the selected option is set to the given boolean value.
+     * <br>
+     * The {@link ComponentEvent#VALUE_CHANGED} event is dispatched with the previous and new selected options.
+     * If the option is not found in the selector, an {@link IllegalArgumentException} is thrown.
+     * If the option is out of range, an {@link IllegalArgumentException} is thrown.
+     * </p>
+     *
+     * @param selectedOption the selected option to set for the selector.
+     */
     public void setSelectedOption(T selectedOption) {
         if (this.type == SelectorType.OBJECT) {
             int index = this.options.indexOf(selectedOption);
@@ -253,10 +305,29 @@ public final class Selector<T> extends GameComponent {
         this.dispatchComponentEvent(ComponentEvent.VALUE_CHANGED, selectedOption, this.getSelectedOption());
     }
 
+    /**
+     * Gets the selected index from the selector.
+     *
+     * @return the selected index from the selector.
+     */
     public int getSelectedIndex() {
         return this.selectedOption;
     }
 
+    /**
+     * Sets the selected index for the selector.
+     * <p>
+     * This method sets the selected index for the selector.
+     * If the selector is an object selector, the selected index is set to the given index.
+     * If the selector is a number selector, the selected index is set to the given number if it is within the range.
+     * If the selector is a boolean selector, the selected index is set to the given boolean value.
+     * <br>
+     * The {@link ComponentEvent#VALUE_CHANGED} event is dispatched with the previous and new selected options.
+     * If the index is out of range, an {@link IllegalArgumentException} is thrown.
+     * </p>
+     *
+     * @param selectedOption the selected index to set for the selector.
+     */
     public void setSelectedIndex(int selectedOption) {
 
         if (this.type != SelectorType.OBJECT) {
@@ -269,6 +340,11 @@ public final class Selector<T> extends GameComponent {
         }
     }
 
+    /**
+     * Gets the string value of the selected option.
+     *
+     * @return the string value of the selected option.
+     */
     private String getStringValue() {
         return switch (this.type) {
             case OBJECT -> this.options.get(this.selectedOption).toString();
@@ -277,6 +353,19 @@ public final class Selector<T> extends GameComponent {
         };
     }
 
+    /**
+     * Sets the maximum value for the number selector.
+     * <p>
+     * This method sets the maximum value for the number selector.
+     * If the selector is not a number selector, an {@link UnsupportedOperationException} is thrown.
+     * If the maximum value is less than the minimum value, an {@link IllegalArgumentException} is thrown.
+     * The selected option is updated to the maximum value if it is greater than the maximum value.
+     * <br>
+     * The {@link ComponentEvent#VALUE_CHANGED} event is dispatched with the previous and new selected options.
+     * </p>
+     *
+     * @param max the maximum value to set for the number selector.
+     */
     public void setMax(int max) {
         if (this.type != SelectorType.NUMBER) {
             throw new UnsupportedOperationException("Max value can only be set for number selectors");
@@ -289,9 +378,38 @@ public final class Selector<T> extends GameComponent {
         this.selectedOption = Math.min(max, this.selectedOption);
     }
 
+    /**
+     * Enum representing the different selector types.
+     *
+     * <p>
+     * This enum represents the different types of selectors that can be created.
+     * The selector type can be an object selector, a number selector, or a boolean selector.
+     * </p>
+     */
     public enum SelectorType {
+
+        /**
+         * The type of the selector is an object selector.
+         * <p>
+         * This type represents a selector that can select from a list of objects.
+         * </p>
+         */
         OBJECT,
+
+        /**
+         * The type of the selector is a number selector.
+         * <p>
+         * This type represents a selector that can select from a range of numbers.
+         * </p>
+         */
         NUMBER,
+
+        /**
+         * The type of the selector is a boolean selector.
+         * <p>
+         * This type represents a selector that can select between true and false.
+         * </p>
+         */
         BOOLEAN
     }
 }

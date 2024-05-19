@@ -2,7 +2,7 @@ package controller.states;
 
 public enum GlobalState {
     WELCOME,
-    SELECTING_GAME_MODE,
+    SETUP_MATCH_SETTINGS,
     PLAYING,
     GAME_FINISHED
 }

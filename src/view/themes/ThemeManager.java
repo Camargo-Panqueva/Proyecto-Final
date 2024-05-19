@@ -12,13 +12,6 @@ public final class ThemeManager {
     private Theme currentTheme;
 
     /**
-     * Creates a new ThemeManager with the default light theme.
-     */
-    public ThemeManager() {
-        this.currentTheme = new LightTheme();
-    }
-
-    /**
      * Creates a new ThemeManager with the given theme.
      *
      * @param theme the theme to use for the manager.

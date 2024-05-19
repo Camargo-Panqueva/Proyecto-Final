@@ -14,10 +14,29 @@ import java.awt.event.MouseAdapter;
  */
 public final class Mouse extends MouseAdapter {
 
+    /**
+     * The button code for the left mouse button.
+     */
     public static final int LEFT_BUTTON = 1;
+
+    /**
+     * The button code for the middle mouse button.
+     */
     public static final int MIDDLE_BUTTON = 2;
+
+    /**
+     * The button code for the right mouse button.
+     */
     public static final int RIGHT_BUTTON = 3;
+
+    /**
+     * The button code for the backward mouse button.
+     */
     public static final int BACKWARD_BUTTON = 4;
+
+    /**
+     * The button code for the forward mouse button.
+     */
     public static final int FORWARD_BUTTON = 5;
 
     private final Point mousePosition;

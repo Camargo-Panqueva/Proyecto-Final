@@ -10,6 +10,14 @@ import view.themes.ThemeColor.ColorVariant;
 
 import java.awt.*;
 
+/**
+ * Represents a text input component that can be rendered on the screen.
+ * <p>
+ * This class represents a text input component that can be rendered on the screen.
+ * It provides a basic structure for rendering text input fields on the screen.
+ * Text input fields are used to capture user input from the keyboard.
+ * </p>
+ */
 public final class TextInput extends GameComponent {
 
     private static final int BLINK_INTERVAL = 1600;
@@ -21,6 +29,7 @@ public final class TextInput extends GameComponent {
      * Creates a new TextInput component with the given context provider.
      *
      * @param globalContext the context provider for the component.
+     * @param placeholder   the placeholder text to display in the text input field.
      */
     public TextInput(GlobalContext globalContext, String placeholder) {
         super(globalContext);
@@ -31,11 +40,23 @@ public final class TextInput extends GameComponent {
         this.maxLength = 20;
     }
 
+    /**
+     * Updates the component's logic.
+     * <p>
+     * This method only handles keyboard events for the text input field.
+     * It runs the {@link #pollMouseEvents} method to check for keyboard events.
+     * </p>
+     */
     @Override
     public void update() {
         this.pollMouseEvents();
     }
 
+    /**
+     * Renders the TextInput component on the screen.
+     *
+     * @param graphics the graphics object to render the component with.
+     */
     @Override
     public void render(Graphics2D graphics) {
         graphics.setFont(this.style.font);
@@ -102,11 +123,31 @@ public final class TextInput extends GameComponent {
         graphics.drawString(this.value + appendedValue, textX, textY);
     }
 
+    /**
+     * Fits the component's size to its content.
+     * <p>
+     * This method is not implemented for the TextInput component.
+     * TextInput components have a fixed size and do not need to fit to their content.
+     * </p>
+     */
     @Override
     public void fitSize() {
 
     }
 
+    /**
+     * Sets up the default style for the component.
+     * <p>
+     * This method sets up the default style for the text input component.
+     * It sets the background color to the background contrast color of the current theme,
+     * the foreground color to the foreground color of the current theme,
+     * the border color to the primary color of the current theme,
+     * the font to a {@code 26pt} font, the height to {@code 60px}, the width to {@code 300px},
+     * the border radius to {@code 16px}, and the padding to {@code 16px}.
+     * <br>
+     * This method is called in the constructor of the component.
+     * </p>
+     */
     @Override
     protected void setupDefaultStyle() {
         this.style.backgroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.DIMMED);
@@ -119,6 +160,13 @@ public final class TextInput extends GameComponent {
         this.style.paddingX = 16;
     }
 
+    /**
+     * Sets up the default event listeners for the component.
+     * <p>
+     * This method sets up the default event listeners for the text input component.
+     * It adds a key listener to the component to handle keyboard events.
+     * </p>
+     */
     @Override
     protected void setupDefaultEventListeners() {
         super.setupDefaultEventListeners();
@@ -126,6 +174,16 @@ public final class TextInput extends GameComponent {
         this.addKeyListener(KeyboardEvent.EventType.PRESSED, this::handleKeyTyped);
     }
 
+    /**
+     * Handles the key typed event for the text input field.
+     * <p>
+     * This method handles the key typed event for the text input field.
+     * It appends the typed character to the text input field's value.
+     * If the backspace key is pressed, it removes the last character from the text input field's value.
+     * </p>
+     *
+     * @param event the key typed event to handle.
+     */
     private void handleKeyTyped(KeyboardEvent event) {
         String lastValue = this.value;
 
@@ -150,6 +208,16 @@ public final class TextInput extends GameComponent {
         }
     }
 
+    /**
+     * Sets the maximum length of the text input field.
+     * <p>
+     * This method sets the maximum length of the text input field.
+     * If the current value of the text input field is longer than the maximum length,
+     * it truncates the value to the maximum length.
+     * </p>
+     *
+     * @param maxLength the maximum length of the text input field.
+     */
     public void setMaxLength(int maxLength) {
         this.maxLength = maxLength;
 
@@ -159,10 +227,24 @@ public final class TextInput extends GameComponent {
         }
     }
 
+    /**
+     * Gets the current value of the text input field.
+     *
+     * @return the current value of the text input field.
+     */
     public String getValue() {
         return this.value;
     }
 
+    /**
+     * Sets the value of the text input field.
+     * <p>
+     * This method sets the value of the text input field.
+     * It dispatches a value changed event if the value has changed.
+     * </p>
+     *
+     * @param value the new value of the text input field.
+     */
     public void setValue(String value) {
         this.dispatchComponentEvent(ComponentEvent.VALUE_CHANGED, this.value, value);
         this.value = value;
