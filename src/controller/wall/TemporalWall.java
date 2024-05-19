@@ -1,6 +1,7 @@
 package controller.wall;
 
 import controller.logic.MatchManager;
+import model.player.Player;
 import model.wall.WallType;
 
 public class TemporalWall extends Wall {
@@ -35,7 +36,9 @@ public class TemporalWall extends Wall {
     @Override
     public void actionAtFinishTurn(MatchManager matchManager) {
         if (matchManager.getTurnCount() - this.getCreationTurn() >= this.turnRemaining) {
+            Player player = this.getOwner();
             matchManager.executeDeleteWall(this.getWallId());
+            player.addWallToPlace(this.getWallType());
         }
     }
 }

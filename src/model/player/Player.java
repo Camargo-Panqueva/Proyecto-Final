@@ -118,6 +118,11 @@ public class Player {
         this.PlayerWallsPlaced.add(newAddedWall);
     }
 
+    public void addWallToPlace(WallType wallType){
+        final Integer newValue = this.playerWalls.get(wallType) + 1;
+        this.getPlayerWalls().put(wallType, newValue);
+    }
+
     public void subtractWall(WallType wallType){
         final Integer newValue = this.playerWalls.get(wallType) - 1;
         this.getPlayerWalls().put(wallType, newValue);
