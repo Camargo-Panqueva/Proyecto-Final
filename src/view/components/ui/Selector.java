@@ -187,7 +187,7 @@ public final class Selector<T> extends GameComponent {
         });
     }
 
-    private void incrementSelectedOption() {
+    public void incrementSelectedOption() {
         T previousValue = this.getSelectedOption();
 
         if (this.type == SelectorType.OBJECT)
@@ -201,7 +201,7 @@ public final class Selector<T> extends GameComponent {
         this.dispatchComponentEvent(ComponentEvent.VALUE_CHANGED, previousValue, this.getSelectedOption());
     }
 
-    private void decrementSelectedOption() {
+    public void decrementSelectedOption() {
         T previousValue = this.getSelectedOption();
 
         if (this.type == SelectorType.OBJECT)

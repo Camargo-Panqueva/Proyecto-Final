@@ -190,6 +190,12 @@ public final class SettingsScene extends Scene {
         this.difficultySelect.addComponentListener(GameComponent.ComponentEvent.VALUE_CHANGED, (previousValue, currentValue) -> {
             this.updateDisabledTime();
         });
+        this.widthCellsSelect.addComponentListener(GameComponent.ComponentEvent.VALUE_CHANGED, (previousValue, currentValue) -> {
+            this.updateMaxWallCount(this.getMaxWallCount());
+        });
+        this.heightCellsSelect.addComponentListener(GameComponent.ComponentEvent.VALUE_CHANGED, (previousValue, currentValue) -> {
+            this.updateMaxWallCount(this.getMaxWallCount());
+        });
 
         for (int index = 0; index < this.playerColorSelects.size(); index++) {
             Selector<ColorName> colorNameSelector = this.playerColorSelects.get(index);
@@ -351,7 +357,7 @@ public final class SettingsScene extends Scene {
             wallCountLabel.getStyle().backgroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.DIMMED);
             wallCountLabel.getStyle().foregroundColor = new ThemeColor(ColorName.GREEN, ColorVariant.NORMAL);
 
-            Selector<Integer> wallCountSelector = new Selector<>(0, 10, this.globalContext);
+            Selector<Integer> wallCountSelector = new Selector<>(0, 15, this.globalContext);
             wallCountSelector.getStyle().x = this.paddingX + wallCountLabel.getStyle().width + wallCountLabel.getStyle().x;
             wallCountSelector.getStyle().y = wallCountLabel.getStyle().y;
             wallCountSelector.getStyle().height = this.componentHeight;
@@ -363,6 +369,8 @@ public final class SettingsScene extends Scene {
             this.wallCountLabels.add(wallCountLabel);
             this.wallCountSelects.add(wallCountSelector);
         }
+
+        this.updateMaxWallCount(this.getMaxWallCount());
     }
 
     private void setupPlayerComponents() {

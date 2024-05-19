@@ -54,7 +54,7 @@ public final class WallRenderer {
         int[] scaleParams = {0, 0};
 
         //TODO: Get scale from model
-        int scale = this.matchContext.selectedWallType() == WallType.NORMAL ? 2 : 3;
+        int scale = this.matchContext.selectedWallType() == WallType.LARGE ? 3 : 2;
 
         if (this.matchContext.mousePosition().x % 2 == 0) {
             scaleParams[0] = scale;
