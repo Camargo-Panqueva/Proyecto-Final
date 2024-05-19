@@ -18,7 +18,7 @@ import java.util.Random;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * The test class Quopripoobv1.
+ * The test class QuoriPoobV1.
  *
  * @author POOB
  * @version 2024-1
@@ -35,7 +35,11 @@ public class TestQuoridor {
     private GameController gameController;
 
     /**
-     * Default constructor for test class Qupripoobv1
+     * Default constructor for test class
+     *
+     * <p>
+     * Creates a new Quoridor test class with a default setup transfer object.
+     * </p>
      */
     public TestQuoridor() {
         wallsPerPlayer.put(WallType.NORMAL, 2);
@@ -53,6 +57,7 @@ public class TestQuoridor {
      * Sets up the test fixture.
      * <p>
      * Called before every test case method.
+     * </p>
      */
     @BeforeEach
     public void setUp() {
@@ -61,7 +66,7 @@ public class TestQuoridor {
     }
 
     /**
-     * verify that the game can create board nxn size
+     * Verify that the game can create board {@code N x N} size
      */
     @Test
     public void shouldCreateBoardsOfDifferentSizes() {
@@ -78,7 +83,7 @@ public class TestQuoridor {
     }
 
     /**
-     * verify that the game can create a player an assign them Walls
+     * Verify that the game can create a player an assign them Walls
      */
     @Test
     public void shouldAssignBarriersToPlayers() {
@@ -93,7 +98,7 @@ public class TestQuoridor {
 
 
     /**
-     * verify that the players can move orthogonally
+     * Verify that the players can move orthogonally
      */
     @Test
     public void shouldMoveOrthogonallyAPawn() {
@@ -114,7 +119,7 @@ public class TestQuoridor {
 
 
     /**
-     * verify that the players can move diagonally when is necessary
+     * Verify that the players can move diagonally when is necessary
      */
     @Test
     public void shouldMoveDiagonallyAPawn() {
@@ -135,7 +140,7 @@ public class TestQuoridor {
     }
 
     /**
-     * verify that the players can place normal barriers
+     * Verify that the players can place normal barriers
      */
     @Test
     public void shouldPlaceANormalBarrier() {
@@ -143,7 +148,7 @@ public class TestQuoridor {
             fail();
         }
 
-        //wall just can be placed in position x odd an y even or x even and y odd
+        // Wall just can be placed in position x odd and y even or x even and y odd
 
         this.gameController.placeWall(0, new Point(0, 1), WallType.NORMAL);
         this.gameController.placeWall(1, new Point(2, 5), WallType.NORMAL);
@@ -161,7 +166,7 @@ public class TestQuoridor {
 
 
     /**
-     * verify that the players can jump over a pawn
+     * Verify that the players can jump over a pawn
      */
     @Test
     public void shouldMoveAPawnOverAPawn() {
@@ -180,7 +185,7 @@ public class TestQuoridor {
     }
 
     /**
-     * verify that the players cannot jump over a wall no allied
+     * Verify that the players cannot jump over a wall no allied
      */
     @Test
     public void shouldNotMoveAPawnOverANonAlliedBarrier() {
@@ -198,7 +203,7 @@ public class TestQuoridor {
     }
 
     /**
-     * verify that the players can jump over a wall allied
+     * Verify that the players can jump over a wall allied
      */
     @Test
     public void shouldMoveAPawnOverAnAlliedBarrier() {
@@ -216,7 +221,7 @@ public class TestQuoridor {
     }
 
     /**
-     * verify when a player wins the game
+     * Verify when a player wins the game
      */
     @Test
     public void shouldKnowWhenSomeoneWonTheGame() {
@@ -252,7 +257,7 @@ public class TestQuoridor {
     }
 
     /**
-     * verify the walls placed by the players
+     * Verify the walls placed by the players
      */
     @Test
     public void shouldKnowTheBarriersLeftForEachPlayer() {
@@ -275,7 +280,7 @@ public class TestQuoridor {
     }
 
     /**
-     * verify must not blockers walls
+     * Verify must not blockers walls
      */
     @Test
     public void shouldNotBlockThePassageOfAPlayer() {
@@ -294,7 +299,7 @@ public class TestQuoridor {
     }
 
     /**
-     * verify Normal Walls Conditions
+     * Verify Normal Walls Conditions
      */
     @Test
     public void shouldMeetNormalBarrierConditions() {
@@ -321,7 +326,7 @@ public class TestQuoridor {
     }
 
     /**
-     * verify Temporal Walls Conditions
+     * Verify Temporal Walls Conditions
      */
     @Test
     public void shouldMeetTemporalBarrierConditions() {
@@ -345,7 +350,7 @@ public class TestQuoridor {
     }
 
     /**
-     * verify Long Walls Conditions
+     * Verify Long Walls Conditions
      */
     @Test
     public void shouldMeetLongBarrierConditions() {
@@ -372,7 +377,7 @@ public class TestQuoridor {
     }
 
     /**
-     * verify Allied Walls Conditions
+     * Verify Allied Walls Conditions
      */
     @Test
     public void shouldMeetAlliedBarrierConditions() {
@@ -399,7 +404,7 @@ public class TestQuoridor {
     }
 
     /**
-     * verify when is not possible create a board
+     * Verify when is not possible create a board
      */
     @Test
     public void shouldNotCreateABoardIfItsNotPossible() {
@@ -411,7 +416,7 @@ public class TestQuoridor {
     }
 
     /**
-     * verify when is not possible move orthogonally a player
+     * Verify when is not possible move orthogonally a player
      */
     @Test
     public void shouldNotMoveOrthogonallyAPawnIfItsNotPossible() {
@@ -429,7 +434,7 @@ public class TestQuoridor {
     }
 
     /**
-     * verify when is not possible move diagonally a player
+     * Verify when is not possible move diagonally a player
      */
     @Test
     public void shouldNotMoveDiagonallyAPawnIfItsNotPossible() {
@@ -465,7 +470,6 @@ public class TestQuoridor {
         assertFalse(this.gameController.placeWall(1, new Point(0, 7), WallType.TEMPORAL_WALL).ok);
         assertFalse(this.gameController.placeWall(1, new Point(0, 7), WallType.ALLY).ok);
     }
-
 
     /**
      * Test that the game does not allow to place a barrier in a position that is not possible
