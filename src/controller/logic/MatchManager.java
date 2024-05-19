@@ -97,10 +97,7 @@ public class MatchManager {
         final Wall wall = getBlockerWall(playerPosition, objectivePoint);
         if (wall == null) {
             return false;
-        } else if (wall.getIsAlly() && wall.getOwner().equals(player)) {
-            return false;
-        }
-        return true;
+        } else return !wall.getIsAlly() || !wall.getOwner().equals(player);
     }
 
     private boolean isOccupiedPoint(Point point) {
@@ -155,6 +152,7 @@ public class MatchManager {
         this.walls.put(wallUuid, wall);
         this.model.addWall(wallUuid, wall.getWallData());
         player.subtractWall(wall.getWallType());
+        wall.setCreationTurn(this.model.getTurnCount());
         this.nextTurn();
     }
 

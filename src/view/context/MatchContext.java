@@ -137,12 +137,9 @@ public final class MatchContext {
         this.turnCount = turnCount;
     }
 
-    public void toggleWallType() {
-        if (this.selectedWallType == WallType.NORMAL) {
-            this.selectedWallType = WallType.LARGE;
-        } else {
-            this.selectedWallType = WallType.NORMAL;
-        }
+    public void setSelectedWallType(WallType selectedWallType) {
+        this.selectedWallType = selectedWallType;
+        this.dispatchEvent(MatchEvent.WALL_TYPE_CHANGED, this.playerInTurn);
     }
 
     public void setMousePosition(Point mousePosition) {
@@ -189,6 +186,7 @@ public final class MatchContext {
     public enum MatchEvent {
         PLAYER_MOVED,
         WALL_PLACED,
+        WALL_TYPE_CHANGED,
         PLAYER_WON,
         TURN_CHANGED,
         REMAINING_TIME_CHANGED,

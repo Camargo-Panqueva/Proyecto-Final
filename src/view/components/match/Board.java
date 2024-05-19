@@ -2,9 +2,6 @@ package view.components.match;
 
 import controller.dto.BoardTransferObject;
 import controller.dto.ServiceResponse;
-import controller.wall.LargeWall;
-import controller.wall.NormalWall;
-import controller.wall.Wall;
 import model.wall.WallType;
 import view.components.GameComponent;
 import view.context.GlobalContext;
@@ -164,14 +161,7 @@ public final class Board extends GameComponent {
 
         this.addKeyListener(KeyboardEvent.EventType.PRESSED, event -> {
             this.handlePlayerKeyboardMovement(event);
-            this.handleWallTypeChange(event);
         });
-    }
-
-    private void handleWallTypeChange(KeyboardEvent event) {
-        if (event.keyCode == KeyboardEvent.VK_SPACE) {
-            this.matchContext.toggleWallType();
-        }
     }
 
     private void handlePlayerMouseMovement() {
@@ -216,16 +206,11 @@ public final class Board extends GameComponent {
             return;
         }
 
-        //TODO: Change to wall factory
-        Wall wall = this.matchContext.selectedWallType() == WallType.NORMAL ? new NormalWall() : new LargeWall();
-        wall.setPositionOnBoard(new Point(this.matchContext.mousePosition().x, this.matchContext.mousePosition().y));
+        int playerId = this.matchContext.playerInTurn().id();
+        Point wallPosition = new Point(this.matchContext.mousePosition().x, this.matchContext.mousePosition().y);
+        WallType wallType = this.matchContext.selectedWallType();
 
-        if (this.matchContext.mousePosition().y % 2 == 0) {
-            wall.rotate();
-        }
-
-        //TODO : Check creation of walls ;)
-        ServiceResponse<Void> response = this.globalContext.controller().placeWall(this.matchContext.playerInTurn().id(), new Point(this.matchContext.mousePosition().x, this.matchContext.mousePosition().y), this.matchContext.selectedWallType());
+        ServiceResponse<Void> response = this.globalContext.controller().placeWall(playerId, wallPosition, wallType);
 
         if (!response.ok) {
             //TODO: Handle error
@@ -240,8 +225,7 @@ public final class Board extends GameComponent {
             return;
         }
 
-        ServiceResponse<Void> movementResponse =
-                this.globalContext.controller().processPlayerMove(this.matchContext.playerInTurn().id(), newPosition);
+        ServiceResponse<Void> movementResponse = this.globalContext.controller().processPlayerMove(this.matchContext.playerInTurn().id(), newPosition);
 
         if (!movementResponse.ok) {
             //TODO: Handle error

@@ -6,12 +6,14 @@ import view.components.ui.Selector;
 import view.components.ui.Text;
 import view.context.GlobalContext;
 import view.context.MatchContext;
+import view.input.KeyboardEvent;
 import view.themes.ThemeColor;
 import view.themes.ThemeColor.ColorName;
 import view.themes.ThemeColor.ColorVariant;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public final class ControlPanel extends GameComponent {
 
@@ -20,7 +22,8 @@ public final class ControlPanel extends GameComponent {
     private Text title;
     private Text playerName;
     private Text timer;
-    private Selector wallSelector;
+    private Text remainingWalls;
+    private Selector<WallType> wallSelector;
 
     /**
      * Creates a new ControlPanel component with the given context provider.
@@ -79,7 +82,19 @@ public final class ControlPanel extends GameComponent {
             component.getStyle().centerHorizontally(this.getBounds());
         }
 
-        this.wallSelector.getStyle().y = this.style.y + this.style.height - 60;
+        int margin = 20;
+        int paddingX = 20;
+        int paddingY = 20;
+
+        this.title.getStyle().y = this.style.y + this.style.borderWidth + margin;
+        this.playerName.getStyle().y = this.title.getStyle().y + this.title.getStyle().height + paddingY;
+        this.timer.getStyle().y = this.playerName.getStyle().y + this.title.getStyle().height + paddingY;
+        this.wallSelector.getStyle().y = this.style.y + this.style.height - this.style.borderWidth - this.wallSelector.getStyle().height - margin;
+
+        this.remainingWalls.getStyle().centerVertically(this.wallSelector.getBounds());
+        this.remainingWalls.getStyle().x = this.wallSelector.getStyle().x + this.wallSelector.getStyle().width - 70;
+
+        System.out.println(this.remainingWalls.getStyle().x + " " + this.remainingWalls.getStyle().y);
     }
 
     @Override
@@ -111,58 +126,69 @@ public final class ControlPanel extends GameComponent {
         this.timer.getStyle().centerHorizontally(this.getBounds());
     }
 
-    private String mapWallType(WallType wallType) {
-        return switch (wallType) {
-            case NORMAL -> "Normal";
-            case LARGE -> "Large";
-            case TEMPORAL_WALL -> "Temporal";
-            default -> throw new IllegalStateException("Unexpected value: " + wallType);
-        };
+    private void updateRemainingWalls() {
+        this.remainingWalls.setText("x" + this.matchContext.playerInTurn().wallsRemaining().get(this.matchContext.selectedWallType()));
     }
 
     private void setupComponentEvents() {
         this.matchContext.addEventListener(MatchContext.MatchEvent.TURN_CHANGED, _event -> {
             this.updatePlayerText();
+            this.updateRemainingWalls();
         });
 
         this.matchContext.addEventListener(MatchContext.MatchEvent.REMAINING_TIME_CHANGED, _event -> {
             this.updateTimer();
         });
+
+        this.matchContext.addEventListener(MatchContext.MatchEvent.WALL_TYPE_CHANGED, _event -> {
+            this.updateRemainingWalls();
+        });
+
+        this.wallSelector.addComponentListener(ComponentEvent.VALUE_CHANGED, (_previous, _current) -> {
+            this.matchContext.setSelectedWallType(this.wallSelector.getSelectedOption());
+        });
+
+        this.addKeyListener(KeyboardEvent.EventType.PRESSED, event -> {
+            if (event.keyCode == KeyboardEvent.VK_SPACE) {
+                this.wallSelector.incrementSelectedOption();
+            }
+        });
     }
 
     private void setupComponents() {
+
         this.components = new ArrayList<>();
 
         this.title = new Text("Control  Panel", this.globalContext);
         this.title.getStyle().font = this.globalContext.window().getCanvas().getFont().deriveFont(32.0f);
-        this.title.getStyle().y = this.style.y + this.style.paddingY + 60;
         this.title.fitSize();
         this.components.add(this.title);
 
         this.playerName = new Text("undefined", this.globalContext);
         this.playerName.getStyle().font = this.globalContext.window().getCanvas().getFont().deriveFont(20.0f);
-        this.playerName.getStyle().y = this.title.getStyle().y + 90;
         this.playerName.fitSize();
         this.components.add(this.playerName);
 
         this.timer = new Text("undefined", this.globalContext);
         this.timer.getStyle().font = this.globalContext.window().getCanvas().getFont().deriveFont(20.0f);
-        this.timer.getStyle().y = this.playerName.getStyle().y + 30;
         this.timer.fitSize();
         this.components.add(this.timer);
 
-        ArrayList<String> wallTypes = new ArrayList<>();
+        ArrayList<WallType> wallTypes = new ArrayList<>(Arrays.asList(WallType.values()));
 
-        wallTypes.add(this.mapWallType(WallType.NORMAL));
-        wallTypes.add(this.mapWallType(WallType.LARGE));
-        wallTypes.add(this.mapWallType(WallType.TEMPORAL_WALL));
-
-        this.wallSelector = new Selector(wallTypes, this.globalContext);
+        this.wallSelector = new Selector<>(wallTypes, this.globalContext);
         this.wallSelector.getStyle().height = 44;
         this.wallSelector.getStyle().font = this.globalContext.window().getCanvas().getFont().deriveFont(20.0f);
         this.components.add(this.wallSelector);
 
+        this.remainingWalls = new Text("0", this.globalContext);
+        this.remainingWalls.getStyle().font = this.globalContext.window().getCanvas().getFont().deriveFont(16.0f);
+        this.remainingWalls.getStyle().foregroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.NORMAL);
+        this.remainingWalls.fitSize();
+        this.components.add(this.remainingWalls);
+
         this.updatePlayerText();
         this.updateTimer();
+        this.updateRemainingWalls();
     }
 }
