@@ -66,6 +66,10 @@ public abstract class Wall implements ActionableElement {
                     sb.append("Nor").append(" ");
                 } else if (currPosition == WallType.LARGE) {
                     sb.append("Lar").append(" ");
+                } else if (currPosition == WallType.TEMPORAL_WALL) {
+                    sb.append("Tem").append(" ");
+                } else if (currPosition == WallType.ALLY) {
+                    sb.append("All").append(" ");
                 }
             }
             sb.append("\n");
@@ -106,8 +110,7 @@ public abstract class Wall implements ActionableElement {
         return this.wallData.getWallId();
     }
 
-
-    public short getCreationTurn() {
+    public int getCreationTurn() {
         return this.wallData.getCreationTurn();
     }
 
@@ -147,7 +150,7 @@ public abstract class Wall implements ActionableElement {
         this.wallData.setWallId(wallId);
     }
 
-    public void setCreationTurn(short creationTurn) {
+    public void setCreationTurn(int creationTurn) {
         this.wallData.setCreationTurn(creationTurn);
     }
 

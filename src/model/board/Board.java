@@ -26,8 +26,12 @@ public final class Board {
         this.isRandomly = false;
     }
 
-    public CellType getCell(final int x, final int y) {
+    public CellType getCellType(final int x, final int y) {
         return this.boardCells[x][y];
+    }
+
+    public CellType getCellType(final Point point) {
+        return this.boardCells[point.x][point.y];
     }
 
     public WallData getWallData(final int x, final int y) {

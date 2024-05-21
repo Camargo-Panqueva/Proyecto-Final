@@ -1,8 +1,12 @@
 package controller.logic;
 
+import controller.cells.DobleTurnCell;
+import controller.cells.ReturnCell;
+import controller.cells.TeleportCell;
 import controller.wall.Wall;
 import controller.wall.WallManager;
 import model.GameModel;
+import model.cell.CellType;
 import model.difficulty.DifficultyType;
 import model.player.Player;
 import model.wall.WallData;
@@ -18,6 +22,7 @@ public class MatchManager {
     private final GameModel model;
     private final HashMap<UUID, Wall> walls;
     private final HashMap<Player, AIPlayer> aiPlayers;
+    private final Deque<Player> extraTurns = new ArrayDeque<>();
     private int indexCurrentIndex;
     private Instant secondCount;
 
@@ -49,21 +54,33 @@ public class MatchManager {
         this.triggerActionBeforeTurn();
     }
 
-    public void lookForwardMoves(final Player fromPlayer, final ArrayList<Point> directions, final ArrayList<Point> possibleMovements, final Player playerLooking) {
+    public void lookForwardMoves(final Player fromPlayer, ArrayList<Point> directions, final ArrayList<Point> possibleMovements, final Player playerLooking) {
+
         final Point basePoint = new Point(fromPlayer.getPosition());
 
-        for (Point direction : directions) {
+        for (Point direction : new ArrayList<>(directions)) {
             Point objectivePoint = new Point(basePoint.x + direction.x, basePoint.y + direction.y);
-            if (!isInsideBoard(objectivePoint) || isABlockerWall(fromPlayer.getPosition(), objectivePoint, playerLooking)) {
-            } else if (isOccupiedPoint(objectivePoint)) {
+
+            if (this.model.getBoard().getCellType(playerLooking.getPosition()) == CellType.TELEPORT && basePoint.equals(playerLooking.getPosition())) {
+                for (Point tpDir : new TeleportCell().getTeleportPoints()) {
+                    final Point tpPoint = new Point(playerLooking.getPosition().x + tpDir.x, playerLooking.getPosition().y + tpDir.y);
+                    if (isValidPoint(tpPoint) && !isOccupiedPoint(tpPoint) && containsWinnerPosition(this.getIslandBFS(getAbstractBoard(), tpPoint), playerLooking)) {
+                        possibleMovements.add(new Point(tpPoint));
+                    }
+                }
+            }
+
+            if (!isValidPoint(objectivePoint) || isBlocker(fromPlayer.getPosition(), objectivePoint, playerLooking)) {
+                continue;
+            }
+
+            if (isOccupiedPoint(objectivePoint)) {
                 final ArrayList<Point> jumpedPlayerMoves = new ArrayList<>();
 
                 final Point blockerPlayer = new Point(this.getPlayer(objectivePoint).getPosition());
 
                 for (Point dir : directions) {
-                    if ((dir.x == 1 && direction.x == -1) || (dir.y == 1 && direction.y == -1 || ((dir.x == -1 && direction.x == 1) || (dir.y == -1 && direction.y == 1)))) {
-                    } else if (getBlockerWall(blockerPlayer, new Point(blockerPlayer.x + dir.x, blockerPlayer.y + dir.y)) != null) {
-                    } else {
+                    if (!isOppositeDirection(dir, direction) && !isBlocker(blockerPlayer, objectivePoint, playerLooking)) {
                         jumpedPlayerMoves.add(new Point(dir));
                     }
                 }
@@ -72,6 +89,11 @@ public class MatchManager {
                 possibleMovements.add(new Point(objectivePoint));
             }
         }
+    }
+
+    private boolean isOppositeDirection(Point dir, Point playerDirection) {
+        return (dir.x == 1 && playerDirection.x == -1) || (dir.x == -1 && playerDirection.x == 1) ||
+                (dir.y == 1 && playerDirection.y == -1) || (dir.y == -1 && playerDirection.y == 1);
     }
 
     public ArrayList<Point> getPossibleMovements(final Player player) {
@@ -86,18 +108,25 @@ public class MatchManager {
     }
 
     private Player getPlayer(Point point) {
-        return this.model.getPlayers().values().stream().filter(p -> p.getPosition().equals(point)).findAny().orElse(null);
+        for (Player player : this.model.getPlayers().values()) {
+            if (player.getPosition().equals(point)) {
+                return player;
+            }
+        }
+        return null;
     }
 
-    private boolean isInsideBoard(Point point) {
-        return point.x >= 0 && point.x < this.model.getBoard().getWidth() && point.y >= 0 && point.y < this.model.getBoard().getHeight();
+    private boolean isValidPoint(Point point) {
+        final int width = model.getBoard().getWidth();
+        final int height = model.getBoard().getHeight();
+        return point.x >= 0 && point.x < width && point.y >= 0 && point.y < height;
     }
 
-    private boolean isABlockerWall(Point playerPosition, Point objectivePoint, Player player) {
-        final Wall wall = getBlockerWall(playerPosition, objectivePoint);
+    private boolean isBlocker(Point playerPosition, Point objectivePoint, Player player) {
+        final Wall wall = this.getPotentialBlockerWall(playerPosition, objectivePoint);
         if (wall == null) {
             return false;
-        } else return !wall.getIsAlly() || !wall.getOwner().equals(player);
+        } else return !(wall.getIsAlly() && wall.getOwner().equals(player));
     }
 
     private boolean isOccupiedPoint(Point point) {
@@ -109,7 +138,7 @@ public class MatchManager {
         return false;
     }
 
-    private Wall getBlockerWall(final Point initialPoint, final Point finalPoint) {
+    private Wall getPotentialBlockerWall(final Point initialPoint, final Point finalPoint) {
 
         final int xWall = initialPoint.x == finalPoint.x ? 2 * initialPoint.x : (2 * initialPoint.x) + (finalPoint.x - initialPoint.x);
         final int yWall = initialPoint.y == finalPoint.y ? 2 * initialPoint.y : (2 * initialPoint.y) + (finalPoint.y - initialPoint.y);
@@ -129,15 +158,32 @@ public class MatchManager {
         return this.walls.get(wallID);
     }
 
-    public void executeMove(Player player, Point moveTo) {
+    public void movePlayer(Player player, final Point moveTo, final boolean isAPlayer) {
         player.setPosition(moveTo);
         //Win Condition
         if (player.getXWinPosition() == player.getPosition().x || player.getYWinPosition() == player.getPosition().y) {
             this.model.setMatchState(GameModel.MatchState.WINNER);
             this.model.setWinningPlayer(player);
         }
-        this.nextTurn();
+        if (model.getBoard().getCellType(player.getPosition()) == CellType.DOUBLE_TURN) {
+            new DobleTurnCell().action(this);
+        }
+        if (model.getBoard().getCellType(player.getPosition()) == CellType.RETURN) {
+            new ReturnCell().action(this);
+        }
+        if (isAPlayer) {
+            this.nextTurn();
+        }
     }
+
+    public void executeMove(Player player, Point moveTo) {
+        this.movePlayer(player, moveTo, true);
+    }
+
+    public void setPlayerPosition(Player player, Point moveTo) {
+        this.movePlayer(player, moveTo, false);
+    }
+
 
     public void executePlaceWall(final Player player, final Wall wall, final ArrayList<Point> newWalls) {
         final UUID wallUuid = UUID.randomUUID();
@@ -168,6 +214,11 @@ public class MatchManager {
 
                 boardWallX = wall.getPositionOnBoard().x + x;
                 boardWallY = wall.getPositionOnBoard().y + y;
+
+                if (boardWallX < 0 || boardWallY < 0 || boardWallX >= this.model.getBoard().getWidth() * 2 - 1 || boardWallY >= this.model.getBoard().getHeight() * 2 - 1) {
+                    continue;
+                }
+
                 final WallData wallDataPosition = this.model.getBoard().getBoardWalls()[boardWallX][boardWallY];
 
                 if (wallDataPosition == wall.getWallData()) {
@@ -182,76 +233,109 @@ public class MatchManager {
         return this.walls.remove(wall.getWallId());
     }
 
-    public boolean isABlockerWall(final ArrayList<Point> newWalls) {
-
+    private int[][] getAbstractBoard() {
         final int height = this.model.getBoard().getHeight() * 2 - 1;
         final int width = this.model.getBoard().getWidth() * 2 - 1;
 
-        final int[][] wantedBoard = new int[width][height];
+        final int[][] abstactBoard = new int[width][height];
 
         for (int x = 0; x < width; x++) { //Abstract the values for the algorithm
             for (int y = 0; y < height; y++) {
                 if (x % 2 != 0 && y % 2 != 0) {
-                    wantedBoard[x][y] = 0;
+                    abstactBoard[x][y] = 0;
                 } else if (this.model.getBoard().getWallData(x, y) == null) {
-                    wantedBoard[x][y] = 1;
+                    abstactBoard[x][y] = 1;
                 } else {
-                    wantedBoard[x][y] = 0;
+                    abstactBoard[x][y] = 0;
                 }
             }
         }
+        return abstactBoard;
+    }
+
+    public boolean isABlockerWall(final ArrayList<Point> newWalls) {
+
+        final int[][] wantedBoard = getAbstractBoard();
+
         for (Point point : newWalls) { //Add the new wall
             wantedBoard[point.x][point.y] = 0;
         }
 
-        final Point[] directions = {new Point(0, 1), new Point(1, 0), new Point(0, -1), new Point(-1, 0)};
+        return isGoalReachable(wantedBoard, new ArrayList<>(this.model.getPlayers().values()));
+    }
+
+    public boolean isGoalReachable(final int[][] wantedBoard, final ArrayList<Player> players) {
 
         final HashSet<Player> playersThatGoalIsReachable = new HashSet<>();
+        ArrayList<Point> island;
 
         for (Player player : this.model.getPlayers().values()) {
 
-            final boolean[][] visited = new boolean[width][height];
+            island = getIslandBFS(wantedBoard, player.getPosition());
 
-
-            final int x = player.getPosition().x * 2;
-            final int y = player.getPosition().y * 2;
-
-            //bfs
-            visited[x][y] = true;
-
-            ArrayDeque<Point> deque = new ArrayDeque<>();
-
-            deque.add(new Point(x, y));
-
-            while (!deque.isEmpty()) {
-                final Point currPoint = new Point(deque.pop());
-
-                if ((player.getYWinPosition() != -1 && currPoint.y == player.getYWinPosition() * 2) || (player.getXWinPosition() != -1 && currPoint.x == player.getXWinPosition() * 2)) {
-                    playersThatGoalIsReachable.add(player); // the player reached his goal
-                    break;
-                }
-
-                for (Point direction : directions) {
-                    final int dirY = currPoint.y + direction.y;
-                    final int dirX = currPoint.x + direction.x;
-                    if (dirY < height && dirX < width && dirY >= 0 && dirX >= 0 && wantedBoard[dirX][dirY] == 1 && !visited[dirX][dirY]) { //TODO : ally walls are blockers?
-                        deque.add(new Point(dirX, dirY)); // Save the point for searching here later
-                        visited[dirX][dirY] = true;
-                    }
-                }
-
+            if (containsWinnerPosition(island, player)) {
+                playersThatGoalIsReachable.add(player);
             }
         }
 
-        return playersThatGoalIsReachable.size() != this.model.getPlayerCount(); //if at least one player misses his goal -> true
+        return playersThatGoalIsReachable.size() != players.size(); // if all players can reach their goal -> true
     }
 
-    private int[][] getAbstractBoard(final Player player) {
-        final int[][] abstractBoard = new int[model.getBoard().getWidth() * 2 - 1][model.getBoard().getHeight() * 2 - 1];
-        return abstractBoard;
+    private boolean containsWinnerPosition(final ArrayList<Point> points, final Player searchFrom) {
+        for (Point point : points) {
+            if ((searchFrom.getYWinPosition() != -1 && point.y == searchFrom.getYWinPosition() * 2) ||
+                    (searchFrom.getXWinPosition() != -1 && point.x == searchFrom.getXWinPosition() * 2)) {
+                return true;
+            }
+        }
+        return false;
     }
+
+    private ArrayList<Point> getIslandBFS(final int[][] board, final Point initialPoint) {
+        final int x = initialPoint.x * 2;
+        final int y = initialPoint.y * 2;
+
+        final int height = board[0].length;
+        final int width = board.length;
+
+        final ArrayList<Point> island = new ArrayList<>();
+
+        final Point[] directions = {new Point(0, 1), new Point(1, 0), new Point(0, -1), new Point(-1, 0)};
+
+        final boolean[][] visited = new boolean[width][height];
+
+        //bfs
+        visited[x][y] = true;
+
+        ArrayDeque<Point> deque = new ArrayDeque<>();
+
+        deque.add(new Point(x, y));
+
+        while (!deque.isEmpty()) {
+            final Point currPoint = new Point(deque.pop());
+            island.add(currPoint);
+
+            for (Point direction : directions) {
+                final int dirY = currPoint.y + direction.y;
+                final int dirX = currPoint.x + direction.x;
+                if (dirY < height && dirX < width && dirY >= 0 && dirX >= 0 && board[dirX][dirY] == 1 && !visited[dirX][dirY]) { //TODO : ally walls are blockers?
+                    deque.add(new Point(dirX, dirY)); // Save the point for searching here later
+                    visited[dirX][dirY] = true;
+                }
+            }
+        }
+
+        return island;
+    }
+
 
     private void nextTurn() {
+
+        if (!this.extraTurns.isEmpty()) {
+            this.extraTurns.poll();
+            this.model.setTurnCount(model.getTurnCount() + 1);
+            return;
+        }
 
         this.triggerActionsAfterTurn();
 
@@ -271,14 +355,43 @@ public class MatchManager {
         }
 
         if (!this.aiPlayers.isEmpty() && this.aiPlayers.containsKey(this.getPlayerInTurn())) {
-            this.aiPlayers.get(this.getPlayerInTurn()).executeMove(this.getAbstractBoard(this.getPlayerInTurn()));
+            this.aiPlayers.get(this.getPlayerInTurn()).executeMove(this.getAbstractBoard());
         }
 
-        this.model.setTurnCount((short) (model.getTurnCount() + 1));
+        this.model.setTurnCount(model.getTurnCount() + 1);
 
         this.triggerActionBeforeTurn();
 
     }
+
+    public void addATurn(Player player) {
+        extraTurns.add(player);
+    }
+
+    public void returnNCells(final int n, final Player player) {
+        final Point basePoint = new Point(player.getPosition());
+        final Point returnDirection = new Point(-1 * player.getWinDirection().x, -1 * player.getWinDirection().y);
+        final ArrayDeque<Point> returnPoints = new ArrayDeque<>();
+
+        for (int i = 1; i <= n; i++) {
+            final Point returnPoint = new Point(basePoint.x + returnDirection.x * i, basePoint.y + returnDirection.y * i);
+            if (isValidPoint(returnPoint)) {
+                if (isOccupiedPoint(returnPoint)) {
+                    if (this.getPlayer(returnPoint).equals(player)) {
+                        returnPoints.add(returnPoint);
+                    }
+                } else if (!isOccupiedPoint(returnPoint)) {
+                    returnPoints.add(returnPoint);
+                }
+            }
+        }
+        if (!returnPoints.isEmpty()) {
+            System.out.println(returnPoints);
+            this.setPlayerPosition(player, returnPoints.getLast());
+        }
+
+    }
+
 
     private void startTimer() {
         ConcurrentLoop clockCurrentTurn = new ConcurrentLoop(this::clockPerTurn, 10, "Time Limit per Turn");
@@ -306,7 +419,7 @@ public class MatchManager {
         return this.model.getPlayers().get(this.model.getPlayerInTurnId());
     }
 
-    public short getTurnCount() {
+    public int getTurnCount() {
         return this.model.getTurnCount();
     }
 

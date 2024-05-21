@@ -2,13 +2,10 @@ package controller.cells;
 
 import controller.logic.MatchManager;
 
-public final class NormalCell extends Cell {
-
-
-
+public class DobleTurnCell extends Cell {
     @Override
     public void action(MatchManager matchManager) {
-
+        matchManager.addATurn(matchManager.getPlayerInTurn());
     }
 
     @Override

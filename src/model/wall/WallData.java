@@ -13,7 +13,7 @@ public class WallData {
     private Player owner;
     private boolean isAlly;
     private WallType wallType;
-    private short creationTurn;
+    private int creationTurn;
     private Point positionOnBoard;
     private WallType[][] wallShape;
 
@@ -50,7 +50,7 @@ public class WallData {
         return wallId;
     }
 
-    public short getCreationTurn() {
+    public int getCreationTurn() {
         return this.creationTurn;
     }
 
@@ -90,7 +90,7 @@ public class WallData {
         this.wallId = wallId;
     }
 
-    public void setCreationTurn(short creationTurn) {
+    public void setCreationTurn(int creationTurn) {
         this.creationTurn = creationTurn;
     }
 

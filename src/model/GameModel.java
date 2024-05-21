@@ -29,7 +29,7 @@ public final class GameModel {
 
     protected final Difficulty difficulty;
 
-    private short turnCount;
+    private int turnCount;
 
     public GameModel() {
         this.gameBaseParameters = new GameBaseParameters();
@@ -75,7 +75,7 @@ public final class GameModel {
         return this.gameBaseParameters.getPlayerCount();
     }
 
-    public short getTurnCount() {
+    public int getTurnCount() {
         return turnCount;
     }
 
@@ -120,7 +120,7 @@ public final class GameModel {
         this.winningPlayer = winningPlayer;
     }
 
-    public void setTurnCount(short turnCount) {
+    public void setTurnCount(int turnCount) {
         this.turnCount = turnCount;
     }
 
