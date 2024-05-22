@@ -194,32 +194,41 @@ public final class GameController {
         int width = this.model.getBoard().getWidth();
         int height = this.model.getBoard().getHeight();
 
-        WallType[][] wallTypesCopy = new WallType[width * 2 - 1][height * 2 - 1];
         CellType[][] cellTypesCopy = new CellType[width][height];
 
         for (int i = 0; i < width; i++) {
             cellTypesCopy[i] = Arrays.copyOf(this.model.getBoard().getBoardCells()[i], this.model.getBoard().getHeight());
         }
 
-        for (int i = 0; i < width * 2 - 1; i++) {
-            for (int j = 0; j < height * 2 - 1; j++) {
-                wallTypesCopy[i][j] = this.model.getBoard().getBoardWalls()[i][j] == null ? null : this.model.getBoard().getBoardWalls()[i][j].getWallType();
-            }
-        }
-
         final ArrayList<PlayerTransferObject> playerTransferObjectArrayList = new ArrayList<>(this.model.getPlayerCount());
+        final ArrayList<WallTransferObject> wallTransferObjectArrayList = new ArrayList<>();
 
         this.model.getPlayers().forEach(((id, player) -> {
-            playerTransferObjectArrayList.add(new PlayerTransferObject(id, player.getName(), new Point(player.getPosition()),
+            final PlayerTransferObject playerTransferObject = new PlayerTransferObject(id, player.getName(), new Point(player.getPosition()),
                     this.model.getPlayerInTurnId() == id, this.matchManager.getPossibleMovements(player), player.getWallsInField(),
                     this.model.getDifficulty().getTimePerTurn() - player.getTimePlayed(),
-                    player.getPlayerWalls()));
+                    player.getPlayerWalls());
+
+            playerTransferObjectArrayList.add(playerTransferObject);
+
+            for (WallData wallData : player.getPlayerWallsPlaced()) { // Wall transfer object
+                WallType[][] wallShapeCopy = wallData.getWallShape();
+
+                for (int i = 0; i < wallData.getWidth(); i++) { //copy wall shape
+                        wallShapeCopy[i] = Arrays.copyOf(wallData.getWallShape()[i], wallData.getWallShape()[i].length);
+                }
+
+                final WallTransferObject wallTransferObject = new WallTransferObject(playerTransferObject, wallData.getWallType(),
+                        model.getTurnCount() - wallData.getCreationTurn(), wallData.getPositionOnBoard(), wallShapeCopy);
+
+                wallTransferObjectArrayList.add(wallTransferObject);
+            }
         }));
 
         return new SuccessResponse<>(
                 new BoardTransferObject(
                         cellTypesCopy,
-                        wallTypesCopy, this.model.getTurnCount(),
+                        wallTransferObjectArrayList, this.model.getTurnCount(),
                         playerTransferObjectArrayList,
                         playerTransferObjectArrayList.stream().filter(PlayerTransferObject::isInTurn).findFirst().orElse(null) //TODO : check if this is correct
                 ), "Ok");

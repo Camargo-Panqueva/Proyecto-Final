@@ -4,7 +4,6 @@ import controller.cells.DobleTurnCell;
 import controller.cells.ReturnCell;
 import controller.cells.TeleportCell;
 import controller.wall.Wall;
-import controller.wall.WallManager;
 import model.GameModel;
 import model.cell.CellType;
 import model.difficulty.DifficultyType;
@@ -29,13 +28,6 @@ public class MatchManager {
     public MatchManager(final GameModel gameModel) {
         this.model = gameModel;
         this.walls = new HashMap<>();
-
-        if (!gameModel.getWalls().isEmpty()) {
-            WallManager wallManager = new WallManager();
-            for (WallData wallData : this.model.getWalls().values()) {
-                this.walls.put(wallData.getWallId(), wallManager.getWallInstance(wallData));
-            }
-        }
 
         this.aiPlayers = new HashMap<>();
 
@@ -196,7 +188,6 @@ public class MatchManager {
         wall.setOwner(player);
         player.addWallPlaced(wall.getWallData());
         this.walls.put(wallUuid, wall);
-        this.model.addWall(wallUuid, wall.getWallData());
         player.subtractWall(wall.getWallType());
         wall.setCreationTurn(this.model.getTurnCount());
         this.nextTurn();
@@ -229,7 +220,6 @@ public class MatchManager {
 
         wall.getOwner().removeWallPlaced(wall.getWallData());
         wall.setOwner(null);
-        model.getWalls().remove(wall.getWallId());
         return this.walls.remove(wall.getWallId());
     }
 

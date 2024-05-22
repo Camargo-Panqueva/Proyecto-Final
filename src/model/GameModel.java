@@ -4,11 +4,11 @@ import model.board.Board;
 import model.difficulty.Difficulty;
 import model.modes.GameBaseParameters;
 import model.player.Player;
-import model.wall.WallData;
+
 
 import java.awt.*;
 import java.util.HashMap;
-import java.util.UUID;
+
 
 public final class GameModel {
 
@@ -19,7 +19,6 @@ public final class GameModel {
     private MatchState matchState;
 
     private final HashMap<Integer, Player> players;
-    private final HashMap<UUID, WallData> walls;
 
     private int playerInTurn;
 
@@ -35,7 +34,6 @@ public final class GameModel {
         this.gameBaseParameters = new GameBaseParameters();
         this.difficulty = new Difficulty();
         this.players = new HashMap<>();
-        this.walls = new HashMap<>();
         this.matchState = MatchState.INITIALIZED;
     }
 
@@ -43,9 +41,6 @@ public final class GameModel {
         this.players.put(playerId, newPlayer);
     }
 
-    public void addWall(UUID uuid, WallData wallData) {
-        this.walls.put(uuid, wallData);
-    }
 
     public void setBoard(final int wight, final int height) {
         this.board = new Board(wight, height);
@@ -102,14 +97,6 @@ public final class GameModel {
 
     public Player getWinningPlayer() {
         return winningPlayer;
-    }
-
-    public WallData getWall(UUID uuid) {
-        return this.walls.get(uuid);
-    }
-
-    public HashMap<UUID, WallData> getWalls() {
-        return walls;
     }
 
     public void setPlayerInTurn(int playerInTurn) {
