@@ -3,6 +3,7 @@ package view.scene;
 import controller.dto.PlayerSetupTransferObject;
 import controller.dto.SetupTransferObject;
 import controller.states.GlobalState;
+import model.cell.CellType;
 import model.difficulty.DifficultyType;
 import model.player.AIProfile;
 import model.player.PlayerType;
@@ -56,10 +57,16 @@ public final class SettingsScene extends Scene {
     private Text colonText;
     private TextInput minutesInput;
     private TextInput secondsInput;
+    private Text cellTypeTitle;
+    private Text wallTypeTitle;
+    private Text cellCountTitle;
+    private Text wallCountTitle;
+    private ArrayList<Text> cellTypeLabels;
+    private ArrayList<Selector<CellType>> cellTypeSelects;
     private ArrayList<Text> wallCountLabels;
+    private ArrayList<Selector<Integer>> wallCountSelects;
 
     // Render parameters
-    private ArrayList<Selector<Integer>> wallCountSelects;
     private ArrayList<TextInput> playerNameInputs;
     private ArrayList<Selector<ColorName>> playerColorSelects;
     private ArrayList<Selector<PlayerType>> playerTypeSelects;
@@ -106,12 +113,22 @@ public final class SettingsScene extends Scene {
         this.addComponent(this.secondsInput);
         this.addComponent(this.startButton);
         this.addComponent(this.backButton);
+        this.addComponent(this.cellTypeTitle);
+        this.addComponent(this.cellCountTitle);
+        this.addComponent(this.wallTypeTitle);
+        this.addComponent(this.wallCountTitle);
 
         for (Text wallCountLabel : this.wallCountLabels) {
             this.addComponent(wallCountLabel);
         }
         for (Selector<Integer> wallCountValue : this.wallCountSelects) {
             this.addComponent(wallCountValue);
+        }
+        for (Text cellTypeLabel : this.cellTypeLabels) {
+            this.addComponent(cellTypeLabel);
+        }
+        for (Selector<CellType> cellTypeSelect : this.cellTypeSelects) {
+            this.addComponent(cellTypeSelect);
         }
         for (TextInput playerNameInput : this.playerNameInputs) {
             this.addComponent(playerNameInput);
@@ -142,11 +159,11 @@ public final class SettingsScene extends Scene {
         this.margin = 60;
         this.componentFont = this.globalContext.window().getCanvas().getFont().deriveFont(20.0f);
         this.componentHeight = 46;
-        this.componentWidth = (int) (componentHeight * 7.5);
+        this.componentWidth = componentHeight * 9;
         this.colonWidth = 6;
 
         this.setupBasicComponents();
-        this.setupTimeSelectorComponents();
+        this.setupCellCountComponents();
         this.setupWallCountComponents();
         this.setupPlayerComponents();
         this.setupButtons();
@@ -230,8 +247,7 @@ public final class SettingsScene extends Scene {
     @Override
     protected void fixCanvasSize() {
         int expectedHeight = this.startButton.getStyle().y + this.startButton.getStyle().height + this.margin;
-
-        int expectedWidth = this.startButton.getStyle().x + this.startButton.getStyle().width + this.margin;
+        int expectedWidth = this.wallCountTitle.getStyle().x + this.wallCountTitle.getStyle().width + this.margin;
 
         this.globalContext.window().setCanvasHeight(expectedHeight);
         this.globalContext.window().setCanvasWidth(expectedWidth);
@@ -254,9 +270,47 @@ public final class SettingsScene extends Scene {
         this.difficultySelect.getStyle().width = this.componentWidth;
         this.difficultySelect.getStyle().font = this.componentFont;
 
+        this.timeLimitLabel = new Text("Time", this.globalContext);
+        this.timeLimitLabel.getStyle().x = this.margin;
+        this.timeLimitLabel.getStyle().y = this.paddingY + this.difficultySelect.getStyle().height + this.difficultySelect.getStyle().y;
+        this.timeLimitLabel.getStyle().height = this.componentHeight;
+        this.timeLimitLabel.getStyle().width = 3 * (this.componentWidth - this.paddingX) / 5;
+        this.timeLimitLabel.getStyle().font = this.componentFont;
+        this.timeLimitLabel.getStyle().backgroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.DIMMED);
+        this.timeLimitLabel.getStyle().foregroundColor = new ThemeColor(ColorName.FOREGROUND, ColorVariant.NORMAL);
+
+        this.minutesInput = new TextInput(this.globalContext, "0");
+        this.minutesInput.getStyle().x = this.paddingX + this.timeLimitLabel.getStyle().width + this.timeLimitLabel.getStyle().x;
+        this.minutesInput.getStyle().y = this.timeLimitLabel.getStyle().y;
+        this.minutesInput.getStyle().height = this.componentHeight;
+        this.minutesInput.getStyle().width = this.componentWidth / 5 - (this.colonWidth + this.paddingX) / 2;
+        this.minutesInput.getStyle().font = this.componentFont;
+        this.minutesInput.getStyle().paddingX = 13;
+        this.minutesInput.getStyle().textAlignment = Style.TextAlignment.CENTER;
+        this.minutesInput.setValue("1");
+
+        this.colonText = new Text(":", this.globalContext);
+        this.colonText.getStyle().x = this.colonWidth + this.minutesInput.getStyle().width + this.minutesInput.getStyle().x;
+        this.colonText.getStyle().y = this.minutesInput.getStyle().y;
+        this.colonText.getStyle().height = this.componentHeight;
+        this.colonText.getStyle().width = this.colonWidth;
+        this.colonText.getStyle().font = this.componentFont;
+
+        this.secondsInput = new TextInput(this.globalContext, "0");
+        this.secondsInput.getStyle().x = this.colonWidth + this.colonText.getStyle().width + this.colonText.getStyle().x;
+        this.secondsInput.getStyle().y = this.minutesInput.getStyle().y;
+        this.secondsInput.getStyle().height = this.componentHeight;
+        this.secondsInput.getStyle().width = (this.componentWidth / 5) - (this.colonWidth + this.paddingX) / 2;
+        this.secondsInput.getStyle().font = this.componentFont;
+        this.secondsInput.getStyle().paddingX = 13;
+        this.secondsInput.getStyle().textAlignment = Style.TextAlignment.CENTER;
+        this.secondsInput.setValue("0");
+
+        this.updateDisabledTime();
+
         this.specialCellsLabel = new Text("Special Cells", this.globalContext);
         this.specialCellsLabel.getStyle().x = this.margin;
-        this.specialCellsLabel.getStyle().y = this.paddingY + this.difficultySelect.getStyle().height + this.difficultySelect.getStyle().y;
+        this.specialCellsLabel.getStyle().y = this.paddingY + this.timeLimitLabel.getStyle().height + this.timeLimitLabel.getStyle().y;
         this.specialCellsLabel.getStyle().height = this.componentHeight;
         this.specialCellsLabel.getStyle().width = 3 * (this.componentWidth - this.paddingX) / 5;
         this.specialCellsLabel.getStyle().font = this.componentFont;
@@ -312,55 +366,6 @@ public final class SettingsScene extends Scene {
     }
 
     /**
-     * Sets up the time selector components for the scene.
-     * <p>
-     * This method sets up the time selector components for the scene.
-     * It creates the time limit label, minutes and seconds input fields.
-     * It also sets up the style for each component.
-     * </p>
-     */
-    private void setupTimeSelectorComponents() {
-
-        this.timeLimitLabel = new Text("Time", this.globalContext);
-        this.timeLimitLabel.getStyle().x = this.margin;
-        this.timeLimitLabel.getStyle().y = this.margin + this.heightCellsLabel.getStyle().height + this.heightCellsLabel.getStyle().y;
-        this.timeLimitLabel.getStyle().height = this.componentHeight;
-        this.timeLimitLabel.getStyle().width = 3 * (this.componentWidth - this.paddingX) / 5;
-        this.timeLimitLabel.getStyle().font = this.componentFont;
-        this.timeLimitLabel.getStyle().backgroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.DIMMED);
-        this.timeLimitLabel.getStyle().foregroundColor = new ThemeColor(ColorName.FOREGROUND, ColorVariant.NORMAL);
-
-        this.minutesInput = new TextInput(this.globalContext, "0");
-        this.minutesInput.getStyle().x = this.paddingX + this.timeLimitLabel.getStyle().width + this.timeLimitLabel.getStyle().x;
-        this.minutesInput.getStyle().y = this.timeLimitLabel.getStyle().y;
-        this.minutesInput.getStyle().height = this.componentHeight;
-        this.minutesInput.getStyle().width = this.componentWidth / 5 - (this.colonWidth + this.paddingX) / 2;
-        this.minutesInput.getStyle().font = this.componentFont;
-        this.minutesInput.getStyle().paddingX = 13;
-        this.minutesInput.getStyle().textAlignment = Style.TextAlignment.CENTER;
-        this.minutesInput.setValue("1");
-
-        this.colonText = new Text(":", this.globalContext);
-        this.colonText.getStyle().x = this.colonWidth + this.minutesInput.getStyle().width + this.minutesInput.getStyle().x;
-        this.colonText.getStyle().y = this.minutesInput.getStyle().y;
-        this.colonText.getStyle().height = this.componentHeight;
-        this.colonText.getStyle().width = this.colonWidth;
-        this.colonText.getStyle().font = this.componentFont;
-
-        this.secondsInput = new TextInput(this.globalContext, "0");
-        this.secondsInput.getStyle().x = this.colonWidth + this.colonText.getStyle().width + this.colonText.getStyle().x;
-        this.secondsInput.getStyle().y = this.minutesInput.getStyle().y;
-        this.secondsInput.getStyle().height = this.componentHeight;
-        this.secondsInput.getStyle().width = (this.componentWidth / 5) - (this.colonWidth + this.paddingX) / 2;
-        this.secondsInput.getStyle().font = this.componentFont;
-        this.secondsInput.getStyle().paddingX = 13;
-        this.secondsInput.getStyle().textAlignment = Style.TextAlignment.CENTER;
-        this.secondsInput.setValue("0");
-
-        this.updateDisabledTime();
-    }
-
-    /**
      * Sets up the wall count components for the scene.
      * <p>
      * This method sets up the wall count components for the scene.
@@ -369,20 +374,38 @@ public final class SettingsScene extends Scene {
      * </p>
      */
     private void setupWallCountComponents() {
+        this.wallTypeTitle = new Text("Wall Type", this.globalContext);
+        this.wallTypeTitle.getStyle().x = this.cellCountTitle.getStyle().x + this.cellCountTitle.getStyle().width + this.margin;
+        this.wallTypeTitle.getStyle().y = this.cellCountTitle.getStyle().y;
+        this.wallTypeTitle.getStyle().height = this.componentHeight;
+        this.wallTypeTitle.getStyle().width = (this.componentWidth - this.paddingX) / 2;
+        this.wallTypeTitle.getStyle().font = this.componentFont;
+        this.wallTypeTitle.getStyle().backgroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.DIMMED);
+        this.wallTypeTitle.getStyle().foregroundColor = new ThemeColor(ColorName.GREEN, ColorVariant.NORMAL);
+
+        this.wallCountTitle = new Text("Count", this.globalContext);
+        this.wallCountTitle.getStyle().x = this.paddingX + this.wallTypeTitle.getStyle().width + this.wallTypeTitle.getStyle().x;
+        this.wallCountTitle.getStyle().y = this.wallTypeTitle.getStyle().y;
+        this.wallCountTitle.getStyle().height = this.componentHeight;
+        this.wallCountTitle.getStyle().width = 2 * (this.componentWidth - this.paddingX) / 3;
+        this.wallCountTitle.getStyle().font = this.componentFont;
+        this.wallCountTitle.getStyle().backgroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.DIMMED);
+        this.wallCountTitle.getStyle().foregroundColor = new ThemeColor(ColorName.GREEN, ColorVariant.NORMAL);
+
         ArrayList<WallType> wallTypes = new ArrayList<>(Arrays.asList(WallType.values()));
         this.wallCountLabels = new ArrayList<>();
         this.wallCountSelects = new ArrayList<>();
 
         for (WallType wallType : wallTypes) {
             Text wallCountLabel = new Text(wallType.toString(), this.globalContext);
-            wallCountLabel.getStyle().x = this.margin;
+            wallCountLabel.getStyle().x = this.wallTypeTitle.getStyle().x;
             wallCountLabel.getStyle().y = this.paddingY +
-                    this.minutesInput.getStyle().height +
-                    this.minutesInput.getStyle().y +
+                    this.wallTypeTitle.getStyle().height +
+                    this.wallTypeTitle.getStyle().y +
                     this.wallCountLabels.size() * (this.paddingY + this.componentHeight);
 
             wallCountLabel.getStyle().height = this.componentHeight;
-            wallCountLabel.getStyle().width = 3 * (this.componentWidth - this.paddingX) / 5;
+            wallCountLabel.getStyle().width = this.wallTypeTitle.getStyle().width;
             wallCountLabel.getStyle().font = this.componentFont;
             wallCountLabel.getStyle().backgroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.DIMMED);
             wallCountLabel.getStyle().foregroundColor = new ThemeColor(ColorName.GREEN, ColorVariant.NORMAL);
@@ -391,7 +414,7 @@ public final class SettingsScene extends Scene {
             wallCountSelector.getStyle().x = this.paddingX + wallCountLabel.getStyle().width + wallCountLabel.getStyle().x;
             wallCountSelector.getStyle().y = wallCountLabel.getStyle().y;
             wallCountSelector.getStyle().height = this.componentHeight;
-            wallCountSelector.getStyle().width = 2 * (this.componentWidth - this.paddingX) / 5;
+            wallCountSelector.getStyle().width = this.wallCountTitle.getStyle().width;
             wallCountSelector.getStyle().font = this.componentFont;
             wallCountSelector.getStyle().backgroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.BRIGHT);
             wallCountSelector.getStyle().foregroundColor = new ThemeColor(ColorName.GREEN, ColorVariant.NORMAL);
@@ -401,6 +424,57 @@ public final class SettingsScene extends Scene {
         }
 
         this.updateMaxWallCount(this.getMaxWallCount());
+    }
+
+    private void setupCellCountComponents() {
+        this.cellTypeTitle = new Text("Cell Type", this.globalContext);
+        this.cellTypeTitle.getStyle().x = this.difficultySelect.getStyle().x + this.difficultySelect.getStyle().width + this.margin;
+        this.cellTypeTitle.getStyle().y = this.difficultySelect.getStyle().y;
+        this.cellTypeTitle.getStyle().height = this.componentHeight;
+        this.cellTypeTitle.getStyle().width = (this.componentWidth - this.paddingX) / 2;
+        this.cellTypeTitle.getStyle().font = this.componentFont;
+        this.cellTypeTitle.getStyle().backgroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.DIMMED);
+        this.cellTypeTitle.getStyle().foregroundColor = new ThemeColor(ColorName.GREEN, ColorVariant.NORMAL);
+
+        this.cellCountTitle = new Text("Count", this.globalContext);
+        this.cellCountTitle.getStyle().x = this.paddingX + this.cellTypeTitle.getStyle().width + this.cellTypeTitle.getStyle().x;
+        this.cellCountTitle.getStyle().y = this.cellTypeTitle.getStyle().y;
+        this.cellCountTitle.getStyle().height = this.componentHeight;
+        this.cellCountTitle.getStyle().width = (this.componentWidth - this.paddingX) / 2;
+        this.cellCountTitle.getStyle().font = this.componentFont;
+        this.cellCountTitle.getStyle().backgroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.DIMMED);
+        this.cellCountTitle.getStyle().foregroundColor = new ThemeColor(ColorName.GREEN, ColorVariant.NORMAL);
+
+        ArrayList<CellType> cellTypes = new ArrayList<>(Arrays.asList(CellType.values()));
+        this.cellTypeLabels = new ArrayList<>();
+        this.cellTypeSelects = new ArrayList<>();
+
+        for (CellType cellType : cellTypes) {
+            Text cellTypeLabel = new Text(cellType.toString(), this.globalContext);
+            cellTypeLabel.getStyle().x = this.cellTypeTitle.getStyle().x;
+            cellTypeLabel.getStyle().y = this.paddingY +
+                    this.cellTypeTitle.getStyle().height +
+                    this.cellTypeTitle.getStyle().y +
+                    this.cellTypeLabels.size() * (this.paddingY + this.componentHeight);
+
+            cellTypeLabel.getStyle().height = this.componentHeight;
+            cellTypeLabel.getStyle().width = (this.componentWidth - this.paddingX) / 2;
+            cellTypeLabel.getStyle().font = this.componentFont;
+            cellTypeLabel.getStyle().backgroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.DIMMED);
+            cellTypeLabel.getStyle().foregroundColor = new ThemeColor(ColorName.GREEN, ColorVariant.NORMAL);
+
+            Selector<CellType> cellTypeSelector = new Selector<>(0, 15, this.globalContext);
+            cellTypeSelector.getStyle().x = this.paddingX + cellTypeLabel.getStyle().width + cellTypeLabel.getStyle().x;
+            cellTypeSelector.getStyle().y = cellTypeLabel.getStyle().y;
+            cellTypeSelector.getStyle().height = this.componentHeight;
+            cellTypeSelector.getStyle().width = (this.componentWidth - this.paddingX) / 2;
+            cellTypeSelector.getStyle().font = this.componentFont;
+            cellTypeSelector.getStyle().backgroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.BRIGHT);
+            cellTypeSelector.getStyle().foregroundColor = new ThemeColor(ColorName.GREEN, ColorVariant.NORMAL);
+
+            this.cellTypeLabels.add(cellTypeLabel);
+            this.cellTypeSelects.add(cellTypeSelector);
+        }
     }
 
     /**
@@ -445,33 +519,51 @@ public final class SettingsScene extends Scene {
         for (int index = 0; index < playerCount; index++) {
 
             TextInput playerNameInput = new TextInput(this.globalContext, String.format("Enter Player %d", index + 1));
-            playerNameInput.getStyle().x = this.componentWidth + 2 * this.margin;
-            playerNameInput.getStyle().y = this.margin + 2 * index * (this.paddingY + this.componentHeight);
+            playerNameInput.getStyle().x = this.cellTypeTitle.getStyle().x;
+            playerNameInput.getStyle().y =
+                    playerNameInput.getStyle().height = this.componentHeight;
+            playerNameInput.getStyle().width = this.cellCountTitle.getStyle().width;
+            playerNameInput.getStyle().font = this.componentFont;
             playerNameInput.getStyle().textAlignment = Style.TextAlignment.CENTER;
-            applyFirstRowStyle.run(playerNameInput);
-
-            if (index > 1) {
-                playerNameInput.getStyle().y = this.timeLimitLabel.getStyle().y + 2 * (index % 2) * (this.paddingY + this.componentHeight);
-            }
-
             this.playerNameInputs.add(playerNameInput);
+
+            if (index == 0) {
+                playerNameInput.getStyle().y = this.margin + this.heightCellsLabel.getStyle().y + this.heightCellsLabel.getStyle().height;
+            } else {
+                playerNameInput.getStyle().y = this.playerNameInputs.get(index - 1).getStyle().y + playerNameInput.getStyle().height + this.paddingY;
+            }
 
 
             Selector<ColorName> playerColorInput = new Selector<>(colorNames, this.globalContext);
             playerColorInput.getStyle().x = playerNameInput.getStyle().x + playerNameInput.getStyle().width + this.paddingX;
             playerColorInput.getStyle().y = playerNameInput.getStyle().y;
+            playerColorInput.getStyle().height = this.componentHeight;
+            playerColorInput.getStyle().width = this.cellCountTitle.getStyle().width;
+            playerColorInput.getStyle().font = this.componentFont;
+            playerColorInput.getStyle().backgroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.BRIGHT);
+            playerColorInput.getStyle().foregroundColor = new ThemeColor(ColorName.FOREGROUND, ColorVariant.NORMAL);
             playerColorInput.setSelectedIndex(index % colorNames.size());
-            applyFirstRowStyle.run(playerColorInput);
+
             this.playerColorSelects.add(playerColorInput);
 
             Selector<PlayerType> playerTypeSelect = new Selector<>(playerTypes, this.globalContext);
-            playerTypeSelect.getStyle().x = playerColorInput.getStyle().x;
-            applySecondRowStyle.run(playerTypeSelect);
+            playerTypeSelect.getStyle().x = this.wallTypeTitle.getStyle().x;
+            playerTypeSelect.getStyle().y = playerNameInput.getStyle().y;
+            playerTypeSelect.getStyle().height = this.componentHeight;
+            playerTypeSelect.getStyle().width = this.wallTypeTitle.getStyle().width;
+            playerTypeSelect.getStyle().font = this.componentFont;
+            playerTypeSelect.getStyle().backgroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.BRIGHT);
+            playerTypeSelect.getStyle().foregroundColor = new ThemeColor(ColorName.FOREGROUND, ColorVariant.NORMAL);
             this.playerTypeSelects.add(playerTypeSelect);
 
             Selector<AIProfile> aiProfileSelect = new Selector<>(aiProfiles, this.globalContext);
-            aiProfileSelect.getStyle().x = playerNameInput.getStyle().x;
-            applySecondRowStyle.run(aiProfileSelect);
+            aiProfileSelect.getStyle().x = playerTypeSelect.getStyle().x + playerTypeSelect.getStyle().width + this.paddingX;
+            aiProfileSelect.getStyle().y = playerNameInput.getStyle().y;
+            aiProfileSelect.getStyle().height = this.componentHeight;
+            aiProfileSelect.getStyle().width = this.wallCountTitle.getStyle().width;
+            aiProfileSelect.getStyle().font = this.componentFont;
+            aiProfileSelect.getStyle().backgroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.BRIGHT);
+            aiProfileSelect.getStyle().foregroundColor = new ThemeColor(ColorName.FOREGROUND, ColorVariant.NORMAL);
             this.aiProfileSelects.add(aiProfileSelect);
 
             this.updatePlayerFieldColor(index, null, colorNames.get(index % colorNames.size()));
@@ -491,25 +583,22 @@ public final class SettingsScene extends Scene {
      * <p>
      */
     private void setupButtons() {
+        GameComponent lastPlayerType = this.playerTypeSelects.get(this.playerTypeSelects.size() - 1);
+
         this.backButton = new Button("Cancel", this.globalContext);
-        this.backButton.getStyle().x = this.playerNameInputs.get(0).getStyle().x;
-        this.backButton.getStyle().y = this.aiProfileSelects.get(this.aiProfileSelects.size() - 1).getStyle().y + this.aiProfileSelects.get(this.aiProfileSelects.size() - 1).getStyle().height + this.paddingY;
+        this.backButton.getStyle().x = this.wallTypeTitle.getStyle().x;
+        this.backButton.getStyle().y = lastPlayerType.getStyle().y + lastPlayerType.getStyle().height + this.margin;
         this.backButton.getStyle().height = this.componentHeight;
-        this.backButton.getStyle().width = 4 * this.componentWidth / 5;
+        this.backButton.getStyle().width = this.cellCountTitle.getStyle().width;
         this.backButton.getStyle().font = this.componentFont;
         this.backButton.getStyle().backgroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.DIMMED);
         this.backButton.getStyle().foregroundColor = new ThemeColor(ColorName.FOREGROUND, ColorVariant.NORMAL);
-
-        GameComponent lastAiProfile = this.aiProfileSelects.get(this.aiProfileSelects.size() - 1);
-        GameComponent lastWallType = this.wallCountSelects.get(this.wallCountSelects.size() - 1);
-
-        this.backButton.getStyle().y = Math.max(lastWallType.getStyle().y, lastAiProfile.getStyle().y);
 
         this.startButton = new Button("Start", this.globalContext);
         this.startButton.getStyle().x = this.backButton.getStyle().x + this.backButton.getStyle().width + this.paddingX;
         this.startButton.getStyle().y = this.backButton.getStyle().y;
         this.startButton.getStyle().height = this.componentHeight;
-        this.startButton.getStyle().width = 4 * this.componentWidth / 5;
+        this.startButton.getStyle().width = this.wallCountTitle.getStyle().width;
         this.startButton.getStyle().font = this.componentFont;
     }
 
