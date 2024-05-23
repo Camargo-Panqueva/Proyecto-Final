@@ -4,6 +4,7 @@ import model.wall.WallData;
 import model.wall.WallType;
 
 import java.awt.*;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -18,12 +19,14 @@ public class Player {
     private int timePlayed;
     private boolean isAI;
     private AIProfile aiProfile;
+    private final ArrayDeque<Point> moveBuffer;
 
     public Player(final Point initialPosition, final String name, final HashMap<WallType, Integer> allowedWalls, final int xWinner, final int yWinner) {
         this.name = name;
         this.position = initialPosition;
         this.playerWalls = allowedWalls;
         this.PlayerWallsPlaced = new ArrayList<>();
+        this.moveBuffer = new ArrayDeque<>();
         this.xWinPosition = xWinner;
         this.yWinPosition = yWinner;
         this.winDirection = this.generateWinDirection();
@@ -90,6 +93,10 @@ public class Player {
         return this.isAI;
     }
 
+    public ArrayDeque<Point> getMoveBuffer() {
+        return moveBuffer;
+    }
+
     public AIProfile getAiProfile() {
         return aiProfile;
     }
@@ -103,6 +110,10 @@ public class Player {
     }
 
     public void setPosition(Point position) {
+        this.moveBuffer.add(position);
+        if (this.moveBuffer.size() >= 2){
+            this.moveBuffer.pop();
+        }
         this.position = position;
     }
 
