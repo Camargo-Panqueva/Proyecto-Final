@@ -5,7 +5,7 @@ import controller.logic.MatchManager;
 public class ReturnCell extends Cell{
     @Override
     public void action(MatchManager matchManager) {
-        matchManager.returnNCells(2, matchManager.getPlayerInTurn());
+        matchManager.returnCell(matchManager.getPlayerInTurn());
     }
 
     @Override

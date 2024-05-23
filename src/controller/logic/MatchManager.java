@@ -121,7 +121,7 @@ public class MatchManager {
         } else return !(wall.getIsAlly() && wall.getOwner().equals(player));
     }
 
-    private boolean isOccupiedPoint(Point point) {
+    public boolean isOccupiedPoint(Point point) {
         for (Player player : this.model.getPlayers().values()) {
             if (player.getPosition().equals(point)) {
                 return true;
@@ -381,12 +381,12 @@ public class MatchManager {
 //
 //    }
 
-    public void returnCell(Player player){
+    public void returnCell(Player player) {
         final ArrayDeque<Point> points = new ArrayDeque<>(player.getMoveBuffer());
 
         for (int i = 0; i < points.size(); i++) {
             final Point point = points.pop();
-            if(this.isValidPoint(point) && !isOccupiedPoint(point)){
+            if (this.isValidPoint(point) && !isOccupiedPoint(point)) {
                 this.setPlayerPosition(player, point);
                 break;
             }

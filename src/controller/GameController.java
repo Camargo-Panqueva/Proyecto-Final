@@ -14,10 +14,7 @@ import model.wall.WallData;
 import model.wall.WallType;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Random;
+import java.util.*;
 
 public final class GameController {
 
@@ -77,15 +74,17 @@ public final class GameController {
             this.model.getDifficulty().setDifficulty(difficultyType, 0, 0);
         }
 
+        //TODO : conditionals for cells
+
         if (setupSettings.wallTypeCount().values().stream().mapToInt(Integer::intValue).sum() > playerWallQuota) {
             return new ErrorResponse<>("The sum of walls at most it should be: " + playerWallQuota);
         }
 
         this.model.getGameBaseParameters().setBaseParameters(boardWidth, boardHeight, playerCount, setupSettings.wallTypeCount());
 
-        this.buildBoard(setupSettings.randomCells());
-
         this.setupPlayers(setupSettings.players());
+
+        this.buildBoard(setupSettings.randomCells(), setupSettings.cellTypeCount());
 
         this.matchManager = new MatchManager(this.model);
 
@@ -94,7 +93,7 @@ public final class GameController {
         return new SuccessResponse<>(null, "Game Started");
     }
 
-    private void buildBoard(final boolean isRandom) {
+    private void buildBoard(final boolean isRandom, HashMap<CellType, Integer> cellTypeCount) {
         this.model.setBoard(this.model.getGameBaseParameters().getBoardWidth(), this.model.getGameBaseParameters().getBoardHeight());
 
         if (isRandom) {
@@ -102,31 +101,44 @@ public final class GameController {
         }
 
         if (this.model.getBoard().getIsRandomly()) {
-            this.createRandomlyCells();
+            this.createRandomlyCells(cellTypeCount);
         } else {
             this.createCells();
         }
     }
 
-    private void createRandomlyCells() { // TODO : check if cell spawn in spawn player
+    private void createRandomlyCells(HashMap<CellType, Integer> cellTypeCount) { // TODO : check if cell spawn in spawn player
         Random random = new Random();
         final double SPECIAL_CELL_PROBABILITY = 0.15;
 
-        for (int x = 0; x < this.model.getBoard().getWidth(); x++) {
-            for (int y = 0; y < this.model.getBoard().getHeight(); y++) {
-                if (random.nextDouble() < SPECIAL_CELL_PROBABILITY) {
-                    this.model.getBoard().getBoardCells()[x][y] = getRandomSpecialCell(random);
-                } else {
-                    this.model.getBoard().getBoardCells()[x][y] = CellType.NORMAL;
-                }
+        while (!this.allValuesZero(cellTypeCount)) {
+            final CellType cellType = this.getRandomKey(cellTypeCount, random);
+            final int width = this.model.getBoard().getWidth();
+            final int height = this.model.getBoard().getHeight();
+            final int x = random.nextInt(width);
+            final int y = random.nextInt(height);
+
+            if (random.nextDouble() < SPECIAL_CELL_PROBABILITY && !this.matchManager.isOccupiedPoint(new Point(x, y))) {
+                this.model.getBoard().getBoardCells()[x][y] = cellType;
+                cellTypeCount.put(cellType, cellTypeCount.get(cellType) - 1);
             }
         }
     }
 
-    private CellType getRandomSpecialCell(Random random) {
-        CellType[] specialCells = {CellType.TELEPORT, CellType.RETURN, CellType.DOUBLE_TURN};
-        return specialCells[random.nextInt(specialCells.length)];
+    private CellType getRandomKey(HashMap<CellType, Integer> hashMap, Random random) {
+        final Set<CellType> keys = hashMap.keySet();
+        return (CellType) keys.toArray()[random.nextInt(keys.size())];
     }
+
+    private  boolean allValuesZero(HashMap<CellType, Integer> hashMap) {
+        for (int value : hashMap.values()) {
+            if (value != 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
 
 
     private void createCells() {
