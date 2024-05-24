@@ -1,6 +1,8 @@
 package view.context;
 
 import controller.dto.PlayerTransferObject;
+import controller.dto.ServiceResponse;
+import controller.dto.WallTransferObject;
 import model.cell.CellType;
 import model.wall.WallType;
 import util.ConsumerFunction;
@@ -31,7 +33,7 @@ public final class MatchContext {
 
     private ArrayList<PlayerTransferObject> players;
     private CellType[][] cells;
-    private WallType[][] walls;
+    private ArrayList<WallTransferObject> walls;
 
     private WallType selectedWallType;
     private PlayerTransferObject playerInTurn;
@@ -55,8 +57,8 @@ public final class MatchContext {
 
         this.mousePosition = new Point(0, 0);
         this.players = new ArrayList<>();
+        this.walls = new ArrayList<>();
         this.cells = new CellType[0][0];
-        this.walls = new WallType[0][0];
         this.turnCount = 0;
 
         this.selectedWallType = WallType.NORMAL;
@@ -113,7 +115,7 @@ public final class MatchContext {
      *
      * @return the walls of the board
      */
-    public WallType[][] walls() {
+    public ArrayList<WallTransferObject> walls() {
         return walls;
     }
 
@@ -251,19 +253,6 @@ public final class MatchContext {
     }
 
     /**
-     * Checks if the mouse is over a filled wall.
-     * <p>
-     * This method checks if the mouse is over a filled wall.
-     * The mouse over filled wall status is stored in the context and can be accessed using this method.
-     * </p>
-     *
-     * @return true if the mouse is over a filled wall, false otherwise
-     */
-    public boolean mouseOverFilledWall() {
-        return this.mouseOverFilledWall;
-    }
-
-    /**
      * Sets the players for the match.
      * <p>
      * This method sets the players for the match.
@@ -302,7 +291,7 @@ public final class MatchContext {
      *
      * @param walls a 2D array of WallType representing the walls of the board
      */
-    public void setWalls(WallType[][] walls) {
+    public void setWalls(ArrayList<WallTransferObject> walls) {
         this.walls = walls;
     }
 
@@ -377,8 +366,8 @@ public final class MatchContext {
         boolean evenY = this.mousePosition.y % 2 == 0;
 
         this.mouseOverWall = (evenX && !evenY) || (!evenX && evenY);
-        this.mouseOverEmptyWall = this.mouseOverWall && this.walls[this.mousePosition.x][this.mousePosition.y] == null;
-        this.mouseOverFilledWall = this.mouseOverWall && this.walls[this.mousePosition.x][this.mousePosition.y] != null;
+        this.mouseOverEmptyWall = this.mouseOverWall && !this.isMouseOverWall();
+        this.mouseOverFilledWall = this.mouseOverWall && this.isMouseOverWall();
     }
 
     /**
@@ -415,6 +404,28 @@ public final class MatchContext {
                 function.run(payload);
             }
         }
+    }
+
+    /**
+     * Checks if the mouse is over a wall.
+     * <p>
+     * This method checks if the mouse is over a wall.
+     * The method checks if the mouse position is over a wall on the board.
+     * </p>
+     *
+     * @return true if the mouse is over a wall, false otherwise
+     */
+    private boolean isMouseOverWall() {
+        int x = this.mousePosition.x;
+        int y = this.mousePosition.y;
+
+        ServiceResponse<Boolean> response = this.globalContext.controller().isThereAWall(new Point(x, y));
+
+        if (!response.ok) {
+            return false;
+        }
+
+        return response.payload;
     }
 
     /**

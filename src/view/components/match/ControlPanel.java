@@ -131,8 +131,6 @@ public final class ControlPanel extends GameComponent {
 
         this.remainingWalls.getStyle().centerVertically(this.wallSelector.getBounds());
         this.remainingWalls.getStyle().x = this.wallSelector.getStyle().x + this.wallSelector.getStyle().width - 70;
-
-        System.out.println(this.remainingWalls.getStyle().x + " " + this.remainingWalls.getStyle().y);
     }
 
     /**

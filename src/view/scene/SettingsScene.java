@@ -62,7 +62,7 @@ public final class SettingsScene extends Scene {
     private Text cellCountTitle;
     private Text wallCountTitle;
     private ArrayList<Text> cellTypeLabels;
-    private ArrayList<Selector<CellType>> cellTypeSelects;
+    private ArrayList<Selector<Integer>> cellTypeSelects;
     private ArrayList<Text> wallCountLabels;
     private ArrayList<Selector<Integer>> wallCountSelects;
 
@@ -127,7 +127,7 @@ public final class SettingsScene extends Scene {
         for (Text cellTypeLabel : this.cellTypeLabels) {
             this.addComponent(cellTypeLabel);
         }
-        for (Selector<CellType> cellTypeSelect : this.cellTypeSelects) {
+        for (Selector<Integer> cellTypeSelect : this.cellTypeSelects) {
             this.addComponent(cellTypeSelect);
         }
         for (TextInput playerNameInput : this.playerNameInputs) {
@@ -186,6 +186,7 @@ public final class SettingsScene extends Scene {
                     this.specialCellsSelect.getSelectedOption(),
                     this.difficultySelect.getSelectedOption(),
                     this.getTotalSeconds(),
+                    this.getCellCounts(),
                     this.getWallCounts(),
                     this.getPlayerSetups()
             );
@@ -366,7 +367,7 @@ public final class SettingsScene extends Scene {
     }
 
     /**
-     * Sets up the wall count components for the scene.
+     * Set up the wall count components for the scene.
      * <p>
      * This method sets up the wall count components for the scene.
      * It creates the wall count labels and selectors for each wall type.
@@ -426,6 +427,14 @@ public final class SettingsScene extends Scene {
         this.updateMaxWallCount(this.getMaxWallCount());
     }
 
+    /**
+     * Set up the cell count components for the scene.
+     * <p>
+     * This method sets up the cell count components for the scene.
+     * It creates the cell type labels and selectors for each cell type.
+     * It also sets up the style for each component.
+     * </p>
+     */
     private void setupCellCountComponents() {
         this.cellTypeTitle = new Text("Cell Type", this.globalContext);
         this.cellTypeTitle.getStyle().x = this.difficultySelect.getStyle().x + this.difficultySelect.getStyle().width + this.margin;
@@ -463,7 +472,7 @@ public final class SettingsScene extends Scene {
             cellTypeLabel.getStyle().backgroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.DIMMED);
             cellTypeLabel.getStyle().foregroundColor = new ThemeColor(ColorName.GREEN, ColorVariant.NORMAL);
 
-            Selector<CellType> cellTypeSelector = new Selector<>(0, 15, this.globalContext);
+            Selector<Integer> cellTypeSelector = new Selector<>(0, 15, this.globalContext);
             cellTypeSelector.getStyle().x = this.paddingX + cellTypeLabel.getStyle().width + cellTypeLabel.getStyle().x;
             cellTypeSelector.getStyle().y = cellTypeLabel.getStyle().y;
             cellTypeSelector.getStyle().height = this.componentHeight;
@@ -770,6 +779,28 @@ public final class SettingsScene extends Scene {
         }
 
         return playerSetups;
+    }
+
+    /**
+     * Gets the cell counts.
+     * <p>
+     * This method gets the cell counts.
+     * It returns a hash map with the cell type and the cell count.
+     * </p>
+     *
+     * @return the cell counts.
+     */
+    private HashMap<CellType, Integer> getCellCounts() {
+        HashMap<CellType, Integer> cellCounts = new HashMap<>();
+
+        for (int index = 0; index < this.cellTypeSelects.size(); index++) {
+            Selector<Integer> cellTypeSelector = this.cellTypeSelects.get(index);
+            CellType cellType = CellType.values()[index];
+
+            cellCounts.put(cellType, cellTypeSelector.getSelectedOption());
+        }
+
+        return cellCounts;
     }
 
     /**

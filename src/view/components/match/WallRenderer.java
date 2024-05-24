@@ -1,9 +1,12 @@
 package view.components.match;
 
+import controller.dto.ServiceResponse;
+import controller.dto.WallTransferObject;
 import model.wall.WallType;
 import view.context.GlobalContext;
 import view.context.MatchContext;
 import view.context.Style;
+import view.themes.ThemeColor;
 import view.themes.ThemeColor.ColorName;
 import view.themes.ThemeColor.ColorVariant;
 
@@ -56,16 +59,9 @@ public final class WallRenderer {
      */
     private void renderWalls(Graphics2D graphics) {
 
-        for (int x = 0; x < this.matchContext.walls().length; x++) {
-            for (int y = 0; y < this.matchContext.walls()[0].length; y++) {
-                WallType wallType = this.matchContext.walls()[x][y];
-
-                if (wallType == null) {
-                    continue;
-                }
-
-                this.renderWall(graphics, x, y, null, this.globalContext.currentTheme().getColor(ColorName.PRIMARY, ColorVariant.NORMAL));
-            }
+        for (WallTransferObject wall : this.matchContext.walls()) {
+            Color color = this.globalContext.currentTheme().getColor(this.getWallColor(wall, ColorVariant.NORMAL));
+            this.renderWall(graphics, wall, color);
         }
     }
 
@@ -81,101 +77,97 @@ public final class WallRenderer {
 
         int x = this.matchContext.mousePosition().x;
         int y = this.matchContext.mousePosition().y;
-        int[] scaleParams = {0, 0};
 
-        //TODO: Get scale from model
-        int scale = this.matchContext.selectedWallType() == WallType.LARGE ? 3 : 2;
+        ServiceResponse<WallTransferObject> wallResponse = this.globalContext.controller().getWallPreview(new Point(x, y), this.matchContext.selectedWallType());
 
-        if (this.matchContext.mousePosition().x % 2 == 0) {
-            scaleParams[0] = scale;
-        }
-        if (this.matchContext.mousePosition().y % 2 == 0) {
-            scaleParams[1] = scale;
+        if (!wallResponse.ok) {
+
+            return;
         }
 
-        this.renderWall(graphics, x, y, scaleParams, this.globalContext.currentTheme().getColor(ColorName.PRIMARY, ColorVariant.DIMMED));
+        WallTransferObject wall = wallResponse.payload;
+
+        Color color = this.globalContext.currentTheme().getColor(this.getWallColor(wall, ColorVariant.DIMMED));
+
+        this.renderWall(graphics, wall, color);
     }
 
     /**
      * Renders a wall on the screen.
      *
-     * @param graphics    the graphics object to render the wall with.
-     * @param x           the x-coordinate of the wall.
-     * @param y           the y-coordinate of the wall.
-     * @param scaleParams the scale parameters of the wall.
-     * @param color       the color of the wall.
+     * @param graphics the graphics object to render the wall with.
+     * @param wall     the wall to render.
+     * @param color    the color of the wall.
      */
-    private void renderWall(Graphics2D graphics, int x, int y, int[] scaleParams, Color color) {
-        int[] renderParams = this.calculateWallRenderParams(x, y);
-
-        int cellsCountX = renderParams[0];
-        int cellsCountY = renderParams[1];
-        int wallsCountX = renderParams[2];
-        int wallsCountY = renderParams[3];
-        int width = renderParams[4];
-        int height = renderParams[5];
-
-        graphics.setColor(color);
-
-        if (scaleParams != null) {
-
-            boolean adjustWidth = scaleParams[0] != 0;
-            boolean adjustHeight = scaleParams[1] != 0;
-
-            if (adjustWidth) {
-                width = scaleParams[0] * (WALL_SIZE + CELL_SIZE) - WALL_SIZE;
-            }
-
-            if (adjustHeight) {
-                height = scaleParams[1] * (WALL_SIZE + CELL_SIZE) - WALL_SIZE;
-            }
-        }
-
-        graphics.fillRect(
-                this.boardStyle.x + this.boardStyle.borderWidth + CELL_SIZE * cellsCountX + WALL_SIZE * wallsCountX,
-                this.boardStyle.y + this.boardStyle.borderWidth + CELL_SIZE * cellsCountY + WALL_SIZE * wallsCountY,
-                width,
-                height
-        );
-    }
-
-    /**
-     * Calculates the render parameters of a wall.
-     * <p>
-     * This method calculates the render parameters of a wall.
-     * It calculates the number of cells and walls in the x and y direction.
-     * It also calculates the width and height of the wall.
-     * </p>
-     *
-     * @param x the x-coordinate of the wall.
-     * @param y the y-coordinate of the wall.
-     * @return the render parameters of the wall.
-     */
-    private int[] calculateWallRenderParams(int x, int y) {
-
-        int cellsCountX = (int) Math.ceil(x / 2.0);
-        int cellsCountY = (int) Math.ceil(y / 2.0);
-
-        int wallsCountX = x / 2;
-        int wallsCountY = y / 2;
-
+    private void renderWall(Graphics2D graphics, WallTransferObject wall, Color color) {
         int width;
         int height;
 
-        if (x % 2 == 0 && y % 2 == 0) {
-            width = CELL_SIZE;
-            height = CELL_SIZE;
-        } else if (x % 2 == 0) {
-            width = CELL_SIZE;
-            height = WALL_SIZE;
-        } else if (y % 2 == 0) {
-            width = WALL_SIZE;
-            height = CELL_SIZE;
-        } else {
-            width = WALL_SIZE;
-            height = WALL_SIZE;
+        int wallsCountX;
+        int wallsCountY;
+
+        int cellsCountX;
+        int cellsCountY;
+
+        graphics.setColor(color);
+
+        for (int x = 0; x < wall.wallShape().length; x++) {
+            for (int y = 0; y < wall.wallShape()[0].length; y++) {
+
+                WallType wallType = wall.wallShape()[x][y];
+
+                if (wallType == null) {
+                    continue;
+                }
+
+                int currentX = wall.position().x + x;
+                int currentY = wall.position().y + y;
+
+                wallsCountX = currentX / 2;
+                wallsCountY = currentY / 2;
+
+                cellsCountX = (int) Math.ceil(currentX / 2.0);
+                cellsCountY = (int) Math.ceil(currentY / 2.0);
+
+                if (currentX % 2 == 0 && currentY % 2 == 0) {
+                    width = CELL_SIZE;
+                    height = CELL_SIZE;
+                } else if (currentX % 2 == 0) {
+                    width = CELL_SIZE;
+                    height = WALL_SIZE;
+                } else if (currentY % 2 == 0) {
+                    width = WALL_SIZE;
+                    height = CELL_SIZE;
+                } else {
+                    width = WALL_SIZE;
+                    height = WALL_SIZE;
+                }
+
+                graphics.fillRect(
+                        this.boardStyle.x + this.boardStyle.borderWidth + CELL_SIZE * cellsCountX + WALL_SIZE * wallsCountX,
+                        this.boardStyle.y + this.boardStyle.borderWidth + CELL_SIZE * cellsCountY + WALL_SIZE * wallsCountY,
+                        width,
+                        height
+                );
+            }
         }
 
-        return new int[]{cellsCountX, cellsCountY, wallsCountX, wallsCountY, width, height};
+
+    }
+
+    /**
+     * Gets the color of the wall.
+     *
+     * @param wall    the wall to get the color of.
+     * @param variant the variant of the color.
+     * @return the color of the wall.
+     */
+    private ThemeColor getWallColor(WallTransferObject wall, ColorVariant variant) {
+
+        if (wall.wallType() == WallType.ALLY) {
+            return this.matchContext.getPlayerColor(wall.owner(), variant);
+        }
+
+        return new ThemeColor(ColorName.PRIMARY, variant);
     }
 }

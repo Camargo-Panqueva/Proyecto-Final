@@ -84,11 +84,11 @@ public final class GameController {
 
         this.model.setBoard(this.model.getGameBaseParameters().getBoardWidth(), this.model.getGameBaseParameters().getBoardHeight());
 
+        this.matchManager = new MatchManager(this.model);
+
         this.setupPlayers(setupSettings.players());
 
         this.buildCells(setupSettings.randomCells(), setupSettings.cellTypeCount());
-
-        this.matchManager = new MatchManager(this.model);
 
         this.globalStateManager.setCurrentState(GlobalState.PLAYING);
         this.model.setMatchState(GameModel.MatchState.PLAYING);
@@ -112,12 +112,22 @@ public final class GameController {
         Random random = new Random();
         final double SPECIAL_CELL_PROBABILITY = 0.15;
 
+        this.createCells();
+
         while (!this.allValuesZero(cellTypeCount)) {
             final CellType cellType = this.getRandomKey(cellTypeCount, random);
             final int width = this.model.getBoard().getWidth();
             final int height = this.model.getBoard().getHeight();
             final int x = random.nextInt(width);
             final int y = random.nextInt(height);
+
+            if (cellTypeCount.get(cellType) <= 0) {
+                continue;
+            }
+
+            if (this.model.getBoard().getCellType(x, y) != CellType.NORMAL) {
+                continue;
+            }
 
             if (random.nextDouble() < SPECIAL_CELL_PROBABILITY && !this.matchManager.isOccupiedPoint(new Point(x, y))) {
                 this.model.getBoard().getBoardCells()[x][y] = cellType;
@@ -133,14 +143,12 @@ public final class GameController {
 
     private  boolean allValuesZero(HashMap<CellType, Integer> hashMap) {
         for (int value : hashMap.values()) {
-            if (value != 0) {
+            if (value > 0) {
                 return false;
             }
         }
         return true;
     }
-
-
 
     private void createCells() {
         final int width = this.model.getBoard().getWidth();

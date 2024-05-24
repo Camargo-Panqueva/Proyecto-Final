@@ -6,14 +6,14 @@ public enum WallType {
     TEMPORAL_WALL("Temporal"),
     ALLY("Ally");
 
-    private final String typeString;
+    private final String name;
 
     WallType(String type) {
-        this.typeString = type;
+        this.name = type;
     }
 
     @Override
     public String toString() {
-        return typeString;
+        return name;
     }
 }
