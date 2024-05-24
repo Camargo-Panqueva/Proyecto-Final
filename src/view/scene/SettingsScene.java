@@ -263,6 +263,8 @@ public final class SettingsScene extends Scene {
      * </p>
      */
     private void setupBasicComponents() {
+        ColorName componentsColor = ColorName.RED;
+
         ArrayList<DifficultyType> difficultyOptions = new ArrayList<>(Arrays.asList(DifficultyType.values()));
         this.difficultySelect = new Selector<>(difficultyOptions, this.globalContext);
         this.difficultySelect.getStyle().x = this.margin;
@@ -316,7 +318,7 @@ public final class SettingsScene extends Scene {
         this.specialCellsLabel.getStyle().width = 3 * (this.componentWidth - this.paddingX) / 5;
         this.specialCellsLabel.getStyle().font = this.componentFont;
         this.specialCellsLabel.getStyle().backgroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.DIMMED);
-        this.specialCellsLabel.getStyle().foregroundColor = new ThemeColor(ColorName.PURPLE, ColorVariant.NORMAL);
+        this.specialCellsLabel.getStyle().foregroundColor = new ThemeColor(componentsColor, ColorVariant.NORMAL);
 
         this.specialCellsSelect = new Selector<>(false, this.globalContext);
         this.specialCellsSelect.getStyle().x = this.paddingX + this.specialCellsLabel.getStyle().width + this.specialCellsLabel.getStyle().x;
@@ -325,7 +327,7 @@ public final class SettingsScene extends Scene {
         this.specialCellsSelect.getStyle().width = 2 * (this.componentWidth - this.paddingX) / 5;
         this.specialCellsSelect.getStyle().font = this.componentFont;
         this.specialCellsSelect.getStyle().backgroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.BRIGHT);
-        this.specialCellsSelect.getStyle().foregroundColor = new ThemeColor(ColorName.PURPLE, ColorVariant.NORMAL);
+        this.specialCellsSelect.getStyle().foregroundColor = new ThemeColor(componentsColor, ColorVariant.NORMAL);
 
         this.widthCellsLabel = new Text("Width", this.globalContext);
         this.widthCellsLabel.getStyle().x = this.margin;
@@ -334,7 +336,7 @@ public final class SettingsScene extends Scene {
         this.widthCellsLabel.getStyle().width = 3 * (this.componentWidth - this.paddingX) / 5;
         this.widthCellsLabel.getStyle().font = this.componentFont;
         this.widthCellsLabel.getStyle().backgroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.DIMMED);
-        this.widthCellsLabel.getStyle().foregroundColor = new ThemeColor(ColorName.PURPLE, ColorVariant.NORMAL);
+        this.widthCellsLabel.getStyle().foregroundColor = new ThemeColor(componentsColor, ColorVariant.NORMAL);
 
         this.widthCellsSelect = new Selector<>(5, 14, this.globalContext);
         this.widthCellsSelect.getStyle().x = this.paddingX + this.widthCellsLabel.getStyle().width + this.widthCellsLabel.getStyle().x;
@@ -343,7 +345,7 @@ public final class SettingsScene extends Scene {
         this.widthCellsSelect.getStyle().width = 2 * (this.componentWidth - this.paddingX) / 5;
         this.widthCellsSelect.getStyle().font = this.componentFont;
         this.widthCellsSelect.getStyle().backgroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.BRIGHT);
-        this.widthCellsSelect.getStyle().foregroundColor = new ThemeColor(ColorName.PURPLE, ColorVariant.NORMAL);
+        this.widthCellsSelect.getStyle().foregroundColor = new ThemeColor(componentsColor, ColorVariant.NORMAL);
         this.widthCellsSelect.setSelectedOption(9);
 
         this.heightCellsLabel = new Text("Height", this.globalContext);
@@ -353,7 +355,7 @@ public final class SettingsScene extends Scene {
         this.heightCellsLabel.getStyle().width = 3 * (this.componentWidth - this.paddingX) / 5;
         this.heightCellsLabel.getStyle().font = this.componentFont;
         this.heightCellsLabel.getStyle().backgroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.DIMMED);
-        this.heightCellsLabel.getStyle().foregroundColor = new ThemeColor(ColorName.PURPLE, ColorVariant.NORMAL);
+        this.heightCellsLabel.getStyle().foregroundColor = new ThemeColor(componentsColor, ColorVariant.NORMAL);
 
         this.heightCellsSelect = new Selector<>(5, 14, this.globalContext);
         this.heightCellsSelect.getStyle().x = this.paddingX + this.heightCellsLabel.getStyle().width + this.heightCellsLabel.getStyle().x;
@@ -362,70 +364,10 @@ public final class SettingsScene extends Scene {
         this.heightCellsSelect.getStyle().width = 2 * (this.componentWidth - this.paddingX) / 5;
         this.heightCellsSelect.getStyle().font = this.componentFont;
         this.heightCellsSelect.getStyle().backgroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.BRIGHT);
-        this.heightCellsSelect.getStyle().foregroundColor = new ThemeColor(ColorName.PURPLE, ColorVariant.NORMAL);
+        this.heightCellsSelect.getStyle().foregroundColor = new ThemeColor(componentsColor, ColorVariant.NORMAL);
         this.heightCellsSelect.setSelectedOption(9);
     }
 
-    /**
-     * Set up the wall count components for the scene.
-     * <p>
-     * This method sets up the wall count components for the scene.
-     * It creates the wall count labels and selectors for each wall type.
-     * It also sets up the style for each component.
-     * </p>
-     */
-    private void setupWallCountComponents() {
-        this.wallTypeTitle = new Text("Wall Type", this.globalContext);
-        this.wallTypeTitle.getStyle().x = this.cellCountTitle.getStyle().x + this.cellCountTitle.getStyle().width + this.margin;
-        this.wallTypeTitle.getStyle().y = this.cellCountTitle.getStyle().y;
-        this.wallTypeTitle.getStyle().height = this.componentHeight;
-        this.wallTypeTitle.getStyle().width = (this.componentWidth - this.paddingX) / 2;
-        this.wallTypeTitle.getStyle().font = this.componentFont;
-        this.wallTypeTitle.getStyle().backgroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.DIMMED);
-        this.wallTypeTitle.getStyle().foregroundColor = new ThemeColor(ColorName.GREEN, ColorVariant.NORMAL);
-
-        this.wallCountTitle = new Text("Count", this.globalContext);
-        this.wallCountTitle.getStyle().x = this.paddingX + this.wallTypeTitle.getStyle().width + this.wallTypeTitle.getStyle().x;
-        this.wallCountTitle.getStyle().y = this.wallTypeTitle.getStyle().y;
-        this.wallCountTitle.getStyle().height = this.componentHeight;
-        this.wallCountTitle.getStyle().width = 2 * (this.componentWidth - this.paddingX) / 3;
-        this.wallCountTitle.getStyle().font = this.componentFont;
-        this.wallCountTitle.getStyle().backgroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.DIMMED);
-        this.wallCountTitle.getStyle().foregroundColor = new ThemeColor(ColorName.GREEN, ColorVariant.NORMAL);
-
-        ArrayList<WallType> wallTypes = new ArrayList<>(Arrays.asList(WallType.values()));
-        this.wallCountLabels = new ArrayList<>();
-        this.wallCountSelects = new ArrayList<>();
-
-        for (WallType wallType : wallTypes) {
-            Text wallCountLabel = new Text(wallType.toString(), this.globalContext);
-            wallCountLabel.getStyle().x = this.wallTypeTitle.getStyle().x;
-            wallCountLabel.getStyle().y = this.paddingY +
-                    this.wallTypeTitle.getStyle().height +
-                    this.wallTypeTitle.getStyle().y +
-                    this.wallCountLabels.size() * (this.paddingY + this.componentHeight);
-
-            wallCountLabel.getStyle().height = this.componentHeight;
-            wallCountLabel.getStyle().width = this.wallTypeTitle.getStyle().width;
-            wallCountLabel.getStyle().font = this.componentFont;
-            wallCountLabel.getStyle().backgroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.DIMMED);
-            wallCountLabel.getStyle().foregroundColor = new ThemeColor(ColorName.GREEN, ColorVariant.NORMAL);
-
-            Selector<Integer> wallCountSelector = new Selector<>(0, 15, this.globalContext);
-            wallCountSelector.getStyle().x = this.paddingX + wallCountLabel.getStyle().width + wallCountLabel.getStyle().x;
-            wallCountSelector.getStyle().y = wallCountLabel.getStyle().y;
-            wallCountSelector.getStyle().height = this.componentHeight;
-            wallCountSelector.getStyle().width = this.wallCountTitle.getStyle().width;
-            wallCountSelector.getStyle().font = this.componentFont;
-            wallCountSelector.getStyle().backgroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.BRIGHT);
-            wallCountSelector.getStyle().foregroundColor = new ThemeColor(ColorName.GREEN, ColorVariant.NORMAL);
-
-            this.wallCountLabels.add(wallCountLabel);
-            this.wallCountSelects.add(wallCountSelector);
-        }
-
-        this.updateMaxWallCount(this.getMaxWallCount());
-    }
 
     /**
      * Set up the cell count components for the scene.
@@ -436,14 +378,16 @@ public final class SettingsScene extends Scene {
      * </p>
      */
     private void setupCellCountComponents() {
+        ColorName componentsColor = ColorName.PURPLE;
+
         this.cellTypeTitle = new Text("Cell Type", this.globalContext);
         this.cellTypeTitle.getStyle().x = this.difficultySelect.getStyle().x + this.difficultySelect.getStyle().width + this.margin;
         this.cellTypeTitle.getStyle().y = this.difficultySelect.getStyle().y;
         this.cellTypeTitle.getStyle().height = this.componentHeight;
         this.cellTypeTitle.getStyle().width = (this.componentWidth - this.paddingX) / 2;
         this.cellTypeTitle.getStyle().font = this.componentFont;
-        this.cellTypeTitle.getStyle().backgroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.DIMMED);
-        this.cellTypeTitle.getStyle().foregroundColor = new ThemeColor(ColorName.GREEN, ColorVariant.NORMAL);
+        this.cellTypeTitle.getStyle().backgroundColor = new ThemeColor(componentsColor, ColorVariant.NORMAL);
+        this.cellTypeTitle.getStyle().foregroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.NORMAL);
 
         this.cellCountTitle = new Text("Count", this.globalContext);
         this.cellCountTitle.getStyle().x = this.paddingX + this.cellTypeTitle.getStyle().width + this.cellTypeTitle.getStyle().x;
@@ -451,8 +395,8 @@ public final class SettingsScene extends Scene {
         this.cellCountTitle.getStyle().height = this.componentHeight;
         this.cellCountTitle.getStyle().width = (this.componentWidth - this.paddingX) / 2;
         this.cellCountTitle.getStyle().font = this.componentFont;
-        this.cellCountTitle.getStyle().backgroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.DIMMED);
-        this.cellCountTitle.getStyle().foregroundColor = new ThemeColor(ColorName.GREEN, ColorVariant.NORMAL);
+        this.cellCountTitle.getStyle().backgroundColor = new ThemeColor(componentsColor, ColorVariant.NORMAL);
+        this.cellCountTitle.getStyle().foregroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.NORMAL);
 
         ArrayList<CellType> cellTypes = new ArrayList<>(Arrays.asList(CellType.values()));
         this.cellTypeLabels = new ArrayList<>();
@@ -470,7 +414,7 @@ public final class SettingsScene extends Scene {
             cellTypeLabel.getStyle().width = (this.componentWidth - this.paddingX) / 2;
             cellTypeLabel.getStyle().font = this.componentFont;
             cellTypeLabel.getStyle().backgroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.DIMMED);
-            cellTypeLabel.getStyle().foregroundColor = new ThemeColor(ColorName.GREEN, ColorVariant.NORMAL);
+            cellTypeLabel.getStyle().foregroundColor = new ThemeColor(componentsColor, ColorVariant.NORMAL);
 
             Selector<Integer> cellTypeSelector = new Selector<>(0, 15, this.globalContext);
             cellTypeSelector.getStyle().x = this.paddingX + cellTypeLabel.getStyle().width + cellTypeLabel.getStyle().x;
@@ -479,11 +423,74 @@ public final class SettingsScene extends Scene {
             cellTypeSelector.getStyle().width = (this.componentWidth - this.paddingX) / 2;
             cellTypeSelector.getStyle().font = this.componentFont;
             cellTypeSelector.getStyle().backgroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.BRIGHT);
-            cellTypeSelector.getStyle().foregroundColor = new ThemeColor(ColorName.GREEN, ColorVariant.NORMAL);
+            cellTypeSelector.getStyle().foregroundColor = new ThemeColor(componentsColor, ColorVariant.NORMAL);
 
             this.cellTypeLabels.add(cellTypeLabel);
             this.cellTypeSelects.add(cellTypeSelector);
         }
+    }
+
+    /**
+     * Set up the wall count components for the scene.
+     * <p>
+     * This method sets up the wall count components for the scene.
+     * It creates the wall count labels and selectors for each wall type.
+     * It also sets up the style for each component.
+     * </p>
+     */
+    private void setupWallCountComponents() {
+        ColorName componentsColor = ColorName.BLUE;
+
+        this.wallTypeTitle = new Text("Wall Type", this.globalContext);
+        this.wallTypeTitle.getStyle().x = this.cellCountTitle.getStyle().x + this.cellCountTitle.getStyle().width + this.margin;
+        this.wallTypeTitle.getStyle().y = this.cellCountTitle.getStyle().y;
+        this.wallTypeTitle.getStyle().height = this.componentHeight;
+        this.wallTypeTitle.getStyle().width = (this.componentWidth - this.paddingX) / 2;
+        this.wallTypeTitle.getStyle().font = this.componentFont;
+        this.wallTypeTitle.getStyle().backgroundColor = new ThemeColor(componentsColor, ColorVariant.NORMAL);
+        this.wallTypeTitle.getStyle().foregroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.NORMAL);
+
+        this.wallCountTitle = new Text("Count", this.globalContext);
+        this.wallCountTitle.getStyle().x = this.paddingX + this.wallTypeTitle.getStyle().width + this.wallTypeTitle.getStyle().x;
+        this.wallCountTitle.getStyle().y = this.wallTypeTitle.getStyle().y;
+        this.wallCountTitle.getStyle().height = this.componentHeight;
+        this.wallCountTitle.getStyle().width = 2 * (this.componentWidth - this.paddingX) / 3;
+        this.wallCountTitle.getStyle().font = this.componentFont;
+        this.wallCountTitle.getStyle().backgroundColor = new ThemeColor(componentsColor, ColorVariant.NORMAL);
+        this.wallCountTitle.getStyle().foregroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.NORMAL);
+
+        ArrayList<WallType> wallTypes = new ArrayList<>(Arrays.asList(WallType.values()));
+        this.wallCountLabels = new ArrayList<>();
+        this.wallCountSelects = new ArrayList<>();
+
+        for (WallType wallType : wallTypes) {
+            Text wallCountLabel = new Text(wallType.toString(), this.globalContext);
+            wallCountLabel.getStyle().x = this.wallTypeTitle.getStyle().x;
+            wallCountLabel.getStyle().y = this.paddingY +
+                    this.wallTypeTitle.getStyle().height +
+                    this.wallTypeTitle.getStyle().y +
+                    this.wallCountLabels.size() * (this.paddingY + this.componentHeight);
+
+            wallCountLabel.getStyle().height = this.componentHeight;
+            wallCountLabel.getStyle().width = this.wallTypeTitle.getStyle().width;
+            wallCountLabel.getStyle().font = this.componentFont;
+            wallCountLabel.getStyle().backgroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.DIMMED);
+            wallCountLabel.getStyle().foregroundColor = new ThemeColor(componentsColor, ColorVariant.NORMAL);
+
+            Selector<Integer> wallCountSelector = new Selector<>(0, 15, this.globalContext);
+            wallCountSelector.getStyle().x = this.paddingX + wallCountLabel.getStyle().width + wallCountLabel.getStyle().x;
+            wallCountSelector.getStyle().y = wallCountLabel.getStyle().y;
+            wallCountSelector.getStyle().height = this.componentHeight;
+            wallCountSelector.getStyle().width = this.wallCountTitle.getStyle().width;
+            wallCountSelector.getStyle().font = this.componentFont;
+            wallCountSelector.getStyle().backgroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.BRIGHT);
+            wallCountSelector.getStyle().foregroundColor = new ThemeColor(componentsColor, ColorVariant.NORMAL);
+
+            this.wallCountLabels.add(wallCountLabel);
+            this.wallCountSelects.add(wallCountSelector);
+        }
+
+        this.updateMaxWallCount(this.getMaxWallCount());
     }
 
     /**

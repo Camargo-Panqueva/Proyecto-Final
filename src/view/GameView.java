@@ -74,7 +74,7 @@ public final class GameView {
     public void start() {
         this.window.makeVisible();
 
-        this.renderLoop = new ConcurrentLoop(this::render, 60, "View render");
+        this.renderLoop = new ConcurrentLoop(this::render, 30, "View render");
         this.updateLoop = new ConcurrentLoop(this::update, 60, "View update");
 
         this.renderLoop.start();
