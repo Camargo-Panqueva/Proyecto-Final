@@ -358,38 +358,12 @@ public class MatchManager {
         extraTurns.add(player);
     }
 
-//    public void returnNCells(final int n, final Player player) {
-//        final Point basePoint = new Point(player.getPosition());
-//        final Point returnDirection = new Point(-1 * player.getWinDirection().x, -1 * player.getWinDirection().y);
-//        final ArrayDeque<Point> returnPoints = new ArrayDeque<>();
-//
-//        for (int i = 1; i <= n; i++) {
-//            final Point returnPoint = new Point(basePoint.x + returnDirection.x * i, basePoint.y + returnDirection.y * i);
-//            if (isValidPoint(returnPoint)) {
-//                if (isOccupiedPoint(returnPoint)) {
-//                    if (this.getPlayer(returnPoint).equals(player)) {
-//                        returnPoints.add(returnPoint);
-//                    }
-//                } else if (!isOccupiedPoint(returnPoint)) {
-//                    returnPoints.add(returnPoint);
-//                }
-//            }
-//        }
-//        if (!returnPoints.isEmpty()) {
-//            this.setPlayerPosition(player, returnPoints.getLast());
-//        }
-//
-//    }
-
     public void returnCell(Player player) {
         final ArrayDeque<Point> points = new ArrayDeque<>(player.getMoveBuffer());
 
-        for (int i = 0; i < points.size(); i++) {
-            final Point point = points.pop();
-            if (this.isValidPoint(point) && !isOccupiedPoint(point)) {
-                this.setPlayerPosition(player, point);
-                break;
-            }
+        final Point point = points.getFirst();
+        if (this.isValidPoint(point) && !isOccupiedPoint(point) && this.containsWinnerPosition(this.getIslandBFS(getAbstractBoard(), point), player)) {
+            this.setPlayerPosition(player, point);
         }
     }
 

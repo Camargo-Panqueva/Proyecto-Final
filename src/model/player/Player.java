@@ -27,6 +27,7 @@ public class Player {
         this.playerWalls = allowedWalls;
         this.PlayerWallsPlaced = new ArrayList<>();
         this.moveBuffer = new ArrayDeque<>();
+        this.moveBuffer.add(initialPosition);
         this.xWinPosition = xWinner;
         this.yWinPosition = yWinner;
         this.winDirection = this.generateWinDirection();
@@ -111,8 +112,8 @@ public class Player {
 
     public void setPosition(Point position) {
         this.moveBuffer.add(position);
-        if (this.moveBuffer.size() >= 2){
-            this.moveBuffer.pop();
+        if (this.moveBuffer.size() > 3){
+            this.moveBuffer.poll();
         }
         this.position = position;
     }

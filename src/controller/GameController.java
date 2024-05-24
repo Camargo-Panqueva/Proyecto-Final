@@ -270,11 +270,11 @@ public final class GameController {
     public ServiceResponse<WallTransferObject> getWallPreview(final Point positionOnBoard, final WallType wallType){
         final Wall newWall = this.createNewWall(positionOnBoard, wallType);
 
-        if (this.wallAssertion(this.model.getPlayerInTurnId(), newWall) != null) {
+        final ServiceResponse<Void> assertion = canPlaceWall(this.model.getPlayerInTurnId(), positionOnBoard, wallType);
+
+        if (assertion instanceof ErrorResponse) {
             return new ErrorResponse<>("Wall cannot be placed");
         }
-
-        final Player player = this.model.getPlayers().get(this.model.getPlayerInTurnId());
 
         return new SuccessResponse<>(new WallTransferObject(this.getPlayerTransferObject(this.model.getPlayerInTurnId()), wallType, -1, positionOnBoard, newWall.getWallShape()), "Wall preview created");
     }
@@ -336,6 +336,19 @@ public final class GameController {
 
         final ArrayList<Point> newWalls = new ArrayList<>();
 
+        if(this.addNewWallsIfIsPossible(wall, newWalls) != null){
+            return this.addNewWallsIfIsPossible(wall, newWalls);
+        }
+
+        if (placeIt) {
+            this.matchManager.executePlaceWall(this.model.getPlayers().get(playerId), wall, newWalls);
+            return new SuccessResponse<>(null, "Ok, The Wall was placed");
+        }
+        return new SuccessResponse<>(null, "Can place the Wall");
+    }
+
+    private ServiceResponse<Void> addNewWallsIfIsPossible(Wall wall, ArrayList<Point> newWalls){
+
         int boardWallX;
         int boardWallY;
         for (int x = 0; x < wall.getWidth(); x++) {
@@ -370,21 +383,16 @@ public final class GameController {
                 }
             }
         }
-
-        if (placeIt) {
-            if (this.matchManager.isABlockerWall(newWalls)) {
-                return new ErrorResponse<>("You cannot block the path, chose another position");
-            }
-            this.matchManager.executePlaceWall(this.model.getPlayers().get(playerId), wall, newWalls);
-            return new SuccessResponse<>(null, "Ok, The Wall was placed");
+        if (this.matchManager.isABlockerWall(newWalls)) {
+            return new ErrorResponse<>("You cannot block the path, chose another position");
         }
-        return new SuccessResponse<>(null, "Can place the Wall");
+        return null;
     }
 
-    public ServiceResponse<Boolean> canPlaceWall(final int playerId, final Point positionOnBoard, final WallType wallType) {  //TODO : return a copy of the board with the new wall?
+    public ServiceResponse<Void> canPlaceWall(final int playerId, final Point positionOnBoard, final WallType wallType) {  //TODO : return a copy of the board with the new wall?
         ServiceResponse<Void> response = this.placeWallProcess(playerId, positionOnBoard, wallType, false);
         if (response.ok) {
-            return new SuccessResponse<>(true, response.message);
+            return new SuccessResponse<>(null, response.message);
         }
 
         return new ErrorResponse<>(response.message);
