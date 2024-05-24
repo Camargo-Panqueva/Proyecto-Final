@@ -20,7 +20,7 @@ import java.util.*;
 public final class GameController {
 
     private GameModel model;
-    private final GlobalStateManager globalStateManager;
+    private GlobalStateManager globalStateManager;
     private MatchManager matchManager;
 
     public GameController(GameModel model) {
@@ -65,6 +65,8 @@ public final class GameController {
         } catch (IOException | ClassNotFoundException e) {
             return new ErrorResponse<>("Error loading the match: " + e.getMessage());
         }
+
+        this.globalStateManager.setCurrentState(GlobalState.PLAYING);
 
         return new SuccessResponse<>(null, "Match loaded");
 

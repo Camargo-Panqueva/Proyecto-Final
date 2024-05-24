@@ -163,11 +163,11 @@ public class MatchManager {
         }
     }
 
-    public void executeMove(Player player, Point moveTo) {
+    public void movePlayerAdvancingTurn(Player player, Point moveTo) {
         this.movePlayer(player, moveTo, true);
     }
 
-    public void setPlayerPosition(Player player, Point moveTo) {
+    public void movePlayerNotAdvancingTurn(Player player, Point moveTo) {
         this.movePlayer(player, moveTo, false);
     }
 
@@ -356,7 +356,7 @@ public class MatchManager {
 
         final Point point = points.getFirst();
         if (this.isValidPoint(point) && !isOccupiedPoint(point) && this.containsWinnerPosition(this.getIslandBFS(getAbstractBoardFor(player), point), player)) {
-            this.setPlayerPosition(player, point);
+            this.movePlayerNotAdvancingTurn(player, point);
         }
     }
 

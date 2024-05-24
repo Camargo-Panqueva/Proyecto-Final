@@ -25,10 +25,22 @@ public class AIPlayer {
         this.beginnerMove();
     }
 
+    /** This method move the player or place a wall, with a 50% chance of each, his movement is random, but principally he moves to his goal, walls are placed randomly */
     private void beginnerMove() {
         ArrayList<Point> possibleMoves = this.matchManager.getPossibleMovements(this.aiPlayer);
         Random random = new Random();
-        int randomIndex = random.nextInt(possibleMoves.size());
-        this.matchManager.executeMove(this.aiPlayer, possibleMoves.get(randomIndex));
+        Point winDirection = this.aiPlayer.getWinDirection();
+        if (random.nextBoolean()){
+            final Point preferredMove = new Point(aiPlayer.getPosition().x + winDirection.x, aiPlayer.getPosition().y + winDirection.y);
+            if(possibleMoves.contains(preferredMove)){
+                this.matchManager.movePlayerAdvancingTurn(this.aiPlayer, preferredMove);
+            } else {
+                this.matchManager.movePlayerAdvancingTurn(this.aiPlayer, possibleMoves.get(random.nextInt(possibleMoves.size())));
+            }
+        }
+        else {
+
+        }
+
     }
 }
