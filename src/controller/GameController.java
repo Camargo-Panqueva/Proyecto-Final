@@ -82,9 +82,11 @@ public final class GameController {
 
         this.model.getGameBaseParameters().setBaseParameters(boardWidth, boardHeight, playerCount, setupSettings.wallTypeCount());
 
+        this.model.setBoard(this.model.getGameBaseParameters().getBoardWidth(), this.model.getGameBaseParameters().getBoardHeight());
+
         this.setupPlayers(setupSettings.players());
 
-        this.buildBoard(setupSettings.randomCells(), setupSettings.cellTypeCount());
+        this.buildCells(setupSettings.randomCells(), setupSettings.cellTypeCount());
 
         this.matchManager = new MatchManager(this.model);
 
@@ -93,8 +95,7 @@ public final class GameController {
         return new SuccessResponse<>(null, "Game Started");
     }
 
-    private void buildBoard(final boolean isRandom, HashMap<CellType, Integer> cellTypeCount) {
-        this.model.setBoard(this.model.getGameBaseParameters().getBoardWidth(), this.model.getGameBaseParameters().getBoardHeight());
+    private void buildCells(final boolean isRandom, HashMap<CellType, Integer> cellTypeCount) {
 
         if (isRandom) {
             this.model.getBoard().setAsRandomly();
@@ -406,7 +407,7 @@ public final class GameController {
         return null;
     }
 
-    public ServiceResponse<Boolean> isThereAWalls(Point point) {
+    public ServiceResponse<Boolean> isThereAWall(Point point) {
         if (!this.isPointInsideBoard(point.x, point.y)) {
             return new ErrorResponse<>("Point off the board");
         }
