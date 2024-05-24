@@ -216,10 +216,7 @@ public final class GameController {
         final ArrayList<WallTransferObject> wallTransferObjectArrayList = new ArrayList<>();
 
         this.model.getPlayers().forEach(((id, player) -> {
-            final PlayerTransferObject playerTransferObject = new PlayerTransferObject(id, player.getName(), new Point(player.getPosition()),
-                    this.model.getPlayerInTurnId() == id, this.matchManager.getPossibleMovements(player), player.getWallsInField(),
-                    this.model.getDifficulty().getTimePerTurn() - player.getTimePlayed(),
-                    player.getPlayerWalls());
+            final PlayerTransferObject playerTransferObject = this.getPlayerTransferObject(id);
 
             playerTransferObjectArrayList.add(playerTransferObject);
 
@@ -261,7 +258,28 @@ public final class GameController {
         return new SuccessResponse<>(null, "Updated position in the model");
     }
 
+    public ServiceResponse<WallTransferObject> getWallPreview(final Point positionOnBoard, final WallType wallType){
+        final Wall newWall = this.createNewWall(positionOnBoard, wallType);
+
+        if (this.wallAssertion(this.model.getPlayerInTurnId(), newWall) != null) {
+            return new ErrorResponse<>("Wall cannot be placed");
+        }
+
+        final Player player = this.model.getPlayers().get(this.model.getPlayerInTurnId());
+
+        return new SuccessResponse<>(new WallTransferObject(this.getPlayerTransferObject(this.model.getPlayerInTurnId()), wallType, -1, positionOnBoard, newWall.getWallShape()), "Wall preview created");
+    }
+
+    private PlayerTransferObject getPlayerTransferObject(int playerId) {
+        final Player player = this.model.getPlayers().get(playerId);
+        return new PlayerTransferObject(playerId, player.getName(), new Point(player.getPosition()),
+                this.model.getPlayerInTurnId() == playerId, this.matchManager.getPossibleMovements(player), player.getWallsInField(),
+                this.model.getDifficulty().getTimePerTurn() - player.getTimePlayed(),
+                player.getPlayerWalls());
+    }
+
     private Wall createNewWall(final Point positionOnBoard, final WallType wallType) {
+        // TODO : create a WallFactory
         Wall newWall;
         switch (wallType) {
             case LARGE -> newWall = new LargeWall();
@@ -278,14 +296,8 @@ public final class GameController {
         return newWall;
     }
 
-    private ServiceResponse<Void> placeWallProcess(final int playerId, final Point positionOnBoard, final WallType wallType, boolean placeIt) {
+    private ServiceResponse<Void> wallAssertion(final int playerId, final Wall wall){
 
-        final Wall wall = this.createNewWall(positionOnBoard, wallType);
-
-        final ServiceResponse<Void> assertion = this.validBasicParameters(playerId);
-        if (this.validBasicParameters(playerId) != null) {
-            return assertion;
-        }
         if (wall.getWallType() == null || wall.getPositionOnBoard() == null) {
             return new ErrorResponse<>("Walls passed as parameter must have defined its position, use wall.getDataWall().setPositionOnBoard()");
         }
@@ -295,6 +307,22 @@ public final class GameController {
         final Player player = this.model.getPlayers().get(playerId);
         if (player.getPlayerWalls().get(wall.getWallType()) <= 0) {
             return new ErrorResponse<>(player.getName() + " already placed all of his " + wall.getWallType().toString() + " Walls");
+        }
+        return null;
+    }
+
+    private ServiceResponse<Void> placeWallProcess(final int playerId, final Point positionOnBoard, final WallType wallType, boolean placeIt) {
+
+        final Wall wall = this.createNewWall(positionOnBoard, wallType);
+
+        final ServiceResponse<Void> assertion = this.validBasicParameters(playerId);
+        if (this.validBasicParameters(playerId) != null) {
+            return assertion;
+        }
+
+        final ServiceResponse<Void> wallAssertion = this.wallAssertion(playerId, wall);
+        if (wallAssertion != null) {
+            return wallAssertion;
         }
 
         final ArrayList<Point> newWalls = new ArrayList<>();
@@ -363,7 +391,7 @@ public final class GameController {
     }
 
     private ServiceResponse<Void> validBasicParameters(final int playerId) {
-        if (this.model.getMatchState() == GameModel.MatchState.WINNER) {
+        if (this.model.getMatchState() == GameModel.MatchState.WINNER) { // TODO : Error for Winner?
             return new ErrorResponse<>("There is a WINNER!! Congratulations " + this.model.getWinningPlayer().getName());
         }
         if (!this.model.getMatchState().equals(GameModel.MatchState.PLAYING)) {
@@ -378,22 +406,15 @@ public final class GameController {
         return null;
     }
 
-    public ServiceResponse<Void> getWallId(Point point) {
+    public ServiceResponse<Boolean> isThereAWalls(Point point) {
         if (!this.isPointInsideBoard(point.x, point.y)) {
             return new ErrorResponse<>("Point off the board");
         }
         if (point.x % 2 == 0 && point.y % 2 == 0) {
             return new ErrorResponse<>("A cell was selected, select a Wall");
         }
-        WallData positionRequested = this.model.getBoard().getWallData(point.x, point.y);
-        if (positionRequested == null) {
-            return new ErrorResponse<>("There is no a Wall in: " + point);
-        }
 
-        if (this.matchManager.executeDeleteWall(this.model.getBoard().getWallId(point)) == null) {
-            return new ErrorResponse<>("There wasn't a wall for delete, check walls attribute in the Match Manager");
-        }
-        return new SuccessResponse<>(null, "The Wall was deleted");
+        return new SuccessResponse<>(this.model.getBoard().getWallData(point.x, point.y) != null, "Ok");
     }
 
     public ServiceResponse<GlobalState> getGlobalCurrentState() {
