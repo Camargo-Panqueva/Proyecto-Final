@@ -29,8 +29,7 @@ public final class GameController {
         this.globalStateManager = new GlobalStateManager();
     }
 
-    public ServiceResponse<Void> saveMatch(String dir, String name) {
-        final String path = dir + name + ".ser";
+    public ServiceResponse<Void> saveMatch(String path) {
         if (this.model == null) {
             return new ErrorResponse<>("There is no match to save");
         }
@@ -305,7 +304,7 @@ public final class GameController {
             return new ErrorResponse<>("Illegal Movement for " + this.model.getPlayers().get(playerId).getName());
         }
 
-        this.matchManager.executeMove(this.model.getPlayers().get(playerId), point);
+        this.matchManager.movePlayerAdvancingTurn(this.model.getPlayers().get(playerId), point);
         return new SuccessResponse<>(null, "Updated position in the model");
     }
 
