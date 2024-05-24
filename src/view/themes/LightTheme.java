@@ -12,17 +12,11 @@ import java.awt.*;
  */
 public final class LightTheme extends Theme {
 
-    private final static Color primary = new Color(0x5F1F2E);
-
-    private final static Color primaryBright = new Color(0x852C41);
-
-    private final static Color primaryDimmed = new Color(0x905F1F2E, true);
-
     private final static Color background = new Color(0xFFFFFF);
 
     private final static Color backgroundBright = new Color(0xF0F0F0);
 
-    private final static Color backgroundDimmed = new Color(0x90BBBBBB, true);
+    private final static Color backgroundDimmed = new Color(0x90D7D7D7, true);
 
     private final static Color foreground = new Color(0x272727);
 
@@ -30,29 +24,47 @@ public final class LightTheme extends Theme {
 
     private final static Color foregroundDimmed = new Color(0x40191919, true);
 
-    private final static Color red = new Color(0xBF4040);
+    private final static Color primary = new Color(185, 168, 141, 255);
 
-    private final static Color redBright = new Color(0xD98C8C);
+    private final static Color primaryBright = new Color(205, 192, 173, 255);
 
-    private final static Color redDimmed = new Color(0x40732626, true);
+    private final static Color primaryDimmed = new Color(185, 168, 141, 127);
 
-    private final static Color green = new Color(0x80BF40);
+    private final static Color red = new Color(209, 71, 71, 255);
 
-    private final static Color greenBright = new Color(0xB3D98C);
+    private final static Color redBright = new Color(219, 112, 112, 255);
 
-    private final static Color greenDimmed = new Color(0x404D7326, true);
+    private final static Color redDimmed = new Color(209, 71, 71, 127);
 
-    private final static Color blue = new Color(0x40BFBF);
+    private final static Color yellow = new Color(232, 232, 48, 255);
 
-    private final static Color blueBright = new Color(0x8CD9D9);
+    private final static Color yellowBright = new Color(237, 237, 94, 255);
 
-    private final static Color blueDimmed = new Color(0x40267373, true);
+    private final static Color yellowDimmed = new Color(232, 232, 48, 127);
 
-    private final static Color purple = new Color(0x8040BF);
+    private final static Color green = new Color(71, 209, 71, 255);
 
-    private final static Color purpleBright = new Color(0xB38CD9);
+    private final static Color greenBright = new Color(112, 219, 112, 255);
 
-    private final static Color purpleDimmed = new Color(0x404D2673, true);
+    private final static Color greenDimmed = new Color(71, 209, 71, 127);
+
+    private final static Color blue = new Color(48, 156, 232, 255);
+
+    private final static Color blueBright = new Color(94, 178, 237, 255);
+
+    private final static Color blueDimmed = new Color(48, 156, 232, 127);
+
+    private final static Color purple = new Color(159, 60, 221, 255);
+
+    private final static Color purpleBright = new Color(180, 103, 228, 255);
+
+    private final static Color purpleDimmed = new Color(159, 60, 221, 127);
+
+    private final static Color pink = new Color(232, 48, 192, 255);
+
+    private final static Color pinkBright = new Color(237, 94, 206, 255);
+
+    private final static Color pinkDimmed = new Color(232, 48, 192, 127);
 
     /**
      * Creates a new LightTheme with the default colors.
