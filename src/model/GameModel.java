@@ -34,6 +34,8 @@ public final class GameModel implements Serializable {
         this.difficulty = new Difficulty();
         this.players = new HashMap<>();
         this.matchState = MatchState.INITIALIZED;
+        this.playerInTurn = 0;
+        this.turnCount = 0;
     }
 
     public void addPlayer(int playerId, Player newPlayer) {

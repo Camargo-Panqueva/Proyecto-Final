@@ -57,7 +57,10 @@ public final class GameController {
         try{
             FileInputStream fileIn = new FileInputStream(path);
             ObjectInputStream in = new ObjectInputStream(fileIn);
+
             this.model = (GameModel) in.readObject();
+            this.matchManager = new MatchManager(this.model);
+
             fileIn.close();
             in.close();
         } catch (IOException | ClassNotFoundException e) {
@@ -422,7 +425,7 @@ public final class GameController {
                 }
             }
         }
-        if (this.matchManager.isABlockerWall(newWalls)) {
+        if (this.matchManager.isABlockerWallFor(newWalls, this.model.getPlayers().get(this.model.getPlayerInTurnId()))) {
             return new ErrorResponse<>("You cannot block the path, chose another position");
         }
         return null;
