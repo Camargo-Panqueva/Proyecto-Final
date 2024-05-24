@@ -50,7 +50,7 @@ public class TestQuoridor {
         players.add(new PlayerSetupTransferObject("Player1", PlayerType.PLAYER, AIProfile.BEGINNER));
         players.add(new PlayerSetupTransferObject("Player2", PlayerType.PLAYER, AIProfile.BEGINNER));
 
-        this.setupTransferObject = new SetupTransferObject(9, 9, false, DifficultyType.NORMAL, 60, this.wallsPerPlayer, this.players);
+        this.setupTransferObject = new SetupTransferObject(9, 9, false, DifficultyType.NORMAL, 60, null, this.wallsPerPlayer, this.players);
     }
 
     /**
@@ -73,7 +73,7 @@ public class TestQuoridor {
         int randomHeight = random.nextInt(16) + 5;
         int randomWidth = random.nextInt(16) + 5;
 
-        SetupTransferObject setupTransferObject = new SetupTransferObject(randomWidth, randomHeight, false, DifficultyType.NORMAL, 60, this.wallsPerPlayer, this.players);
+        SetupTransferObject setupTransferObject = new SetupTransferObject(randomWidth, randomHeight, false, DifficultyType.NORMAL, 60, null, this.wallsPerPlayer, this.players);
 
         this.gameController.createMatch(setupTransferObject);
 
@@ -155,7 +155,7 @@ public class TestQuoridor {
         this.gameController.placeWall(0, new Point(4, 3), WallType.NORMAL);
         this.gameController.placeWall(1, new Point(6, 7), WallType.NORMAL);
 
-        if (this.gameModel.getWalls().size() != 4) {
+        if (this.gameModel.getWallCount() != 4) {
             fail();
         }
 
@@ -408,11 +408,11 @@ public class TestQuoridor {
      */
     @Test
     public void shouldNotCreateABoardIfItsNotPossible() {
-        if (this.gameController.createMatch(new SetupTransferObject(0, 0, false, DifficultyType.NORMAL, 60, this.wallsPerPlayer, this.players)).ok) {
+        if (this.gameController.createMatch(new SetupTransferObject(0, 0, false, DifficultyType.NORMAL, 60, null, this.wallsPerPlayer, this.players)).ok) {
             fail();
         }
 
-        assertFalse(this.gameController.createMatch(new SetupTransferObject(0, 9, false, DifficultyType.NORMAL, 60, this.wallsPerPlayer, this.players)).ok);
+        assertFalse(this.gameController.createMatch(new SetupTransferObject(0, 9, false, DifficultyType.NORMAL, 60, null, this.wallsPerPlayer, this.players)).ok);
     }
 
     /**

@@ -1,6 +1,8 @@
 package model.wall;
 
-public enum WallType {
+import java.io.Serializable;
+
+public enum WallType implements Serializable {
     NORMAL("Normal"),
     LARGE("Large"),
     TEMPORAL_WALL("Temporal"),

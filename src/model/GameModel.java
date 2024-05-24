@@ -7,12 +7,11 @@ import model.player.Player;
 
 
 import java.awt.*;
+import java.io.Serializable;
 import java.util.HashMap;
 
 
-public final class GameModel {
-
-    private int wallCount;
+public final class GameModel implements Serializable {
 
     private Board board;
 
@@ -79,7 +78,11 @@ public final class GameModel {
     }
 
     public int getWallCount() {
-        return wallCount;
+        int count = 0;
+        for (Player player : this.players.values()) {
+            count += player.getRemainingWallsCount();
+        }
+        return count;
     }
 
     public Difficulty getDifficulty(){

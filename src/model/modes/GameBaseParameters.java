@@ -2,9 +2,10 @@ package model.modes;
 
 import model.wall.WallType;
 
+import java.io.Serializable;
 import java.util.HashMap;
 
-public final class GameBaseParameters {
+public final class GameBaseParameters implements Serializable {
     private int boardHeight;
     private int boardWidth;
     private int playerCount;

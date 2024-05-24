@@ -1,6 +1,8 @@
 package model.cell;
 
-public enum CellType {
+import java.io.Serializable;
+
+public enum CellType implements Serializable {
     NORMAL("Normal"),
     TELEPORT("Teleport"),
     RETURN("Return"),

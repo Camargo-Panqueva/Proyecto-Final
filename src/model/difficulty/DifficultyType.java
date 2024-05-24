@@ -1,6 +1,8 @@
 package model.difficulty;
 
-public enum DifficultyType {
+import java.io.Serializable;
+
+public enum DifficultyType implements Serializable {
 
     NORMAL("Normal"),
     AGAINST_THE_CLOCK("Against the Clock"),

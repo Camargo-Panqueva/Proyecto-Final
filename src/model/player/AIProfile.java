@@ -1,6 +1,8 @@
 package model.player;
 
-public enum AIProfile {
+import java.io.Serializable;
+
+public enum AIProfile implements Serializable {
     BEGINNER("Beginner &"),
     INTERMEDIATE("Intermediate #"),
     ADVANCED("Advanced !");

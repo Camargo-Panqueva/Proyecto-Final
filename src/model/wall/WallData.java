@@ -3,9 +3,10 @@ package model.wall;
 import model.player.Player;
 
 import java.awt.*;
+import java.io.Serializable;
 import java.util.UUID;
 
-public class WallData {
+public class WallData implements Serializable {
     private int width;
     private int height;
     private char course;

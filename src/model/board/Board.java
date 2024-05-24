@@ -5,9 +5,10 @@ import model.wall.WallData;
 import model.wall.WallType;
 
 import java.awt.*;
+import java.io.Serializable;
 import java.util.UUID;
 
-public final class Board {
+public final class Board implements Serializable {
 
     private final CellType[][] boardCells;
     private final WallData[][] boardWalls;
@@ -68,9 +69,6 @@ public final class Board {
 
     @Override
     public String toString() {
-        if (this.boardWalls == null) {
-            return "Null";
-        }
         StringBuilder sb = new StringBuilder();
 
         for (int y = 0; y < this.width * 2 - 1; y++) {

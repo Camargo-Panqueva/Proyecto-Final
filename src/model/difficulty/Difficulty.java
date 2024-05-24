@@ -1,6 +1,8 @@
 package model.difficulty;
 
-public class Difficulty {
+import java.io.Serializable;
+
+public class Difficulty implements Serializable {
     private DifficultyType difficultyType;
     private int timePerTurn;
     private int timeTotal;

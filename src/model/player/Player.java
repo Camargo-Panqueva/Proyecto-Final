@@ -4,11 +4,12 @@ import model.wall.WallData;
 import model.wall.WallType;
 
 import java.awt.*;
+import java.io.Serializable;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class Player {
+public class Player implements Serializable {
     private Point position;
     private final String name;
     private final HashMap<WallType, Integer> playerWalls;

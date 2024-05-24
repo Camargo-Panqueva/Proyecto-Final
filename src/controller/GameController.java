@@ -14,11 +14,12 @@ import model.wall.WallData;
 import model.wall.WallType;
 
 import java.awt.*;
+import java.io.*;
 import java.util.*;
 
 public final class GameController {
 
-    private final GameModel model;
+    private GameModel model;
     private final GlobalStateManager globalStateManager;
     private MatchManager matchManager;
 
@@ -28,6 +29,44 @@ public final class GameController {
         this.globalStateManager = new GlobalStateManager();
     }
 
+    public ServiceResponse<Void> saveMatch(String dir, String name) {
+        final String path = dir + name + ".ser";
+        if (this.model == null) {
+            return new ErrorResponse<>("There is no match to save");
+        }
+        if (this.model.getMatchState() == GameModel.MatchState.INITIALIZED) {
+            return new ErrorResponse<>("The match has not started yet");
+        }
+        if (this.model.getMatchState() == GameModel.MatchState.WINNER) {
+            return new ErrorResponse<>("The match has already ended");
+        }
+
+        try {
+            FileOutputStream fileOut = new FileOutputStream(path);
+            ObjectOutputStream out = new ObjectOutputStream(fileOut);
+            out.writeObject(this.model);
+            out.close();
+            fileOut.close();
+            return new SuccessResponse<>(null, "Match saved in " + path);
+        } catch (IOException e) {
+            return new ErrorResponse<>("Error saving the match: " + e.getMessage());
+        }
+    }
+
+    public ServiceResponse<Void> loadMatch(String path) {
+        try{
+            FileInputStream fileIn = new FileInputStream(path);
+            ObjectInputStream in = new ObjectInputStream(fileIn);
+            this.model = (GameModel) in.readObject();
+            fileIn.close();
+            in.close();
+        } catch (IOException | ClassNotFoundException e) {
+            return new ErrorResponse<>("Error loading the match: " + e.getMessage());
+        }
+
+        return new SuccessResponse<>(null, "Match loaded");
+
+    }
 
     public ServiceResponse<Void> createMatch(SetupTransferObject setupSettings) {
         final int playerCount = setupSettings.players().size();
@@ -141,7 +180,7 @@ public final class GameController {
         return (CellType) keys.toArray()[random.nextInt(keys.size())];
     }
 
-    private  boolean allValuesZero(HashMap<CellType, Integer> hashMap) {
+    private boolean allValuesZero(HashMap<CellType, Integer> hashMap) {
         for (int value : hashMap.values()) {
             if (value > 0) {
                 return false;
@@ -233,7 +272,7 @@ public final class GameController {
                 WallType[][] wallShapeCopy = wallData.getWallShape();
 
                 for (int i = 0; i < wallData.getWidth(); i++) { //copy wall shape
-                        wallShapeCopy[i] = Arrays.copyOf(wallData.getWallShape()[i], wallData.getWallShape()[i].length);
+                    wallShapeCopy[i] = Arrays.copyOf(wallData.getWallShape()[i], wallData.getWallShape()[i].length);
                 }
 
                 final WallTransferObject wallTransferObject = new WallTransferObject(playerTransferObject, wallData.getWallType(),
@@ -267,7 +306,7 @@ public final class GameController {
         return new SuccessResponse<>(null, "Updated position in the model");
     }
 
-    public ServiceResponse<WallTransferObject> getWallPreview(final Point positionOnBoard, final WallType wallType){
+    public ServiceResponse<WallTransferObject> getWallPreview(final Point positionOnBoard, final WallType wallType) {
         final Wall newWall = this.createNewWall(positionOnBoard, wallType);
 
         final ServiceResponse<Void> assertion = canPlaceWall(this.model.getPlayerInTurnId(), positionOnBoard, wallType);
@@ -305,7 +344,7 @@ public final class GameController {
         return newWall;
     }
 
-    private ServiceResponse<Void> wallAssertion(final int playerId, final Wall wall){
+    private ServiceResponse<Void> wallAssertion(final int playerId, final Wall wall) {
 
         if (wall.getWallType() == null || wall.getPositionOnBoard() == null) {
             return new ErrorResponse<>("Walls passed as parameter must have defined its position, use wall.getDataWall().setPositionOnBoard()");
@@ -336,7 +375,7 @@ public final class GameController {
 
         final ArrayList<Point> newWalls = new ArrayList<>();
 
-        if(this.addNewWallsIfIsPossible(wall, newWalls) != null){
+        if (this.addNewWallsIfIsPossible(wall, newWalls) != null) {
             return this.addNewWallsIfIsPossible(wall, newWalls);
         }
 
@@ -347,7 +386,7 @@ public final class GameController {
         return new SuccessResponse<>(null, "Can place the Wall");
     }
 
-    private ServiceResponse<Void> addNewWallsIfIsPossible(Wall wall, ArrayList<Point> newWalls){
+    private ServiceResponse<Void> addNewWallsIfIsPossible(Wall wall, ArrayList<Point> newWalls) {
 
         int boardWallX;
         int boardWallY;
