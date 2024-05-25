@@ -4,8 +4,15 @@ import controller.logic.MatchManager;
 import model.wall.WallData;
 import model.wall.WallType;
 
+/**
+ * Represents a large wall in the game.
+ * This class extends Wall and defines the properties and behavior specific to large walls.
+ */
 public class LargeWall extends Wall {
-
+    /**
+     * Constructs a LargeWall object and initializes its properties.
+     * Large walls have a specific size, shape, and properties.
+     */
     public LargeWall() {
         super.wallData.setWallType(WallType.LARGE);
         super.wallData.setHeight(5);

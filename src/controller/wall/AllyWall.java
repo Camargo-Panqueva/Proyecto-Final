@@ -3,8 +3,17 @@ package controller.wall;
 import controller.logic.MatchManager;
 import model.wall.WallType;
 
+/**
+ * Represents an allayed wall in the game.
+ * This class extends Wall and defines the properties and behavior specific to allay walls.
+ */
 public class AllyWall extends Wall {
 
+/**
+ * Constructs an AllyWall object and initializes its properties.
+ * Ally walls have a specific size, shape, and properties.
+ * Ally walls are used to protect the player's base.
+ */
     public AllyWall() {
         super.wallData.setWidth(3);
         super.wallData.setHeight(3);

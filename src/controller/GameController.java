@@ -5,7 +5,8 @@ import controller.logic.AIPlayer;
 import controller.logic.MatchManager;
 import controller.states.GlobalState;
 import controller.states.GlobalStateManager;
-import controller.wall.*;
+import controller.wall.Wall;
+import controller.wall.WallManager;
 import model.GameModel;
 import model.cell.CellType;
 import model.difficulty.DifficultyType;
@@ -20,16 +21,27 @@ import java.util.*;
 
 public final class GameController {
 
-    private GameModel model;
     private final GlobalStateManager globalStateManager;
+    private GameModel model;
     private MatchManager matchManager;
 
+    /**
+     * Constructor
+     *
+     * @param model GameModel
+     */
     public GameController(GameModel model) {
         this.model = model;
         this.model.setMatchState(GameModel.MatchState.INITIALIZED);
         this.globalStateManager = new GlobalStateManager();
     }
 
+    /**
+     * Save the current match that is being played
+     *
+     * @param path String
+     * @return ServiceResponse<Void>
+     */
     public ServiceResponse<Void> saveMatch(String path) {
         if (this.model == null) {
             return new ErrorResponse<>("There is no match to save");
@@ -53,8 +65,15 @@ public final class GameController {
         }
     }
 
+    /**
+     * Load a match from a file, and start the match immediately
+     *
+     * @param path String
+     * @return ServiceResponse<Void>
+     */
+
     public ServiceResponse<Void> loadMatch(String path) {
-        try{
+        try {
             FileInputStream fileIn = new FileInputStream(path);
             ObjectInputStream in = new ObjectInputStream(fileIn);
 
@@ -73,6 +92,12 @@ public final class GameController {
 
     }
 
+    /**
+     * Create a new match and start it with the parameters given
+     *
+     * @param setupSettings SetupTransferObject
+     * @return ServiceResponse<Void>
+     */
     public ServiceResponse<Void> createMatch(SetupTransferObject setupSettings) {
         final int playerCount = setupSettings.players().size();
         final int boardWidth = setupSettings.boardWidth();
@@ -139,6 +164,13 @@ public final class GameController {
         return new SuccessResponse<>(null, "Game Started");
     }
 
+    /**
+     * Build the cells of the board based on the parameters given, can be random or not
+     * if random, recive a HashMap with the count of each cell type and place them randomly
+     *
+     * @param isRandom      boolean
+     * @param cellTypeCount HashMap<CellType, Integer>
+     */
     private void buildCells(final boolean isRandom, HashMap<CellType, Integer> cellTypeCount) {
 
         if (isRandom) {
@@ -152,6 +184,11 @@ public final class GameController {
         }
     }
 
+    /**
+     * Fill the board with tha cells values given in the parameters
+     *
+     * @param cellTypeCount HashMap<CellType, Integer>
+     */
     private void createRandomlyCells(HashMap<CellType, Integer> cellTypeCount) { // TODO : check if cell spawn in spawn player
         Random random = new Random();
         final double SPECIAL_CELL_PROBABILITY = 0.15;
@@ -180,11 +217,24 @@ public final class GameController {
         }
     }
 
+    /**
+     * Get a random key from a HashMap<CellType, Integer>
+     *
+     * @param hashMap HashMap<CellType, Integer>
+     * @param random  Random
+     * @return CellType
+     */
     private CellType getRandomKey(HashMap<CellType, Integer> hashMap, Random random) {
         final Set<CellType> keys = hashMap.keySet();
         return (CellType) keys.toArray()[random.nextInt(keys.size())];
     }
 
+    /**
+     * Check if all the values in the HashMap are zero
+     *
+     * @param hashMap HashMap<CellType, Integer>
+     * @return boolean
+     */
     private boolean allValuesZero(HashMap<CellType, Integer> hashMap) {
         for (int value : hashMap.values()) {
             if (value > 0) {
@@ -194,6 +244,9 @@ public final class GameController {
         return true;
     }
 
+    /**
+     * Fill the board with NORMAL cells
+     */
     private void createCells() {
         final int width = this.model.getBoard().getWidth();
         final int height = this.model.getBoard().getHeight();
@@ -204,6 +257,12 @@ public final class GameController {
         }
     }
 
+    /**
+     * Deploy the players in PlayerSetupTransferObject on the board,
+     * set up his parameters and if is AI, create an AIPlayer
+     *
+     * @param players ArrayList<PlayerSetupTransferObject>
+     */
     private void setupPlayers(ArrayList<PlayerSetupTransferObject> players) {
         final HashMap<WallType, Integer> allowedWallsPerPlayer = this.model.getGameBaseParameters().getWallsCountPerPlayer();
 
@@ -255,6 +314,11 @@ public final class GameController {
         }
     }
 
+    /**
+     * Get the current state of the match, in a BoardTransferObject
+     *
+     * @return ServiceResponse<BoardTransferObject>
+     */
     public ServiceResponse<BoardTransferObject> getBoardState() {
         if (this.model.getMatchState().equals(GameModel.MatchState.INITIALIZED)) {
             return new ErrorResponse<>("The model does not have parameters to build it; select them using setGameMode, and build them using startGame");
@@ -300,6 +364,13 @@ public final class GameController {
                 ), "Ok");
     }
 
+    /**
+     * Gives the order to the Controller of move a player to a point, and verify if the movement is legal
+     *
+     * @param playerId int
+     * @param point    Point
+     * @return ServiceResponse<Void>
+     */
     public ServiceResponse<Void> processPlayerMove(int playerId, Point point) {
 
         final ServiceResponse<Void> assertion = this.validBasicParameters(playerId);
@@ -315,6 +386,13 @@ public final class GameController {
         return new SuccessResponse<>(null, "Updated position in the model");
     }
 
+    /**
+     * Get a WallTransferObject with the preview of a wish wall to be placed
+     *
+     * @param positionOnBoard Point
+     * @param wallType        WallType
+     * @return ServiceResponse<WallTransferObject>
+     */
     public ServiceResponse<WallTransferObject> getWallPreview(final Point positionOnBoard, final WallType wallType) {
         final Wall newWall = this.createNewWall(positionOnBoard, wallType);
 
@@ -327,23 +405,33 @@ public final class GameController {
         return new SuccessResponse<>(new WallTransferObject(this.getPlayerTransferObject(this.model.getPlayerInTurnId()), wallType, -1, positionOnBoard, newWall.getWallShape()), "Wall preview created");
     }
 
+    /**
+     * Create a PlayerTransferObject with the player data
+     *
+     * @param playerId int
+     * @return PlayerTransferObject
+     */
     private PlayerTransferObject getPlayerTransferObject(int playerId) {
         final Player player = this.model.getPlayers().get(playerId);
         return new PlayerTransferObject(playerId, player.getName(), new Point(player.getPosition()),
                 this.model.getPlayerInTurnId() == playerId, this.matchManager.getPossibleMovements(player), player.getWallsInField(),
                 this.model.getDifficulty().getTimePerTurn() - player.getTimePlayed(),
-                player.getPlayerWalls());
+                player.getPlayerWalls(), player.isAI());
     }
 
+    /**
+     * Create a new Wall in the position given, with the type given
+     *
+     * @param positionOnBoard Point
+     * @param wallType        WallType
+     * @return Wall
+     */
     private Wall createNewWall(final Point positionOnBoard, final WallType wallType) {
-        // TODO : create a WallFactory
+
         Wall newWall;
-        switch (wallType) {
-            case LARGE -> newWall = new LargeWall();
-            case TEMPORAL_WALL -> newWall = new TemporalWall();
-            case ALLY -> newWall = new AllyWall();
-            default -> newWall = new NormalWall();// NORMAL
-        }
+        final WallManager wallManager = new WallManager();
+
+        newWall = wallManager.getWallInstance(wallType);
         newWall.setPositionOnBoard(positionOnBoard);
 
         if (positionOnBoard.y % 2 == 0 && positionOnBoard.x % 2 == 1) {
@@ -353,6 +441,13 @@ public final class GameController {
         return newWall;
     }
 
+    /**
+     * Check if a player can place a wall in a position
+     *
+     * @param playerId int
+     * @param wall     Wall
+     * @return ServiceResponse<Void>
+     */
     private ServiceResponse<Void> wallAssertion(final int playerId, final Wall wall) {
 
         if (wall.getWallType() == null || wall.getPositionOnBoard() == null) {
@@ -368,6 +463,14 @@ public final class GameController {
         return null;
     }
 
+    /**
+     * Gives the order to the Controller of place a wall in a position, and verify if the movement is legal
+     *
+     * @param playerId        int
+     * @param positionOnBoard Point
+     * @param wallType        WallType
+     * @return ServiceResponse<Void>
+     */
     private ServiceResponse<Void> placeWallProcess(final int playerId, final Point positionOnBoard, final WallType wallType, boolean placeIt) {
 
         final Wall wall = this.createNewWall(positionOnBoard, wallType);
@@ -395,6 +498,13 @@ public final class GameController {
         return new SuccessResponse<>(null, "Can place the Wall");
     }
 
+    /**
+     * Verifies if the wall can be placed on the board without violating any game rules and adds the wall's points to the newWalls list.
+     *
+     * @param wall     Wall
+     * @param newWalls ArrayList<Point>
+     * @return ServiceResponse<Void>
+     */
     private ServiceResponse<Void> addNewWallsIfIsPossible(Wall wall, ArrayList<Point> newWalls) {
 
         int boardWallX;
@@ -437,6 +547,14 @@ public final class GameController {
         return null;
     }
 
+    /**
+     * Check if a player can place a wall in a position
+     *
+     * @param playerId        int
+     * @param positionOnBoard Point
+     * @param wallType        WallType
+     * @return ServiceResponse<Void>
+     */
     public ServiceResponse<Void> canPlaceWall(final int playerId, final Point positionOnBoard, final WallType wallType) {  //TODO : return a copy of the board with the new wall?
         ServiceResponse<Void> response = this.placeWallProcess(playerId, positionOnBoard, wallType, false);
         if (response.ok) {
@@ -447,16 +565,38 @@ public final class GameController {
 
     }
 
+    /**
+     * Gives the order to the Controller of place a wall in a position, and verify if the movement is legal
+     *
+     * @param playerId        int
+     * @param positionOnBoard Point
+     * @param wallType        WallType
+     * @return ServiceResponse<Void>
+     */
     public ServiceResponse<Void> placeWall(final int playerId, final Point positionOnBoard, final WallType wallType) {
         return this.placeWallProcess(playerId, positionOnBoard, wallType, true);
     }
 
+    /**
+     * Check if a point is inside the board
+     *
+     * @param x int
+     * @param y int
+     * @return boolean
+     */
     public boolean isPointInsideBoard(final int x, final int y) {
         return x <= this.model.getBoard().getWidth() * 2 - 2 && y <= this.model.getBoard().getHeight() * 2 - 2 && x >= 0 && y >= 0;
     }
 
+    /**
+     * Check if a point is inside the board, state of match is playing and is the turn of the player
+     *
+     * @param playerId int
+     * @return ServiceResponse<Void>
+     */
     private ServiceResponse<Void> validBasicParameters(final int playerId) {
-        if (this.model.getMatchState() == GameModel.MatchState.WINNER) { // TODO : Error for Winner?
+        if (this.model.getMatchState() == GameModel.MatchState.WINNER) {
+            this.setGlobalState(GlobalState.GAME_FINISHED);
             return new ErrorResponse<>("There is a WINNER!! Congratulations " + this.model.getWinningPlayer().getName());
         }
         if (!this.model.getMatchState().equals(GameModel.MatchState.PLAYING)) {
@@ -471,6 +611,30 @@ public final class GameController {
         return null;
     }
 
+    /**
+     * Get the PlayerTransferObject of a player
+     *
+     * @return PlayerTransferObject
+     */
+    public ServiceResponse<PlayerTransferObject> getWinner() {
+        if (this.model.getMatchState() == GameModel.MatchState.WINNER) {
+            final ArrayList<Integer> winner = new ArrayList<>();
+            this.model.getPlayers().forEach((id, player) -> {
+                if (this.model.getWinningPlayer().equals(player)) {
+                    winner.add(id);
+                }
+            });
+            return new SuccessResponse<>(this.getPlayerTransferObject(winner.get(0)), "Ok");
+        }
+        return new ErrorResponse<>("There is no winner yet");
+    }
+
+    /**
+     * Check if a point there is a wall
+     *
+     * @param point Point
+     * @return ServiceResponse<Boolean>
+     */
     public ServiceResponse<Boolean> isThereAWall(Point point) {
         if (!this.isPointInsideBoard(point.x, point.y)) {
             return new ErrorResponse<>("Point off the board");
@@ -482,10 +646,21 @@ public final class GameController {
         return new SuccessResponse<>(this.model.getBoard().getWallData(point.x, point.y) != null, "Ok");
     }
 
+    /**
+     * Get the current state of the match, in a BoardTransferObject
+     *
+     * @return ServiceResponse<BoardTransferObject>
+     */
     public ServiceResponse<GlobalState> getGlobalCurrentState() {
         return new SuccessResponse<>(this.globalStateManager.getCurrentState(), "ok");
     }
 
+    /**
+     * Set the global state of the match
+     *
+     * @param globalState GlobalState
+     * @return ServiceResponse<Void>
+     */
     public ServiceResponse<Void> setGlobalState(GlobalState globalState) {
         //TODO : logic upon change global state
         this.globalStateManager.setCurrentState(globalState);

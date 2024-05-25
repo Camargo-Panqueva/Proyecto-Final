@@ -1,6 +1,6 @@
 package controller.cells;
 
-import controller.ActionableElement;
+import controller.interfaces.ActionableElement;
 
 public abstract class Cell implements ActionableElement {
 

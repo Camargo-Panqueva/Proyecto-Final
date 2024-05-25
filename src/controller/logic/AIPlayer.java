@@ -17,6 +17,13 @@ public class AIPlayer {
     private final AIProfile profile;
     private int[][] abstractBoard;
 
+    /**
+     * Constructor of the AIPlayer
+     *
+     * @param player         Player to be controlled by the AI
+     * @param matchManager   MatchManager to control the match
+     * @param gameController GameController to control the game
+     */
     public AIPlayer(Player player, MatchManager matchManager, GameController gameController) {
         this.player = player;
         this.profile = player.getAiProfile();
@@ -24,13 +31,18 @@ public class AIPlayer {
         this.gameController = gameController;
     }
 
+    /**
+     * This method is called by the GameController to execute the turn of the AI.
+     *
+     * @param abstractBoard The abstract board of the game
+     */
     public void executeMove(final int[][] abstractBoard) {
         this.abstractBoard = abstractBoard;
         this.beginnerMove();
     }
 
     /**
-     * This method move the player or place a wall, with a 50% chance of each, his movement is random, but principally he moves to his goal, walls are placed randomly
+     * This method moves the player or places a wall, with a 50% chance of each, his movement is random, but principally he moves to his goal, walls are placed randomly
      */
     private void beginnerMove() {
         ArrayList<Point> possibleMoves = this.matchManager.getPossibleMovements(this.player);
@@ -61,6 +73,11 @@ public class AIPlayer {
 
     }
 
+    /**
+     * This method returns a random wall type from the wall that the player has
+     *
+     * @return WallType
+     */
     private WallType getRandomWallType() {
         Random random = new Random();
         ArrayList<WallType> wallTypes = new ArrayList<>();

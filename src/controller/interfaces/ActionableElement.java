@@ -1,4 +1,4 @@
-package controller;
+package controller.interfaces;
 
 import controller.logic.MatchManager;
 

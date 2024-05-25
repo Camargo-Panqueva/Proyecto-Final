@@ -5,7 +5,6 @@ import model.difficulty.Difficulty;
 import model.modes.GameBaseParameters;
 import model.player.Player;
 
-
 import java.awt.*;
 import java.io.Serializable;
 import java.util.HashMap;
@@ -13,20 +12,37 @@ import java.util.HashMap;
 
 public final class GameModel implements Serializable {
 
-    private Board board;
-
-    private MatchState matchState;
-
+    /**
+     * The players in the game.
+     */
     private final HashMap<Integer, Player> players;
-
-    private int playerInTurn;
-
-    private Player winningPlayer;
-
+    /**
+     * The base parameters of the game.
+     */
     private final GameBaseParameters gameBaseParameters;
-
-    protected final Difficulty difficulty;
-
+    /**
+     * The difficulty of the game.
+     */
+    private final Difficulty difficulty;
+    /**
+     * The board of the game.
+     */
+    private Board board;
+    /**
+     * The current state of the match.
+     */
+    private MatchState matchState;
+    /**
+     * The ID of the player in turn.
+     */
+    private int playerInTurn;
+    /**
+     * The player that won the game.
+     */
+    private Player winningPlayer;
+    /**
+     * The turn count of the game.
+     */
     private int turnCount;
 
     public GameModel() {
@@ -51,12 +67,12 @@ public final class GameModel implements Serializable {
         return board;
     }
 
-    public void setMatchState(MatchState matchState) {
-        this.matchState = matchState;
-    }
-
     public MatchState getMatchState() {
         return matchState;
+    }
+
+    public void setMatchState(MatchState matchState) {
+        this.matchState = matchState;
     }
 
     public void setPlayer(int playerIndex, Player newPlayer) {
@@ -75,6 +91,10 @@ public final class GameModel implements Serializable {
         return turnCount;
     }
 
+    public void setTurnCount(int turnCount) {
+        this.turnCount = turnCount;
+    }
+
     public HashMap<Integer, Player> getPlayers() {
         return this.players;
     }
@@ -87,14 +107,13 @@ public final class GameModel implements Serializable {
         return count;
     }
 
-    public Difficulty getDifficulty(){
+    public Difficulty getDifficulty() {
         return this.difficulty;
     }
 
     public GameBaseParameters getGameBaseParameters() {
         return gameBaseParameters;
     }
-
 
     public int getPlayerInTurnId() {
         return playerInTurn;
@@ -104,21 +123,17 @@ public final class GameModel implements Serializable {
         return winningPlayer;
     }
 
-    public void setPlayerInTurn(int playerInTurn) {
-        this.playerInTurn = playerInTurn;
-    }
-
     public void setWinningPlayer(final Player winningPlayer) {
         this.winningPlayer = winningPlayer;
     }
 
-    public void setTurnCount(int turnCount) {
-        this.turnCount = turnCount;
+    public void setPlayerInTurn(int playerInTurn) {
+        this.playerInTurn = playerInTurn;
     }
 
     public enum MatchState {
         INITIALIZED,
         PLAYING,
-        WINNER;
+        WINNER
     }
 }

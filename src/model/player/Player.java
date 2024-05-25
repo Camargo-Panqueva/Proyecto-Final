@@ -9,24 +9,61 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * Represents a player in the game.
+ */
 public class Player implements Serializable {
-    private Point position;
+
+    /**
+     * The name of the player.
+     */
     private final String name;
+    /**
+     * The walls available to the player, categorized by wall type.
+     */
     private final HashMap<WallType, Integer> playerWalls;
+    /**
+     * The X coordinate of the winning position for the player.
+     */
     private final int xWinPosition;
+    /**
+     * The Y coordinate of the winning position for the player.
+     */
     private final int yWinPosition;
+    /**
+     * The direction towards the winning position.
+     */
     private final Point winDirection;
-    private final ArrayList<WallData> PlayerWallsPlaced;
-    private int timePlayed;
-    private boolean isAI;
-    private AIProfile aiProfile;
+    /**
+     * The walls placed by the player during the game.
+     */
+    private final ArrayList<WallData> playerWallsPlaced;
+    /**
+     * The buffer for storing the player's moves.
+     */
     private final ArrayDeque<Point> moveBuffer;
+    /**
+     * The current position of the player on the board.
+     */
+    private Point position;
+    /**
+     * The time the player has played in the game.
+     */
+    private int timePlayed;
+    /**
+     * Indicates if the player is controlled by AI.
+     */
+    private boolean isAI;
+    /**
+     * The AI profile associated with the player.
+     */
+    private AIProfile aiProfile;
 
     public Player(final Point initialPosition, final String name, final HashMap<WallType, Integer> allowedWalls, final int xWinner, final int yWinner) {
         this.name = name;
         this.position = initialPosition;
         this.playerWalls = allowedWalls;
-        this.PlayerWallsPlaced = new ArrayList<>();
+        this.playerWallsPlaced = new ArrayList<>();
         this.moveBuffer = new ArrayDeque<>();
         this.moveBuffer.add(initialPosition);
         this.xWinPosition = xWinner;
@@ -55,6 +92,14 @@ public class Player implements Serializable {
         return position;
     }
 
+    public void setPosition(Point position) {
+        this.moveBuffer.add(position);
+        if (this.moveBuffer.size() > 3) {
+            this.moveBuffer.poll();
+        }
+        this.position = position;
+    }
+
     public Point getWinDirection() {
         return this.winDirection;
     }
@@ -68,7 +113,7 @@ public class Player implements Serializable {
     }
 
     public int getWallsInField() {
-        return PlayerWallsPlaced.size();
+        return playerWallsPlaced.size();
     }
 
     public int getWallsPlaced() {
@@ -77,6 +122,10 @@ public class Player implements Serializable {
 
     public int getTimePlayed() {
         return timePlayed;
+    }
+
+    public void setTimePlayed(int timePlayed) {
+        this.timePlayed = timePlayed;
     }
 
     public int getXWinPosition() {
@@ -91,7 +140,7 @@ public class Player implements Serializable {
         return name;
     }
 
-    public boolean getIsAI() {
+    public boolean isAI() {
         return this.isAI;
     }
 
@@ -103,45 +152,33 @@ public class Player implements Serializable {
         return aiProfile;
     }
 
+    public void setAiProfile(AIProfile aiProfile) {
+        this.aiProfile = aiProfile;
+    }
+
     public ArrayList<WallData> getPlayerWallsPlaced() {
-        return new ArrayList<>(PlayerWallsPlaced);
+        return new ArrayList<>(playerWallsPlaced);
     }
 
     public void setAsAI() {
         this.isAI = true;
     }
 
-    public void setPosition(Point position) {
-        this.moveBuffer.add(position);
-        if (this.moveBuffer.size() > 3){
-            this.moveBuffer.poll();
-        }
-        this.position = position;
-    }
-
-    public void setAiProfile(AIProfile aiProfile) {
-        this.aiProfile = aiProfile;
-    }
-
-    public void setTimePlayed(int timePlayed) {
-        this.timePlayed = timePlayed;
-    }
-
     public void addWallPlaced(WallData newAddedWall) {
-        this.PlayerWallsPlaced.add(newAddedWall);
+        this.playerWallsPlaced.add(newAddedWall);
     }
 
-    public void addWallToPlace(WallType wallType){
+    public void addWallToPlace(WallType wallType) {
         final Integer newValue = this.playerWalls.get(wallType) + 1;
         this.getPlayerWalls().put(wallType, newValue);
     }
 
-    public void subtractWall(WallType wallType){
+    public void subtractWall(WallType wallType) {
         final Integer newValue = this.playerWalls.get(wallType) - 1;
         this.getPlayerWalls().put(wallType, newValue);
     }
 
     public void removeWallPlaced(WallData wallData) {
-        this.PlayerWallsPlaced.remove(wallData);
+        this.playerWallsPlaced.remove(wallData);
     }
 }

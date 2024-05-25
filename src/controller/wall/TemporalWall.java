@@ -4,8 +4,16 @@ import controller.logic.MatchManager;
 import model.player.Player;
 import model.wall.WallType;
 
+/**
+ * Represents a temporal wall in the game.
+ * This class extends Wall and defines the behavior- and properties-specific to temporal walls.
+ */
 public class TemporalWall extends Wall {
 
+    /**
+     * Constructs a TemporalWall object and initializes its properties.
+     * Temporal walls have a specific size, shape, and lifespan.
+     */
     public TemporalWall() {
         super.wallData.setWidth(3);
         super.wallData.setHeight(3);

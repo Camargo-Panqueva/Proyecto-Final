@@ -8,14 +8,34 @@ import java.awt.*;
 import java.io.Serializable;
 import java.util.UUID;
 
+/**
+ * Represents the game board.
+ */
 public final class Board implements Serializable {
 
+    /**
+     * The cells of the board.
+     */
     private final CellType[][] boardCells;
+
+    /**
+     * The walls on the board.
+     */
     private final WallData[][] boardWalls;
 
+    /**
+     * The height of the board.
+     */
     private final int height;
+
+    /**
+     * The width of the board.
+     */
     private final int width;
 
+    /**
+     * Indicates if the board is set up randomly.
+     */
     private boolean isRandomly;
 
     public Board(final int width, final int height) {

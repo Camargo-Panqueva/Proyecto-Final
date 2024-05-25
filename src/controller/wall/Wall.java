@@ -1,6 +1,6 @@
 package controller.wall;
 
-import controller.ActionableElement;
+import controller.interfaces.ActionableElement;
 import model.player.Player;
 import model.wall.WallData;
 import model.wall.WallType;
@@ -9,18 +9,35 @@ import java.awt.*;
 import java.util.Arrays;
 import java.util.UUID;
 
+/**
+ * Represents a wall element in the game.
+ * This abstract class defines common functionality and properties for walls.
+ */
 public abstract class Wall implements ActionableElement {
 
+    /** The data associated with the wall. */
     protected final WallData wallData;
 
+    /**
+     * Constructs a Wall object with default wall data.
+     */
     public Wall() {
         this.wallData = new WallData();
     }
 
+    /**
+     * Constructs a Wall object with the specified wall data.
+     *
+     * @param wallData The wall data for this wall.
+     */
     public Wall(WallData wallData) {
         this.wallData = wallData;
     }
 
+    /**
+     * Rotates the wall, changing its orientation.
+     * This method rotates the wall shape by 90 degrees clockwise.
+     */
     public void rotate() {
         int width = this.wallData.getWidth();
         int height = this.wallData.getHeight();
@@ -40,43 +57,10 @@ public abstract class Wall implements ActionableElement {
         this.wallData.setWallShape(shapeRotated);
     }
 
-    //TODO : getters & setters for WallData
-
     public WallData getWallData() {
         return wallData;
     }
 
-    @Override
-    public String toString() {
-        if (this.getWallShape() == null) {
-            return "Null";
-        }
-        StringBuilder sb = new StringBuilder();
-
-        for (int y = 0; y < this.getWidth(); y++) {
-            for (int x = 0; x < this.getHeight(); x++) {
-
-                final WallType currPosition = this.getWallShape()[x][y];
-
-                if (currPosition == null) {
-                    sb.append(" 0 ").append(" ");
-                    continue;
-                }
-                if (currPosition == WallType.NORMAL) {
-                    sb.append("Nor").append(" ");
-                } else if (currPosition == WallType.LARGE) {
-                    sb.append("Lar").append(" ");
-                } else if (currPosition == WallType.TEMPORAL_WALL) {
-                    sb.append("Tem").append(" ");
-                } else if (currPosition == WallType.ALLY) {
-                    sb.append("All").append(" ");
-                }
-            }
-            sb.append("\n");
-        }
-
-        return sb.toString();
-    }
 
     public Point getPositionOnBoard() {
         return this.wallData.getPositionOnBoard();
@@ -156,6 +140,37 @@ public abstract class Wall implements ActionableElement {
 
     public void setAlly(boolean ally) {
         this.wallData.setAlly(ally);
+    }
+    @Override
+    public String toString() {
+        if (this.getWallShape() == null) {
+            return "Null";
+        }
+        StringBuilder sb = new StringBuilder();
+
+        for (int y = 0; y < this.getWidth(); y++) {
+            for (int x = 0; x < this.getHeight(); x++) {
+
+                final WallType currPosition = this.getWallShape()[x][y];
+
+                if (currPosition == null) {
+                    sb.append(" 0 ").append(" ");
+                    continue;
+                }
+                if (currPosition == WallType.NORMAL) {
+                    sb.append("Nor").append(" ");
+                } else if (currPosition == WallType.LARGE) {
+                    sb.append("Lar").append(" ");
+                } else if (currPosition == WallType.TEMPORAL_WALL) {
+                    sb.append("Tem").append(" ");
+                } else if (currPosition == WallType.ALLY) {
+                    sb.append("All").append(" ");
+                }
+            }
+            sb.append("\n");
+        }
+
+        return sb.toString();
     }
 
 }

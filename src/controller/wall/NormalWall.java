@@ -3,9 +3,16 @@ package controller.wall;
 import controller.logic.MatchManager;
 import model.wall.WallData;
 import model.wall.WallType;
-
+/**
+ * Represents a normal wall in the game.
+ * This class extends Wall and defines the properties and behavior specific to normal walls.
+ */
 public class NormalWall extends Wall {
 
+    /**
+     * Constructs a NormalWall object and initializes its properties.
+     * Normal walls have a specific size, shape, and properties.
+     */
     public NormalWall() {
         super.wallData.setWidth(3);
         super.wallData.setHeight(3);
