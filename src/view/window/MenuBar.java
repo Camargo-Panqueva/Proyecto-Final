@@ -1,10 +1,15 @@
 package view.window;
 
+import controller.GameController;
+import controller.dto.ServiceResponse;
 import controller.handlers.MenuHandlers;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 /**
  * Represents a menu bar object that can be added to the game window.
@@ -15,12 +20,33 @@ import java.awt.event.ActionListener;
  */
 public final class MenuBar extends JMenuBar {
 
+    private final GameController controller;
+    private FileFilter fileFilter;
+
     /**
      * Creates a new MenuBar with the default menu items.
      */
-    public MenuBar() {
+    public MenuBar(GameController controller) {
+
+        this.controller = controller;
+
+        this.setupFilter();
         this.setupMenu();
         this.setPreferredSize(new Dimension(this.getPreferredSize().width, 30));
+    }
+
+    private void setupFilter() {
+        this.fileFilter = new FileFilter() {
+            @Override
+            public boolean accept(File f) {
+                return f.getName().toLowerCase().endsWith(".qpg") || f.isDirectory();
+            }
+
+            @Override
+            public String getDescription() {
+                return "QuoriPOOB Game Files (*.qpg)";
+            }
+        };
     }
 
     /**
@@ -38,8 +64,8 @@ public final class MenuBar extends JMenuBar {
         aboutMenu.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
         //TODO: Replace this static methods with controller getters
-        JMenuItem openItem = createMenuItem("Open", MenuHandlers.openHandler());
-        JMenuItem saveItem = createMenuItem("Save", MenuHandlers.saveHandler());
+        JMenuItem openItem = createMenuItem("Open", this::openFileHandler);
+        JMenuItem saveItem = createMenuItem("Save", this::saveFileHandler);
         JMenuItem exitItem = createMenuItem("Exit", MenuHandlers.exitHandler());
         JMenuItem aboutItem = createMenuItem("About", MenuHandlers.aboutHandler());
 
@@ -52,6 +78,48 @@ public final class MenuBar extends JMenuBar {
 
         this.add(fileMenu);
         this.add(aboutMenu);
+    }
+
+    private void saveFileHandler(ActionEvent event) {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileFilter(this.fileFilter);
+
+        int option = fileChooser.showSaveDialog(this);
+
+        if (option == JFileChooser.APPROVE_OPTION) {
+            File file = fileChooser.getSelectedFile();
+            String path = file.getPath() + (file.getPath().endsWith(".qpg") ? "" : ".qpg");
+
+            ServiceResponse<Void> response = this.controller.saveMatch(path);
+
+            if (!response.ok) {
+                //TODO: Improve error message
+                JOptionPane.showMessageDialog(null, response.message, "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            JOptionPane.showMessageDialog(null, "Match saved successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+        }
+    }
+
+    private void openFileHandler(ActionEvent event) {
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setFileFilter(this.fileFilter);
+        int option = fileChooser.showOpenDialog(this);
+
+        if (option == JFileChooser.APPROVE_OPTION) {
+            File file = fileChooser.getSelectedFile();
+
+            ServiceResponse<Void> response = this.controller.loadMatch(file.getAbsolutePath());
+
+            if (!response.ok) {
+                //TODO: Improve error message
+                JOptionPane.showMessageDialog(null, response.message, "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            JOptionPane.showMessageDialog(null, "Match loaded successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+        }
     }
 
     /**

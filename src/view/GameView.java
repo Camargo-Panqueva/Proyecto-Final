@@ -57,7 +57,7 @@ public final class GameView {
         this.mouse = new Mouse();
         this.keyboard = new Keyboard();
         this.themeManager = new ThemeManager(new DarkTheme());
-        this.window = new Window(600, "Quoridor"); // TODO: Set window size from controller data
+        this.window = new Window(600, "Quoridor", this.controller); // TODO: Set window size from controller data
         this.window.getCanvas().addMouseListener(this.mouse);
         this.window.getCanvas().addKeyListener(this.keyboard);
         this.window.getCanvas().setFont(new Font("Yoster Island Regular", Font.PLAIN, 16));
