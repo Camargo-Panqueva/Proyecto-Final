@@ -1,5 +1,7 @@
 package view.window;
 
+import controller.GameController;
+
 import javax.swing.*;
 import java.awt.*;
 
@@ -16,6 +18,7 @@ public final class Window {
 
     private final JFrame frame;
     private final Canvas canvas;
+    private final GameController controller;
 
     /**
      * Creates a new Window with the given size and title.
@@ -28,10 +31,11 @@ public final class Window {
      * @param size  the size of the window.
      * @param title the title of the window.
      */
-    public Window(final int size, final String title) {
+    public Window(final int size, final String title, GameController globalContext) {
 
         this.frame = new JFrame();
         this.canvas = new Canvas();
+        this.controller = globalContext;
 
         this.setupCanvas(size);
         this.setupJFrame(title);
@@ -52,7 +56,7 @@ public final class Window {
         this.frame.setResizable(false);
         this.frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.frame.setTitle(title);
-        this.frame.setJMenuBar(new MenuBar());
+        this.frame.setJMenuBar(new MenuBar(controller));
 
         this.frame.pack();
         this.frame.setLocationRelativeTo(null);

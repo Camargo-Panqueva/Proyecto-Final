@@ -82,6 +82,7 @@ public final class SceneManager {
 
         this.lastState = state;
         this.currentScene.fixCanvasSize();
+        this.globalContext.window().getCanvas().setCursor(Cursor.getDefaultCursor());
     }
 
     /**
