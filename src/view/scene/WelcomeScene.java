@@ -67,7 +67,7 @@ public final class WelcomeScene extends Scene {
         this.welcomeTitle.getStyle().centerHorizontally(globalContext);
 
         this.authorsText = new Text("Camargo # Panqueva", globalContext);
-        this.authorsText.getStyle().y = 190;
+        this.authorsText.getStyle().y = 200;
         this.authorsText.getStyle().font = this.globalContext.gameFont().deriveFont(21.0f);
         this.authorsText.fitSize();
         this.authorsText.getStyle().centerHorizontally(globalContext);
