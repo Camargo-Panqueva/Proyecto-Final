@@ -24,6 +24,7 @@ import static view.components.match.Board.WALL_SIZE;
 public final class PlayerRenderer {
 
     private static final int PLAYER_PADDING = 3;
+    private static final int BOT_CHANGE_INTERVAL = 2000;
 
     private final Style boardStyle;
     private final GlobalContext globalContext;
@@ -69,16 +70,28 @@ public final class PlayerRenderer {
      * @param player   the player whose allowed moves are to be rendered.
      */
     private void renderAllowedMoves(Graphics2D graphics, PlayerTransferObject player) {
-        ColorVariant variant = player.isInTurn() ? ColorVariant.NORMAL : ColorVariant.DIMMED;
-        Color color = this.globalContext.currentTheme().getColor(this.matchContext.getPlayerColor(player, variant));
+        if (!player.isInTurn()) {
+            return;
+        }
 
-        graphics.setColor(color);
+        ColorVariant variant = ColorVariant.NORMAL;
+        Color baseColor = this.globalContext.currentTheme().getColor(this.matchContext.getPlayerColor(player, variant));
+        Color backgroundColor = new Color(baseColor.getRed(), baseColor.getGreen(), baseColor.getBlue(), 18);
+        Stroke oldStroke = graphics.getStroke();
+
         for (Point move : player.allowedMoves()) {
             int x = move.x * (CELL_SIZE + WALL_SIZE) + this.boardStyle.x + this.boardStyle.borderWidth;
             int y = move.y * (CELL_SIZE + WALL_SIZE) + this.boardStyle.y + this.boardStyle.borderWidth;
 
-            graphics.drawOval(x, y, CELL_SIZE, CELL_SIZE);
+            graphics.setColor(backgroundColor);
+            graphics.fillRoundRect(x, y, CELL_SIZE, CELL_SIZE, 6, 6);
+
+            graphics.setStroke(new BasicStroke(2));
+            graphics.setColor(baseColor);
+            graphics.drawRoundRect(x + 1, y + 1, CELL_SIZE - 2, CELL_SIZE - 2, 6, 6);
         }
+
+        graphics.setStroke(oldStroke);
     }
 
     /**
@@ -94,7 +107,7 @@ public final class PlayerRenderer {
      * @param player   the player to render.
      */
     private void renderPlayer(Graphics2D graphics, PlayerTransferObject player) {
-        graphics.setFont(this.globalContext.window().getCanvas().getFont().deriveFont(16.0f));
+        graphics.setFont(this.globalContext.gameFont().deriveFont(16.0f));
 
         ColorVariant variant = player.isInTurn() ? ColorVariant.NORMAL : ColorVariant.DIMMED;
         Color color = this.globalContext.currentTheme().getColor(this.matchContext.getPlayerColor(player, variant));
@@ -128,7 +141,39 @@ public final class PlayerRenderer {
         graphics.setColor(color);
         graphics.drawString(player.name(), x + CELL_SIZE, y - 3);
 
-        graphics.setFont(this.globalContext.window().getCanvas().getFont().deriveFont(22.0f));
+        if (player.isAI()) {
+            this.renderBotIcon(graphics, player, x, y);
+        } else {
+            this.renderPlayerIcon(graphics, player, x, y);
+        }
+    }
+
+    private String getBotIcon(PlayerTransferObject bot) {
+        String[] icons = {
+                new String(Character.toChars(0xf06a9)),
+                new String(Character.toChars(0xf169d)),
+                new String(Character.toChars(0xf169f)),
+                new String(Character.toChars(0xf16a1)),
+                new String(Character.toChars(0xf16a3)),
+                new String(Character.toChars(0xf16a5)),
+                new String(Character.toChars(0xf1114)),
+        };
+
+        return icons[bot.id() % icons.length];
+    }
+
+    private void renderBotIcon(Graphics2D graphics, PlayerTransferObject player, int x, int y) {
+        graphics.setFont(this.globalContext.iconFont().deriveFont(32.0f));
+        graphics.setColor(this.globalContext.currentTheme().getColor(ColorName.BACKGROUND, ColorVariant.NORMAL));
+        graphics.drawString(
+                getBotIcon(player),
+                x + (CELL_SIZE - 28) / 2,
+                y + CELL_SIZE / 2 + 5
+        );
+    }
+
+    private void renderPlayerIcon(Graphics2D graphics, PlayerTransferObject player, int x, int y) {
+        graphics.setFont(this.globalContext.gameFont().deriveFont(22.0f));
         FontMetrics metrics = this.globalContext.window().getCanvas().getFontMetrics(graphics.getFont());
         String initial = player.name().substring(0, 1).toUpperCase();
 

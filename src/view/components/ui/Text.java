@@ -105,7 +105,7 @@ public final class Text extends GameComponent {
      */
     @Override
     protected void setupDefaultStyle() {
-        this.style.font = this.globalContext.window().getCanvas().getFont().deriveFont(16.0f);
+        this.style.font = this.globalContext.gameFont().deriveFont(16.0f);
         this.style.foregroundColor = new ThemeColor(ColorName.FOREGROUND, ColorVariant.NORMAL);
         this.style.backgroundColor = new ThemeColor(ColorName.TRANSPARENT, ColorVariant.NORMAL);
         this.style.borderRadius = 16;

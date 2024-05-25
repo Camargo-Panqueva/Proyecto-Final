@@ -84,7 +84,7 @@ public final class SettingsScene extends Scene {
         this.paddingX = 20;
         this.paddingY = 20;
         this.margin = 60;
-        this.componentFont = this.globalContext.window().getCanvas().getFont().deriveFont(20.0f);
+        this.componentFont = this.globalContext.gameFont().deriveFont(20.0f);
         this.componentHeight = 46;
         this.componentWidth = (int) (componentHeight * 7.5);
         this.colonWidth = 6;
@@ -156,7 +156,7 @@ public final class SettingsScene extends Scene {
         this.paddingX = 20;
         this.paddingY = 20;
         this.margin = 60;
-        this.componentFont = this.globalContext.window().getCanvas().getFont().deriveFont(20.0f);
+        this.componentFont = this.globalContext.gameFont().deriveFont(20.0f);
         this.componentHeight = 46;
         this.componentWidth = componentHeight * 9;
         this.colonWidth = 6;

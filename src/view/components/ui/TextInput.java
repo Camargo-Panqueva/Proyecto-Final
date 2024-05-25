@@ -153,7 +153,7 @@ public final class TextInput extends GameComponent {
         this.style.backgroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.DIMMED);
         this.style.foregroundColor = new ThemeColor(ColorName.FOREGROUND, ColorVariant.NORMAL);
         this.style.borderColor = new ThemeColor(ColorName.PRIMARY, ColorVariant.NORMAL);
-        this.style.font = this.globalContext.window().getCanvas().getFont().deriveFont(26.0f);
+        this.style.font = this.globalContext.gameFont().deriveFont(26.0f);
         this.style.height = 60;
         this.style.width = 300;
         this.style.borderRadius = 16;

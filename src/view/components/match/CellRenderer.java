@@ -27,6 +27,8 @@ public final class CellRenderer {
     private final GlobalContext globalContext;
     private final MatchContext matchContext;
 
+    private final int specialCellBorder = 2;
+
     /**
      * Creates a new cell renderer with the given style, global context, and match context.
      *
@@ -107,8 +109,13 @@ public final class CellRenderer {
      * @param graphics the graphics object to render the cell with.
      */
     private void drawDoubleTurnCell(Graphics2D graphics) {
+
+        this.drawSpecialBorder(graphics, ColorName.GREEN);
+
         graphics.setColor(this.globalContext.currentTheme().getColor(ColorName.GREEN, ColorVariant.DIMMED));
-        graphics.fillRoundRect(0, 0, CELL_SIZE, CELL_SIZE, 8, 8);
+        graphics.setFont(this.globalContext.iconFont().deriveFont(34f));
+
+        this.drawIcon(graphics, 0xf03a7);
     }
 
     /**
@@ -117,8 +124,12 @@ public final class CellRenderer {
      * @param graphics the graphics object to render the cell with.
      */
     private void drawTeleportCell(Graphics2D graphics) {
+        this.drawSpecialBorder(graphics, ColorName.MAGENTA);
+
         graphics.setColor(this.globalContext.currentTheme().getColor(ColorName.MAGENTA, ColorVariant.DIMMED));
-        graphics.fillRoundRect(0, 0, CELL_SIZE, CELL_SIZE, 8, 8);
+        graphics.setFont(this.globalContext.iconFont().deriveFont(34f));
+
+        this.drawIcon(graphics, 0xf004c);
     }
 
     /**
@@ -127,7 +138,38 @@ public final class CellRenderer {
      * @param graphics the graphics object to render the cell with.
      */
     private void drawReturnCell(Graphics2D graphics) {
+        this.drawSpecialBorder(graphics, ColorName.RED);
+
         graphics.setColor(this.globalContext.currentTheme().getColor(ColorName.RED, ColorVariant.DIMMED));
+        graphics.setFont(this.globalContext.iconFont().deriveFont(34f));
+
+        this.drawIcon(graphics, 0xf17b2);
+    }
+
+    /**
+     * Draws a special border around the cell.
+     *
+     * @param graphics the graphics object to render the border with.
+     * @param color    the color of the border.
+     */
+    private void drawSpecialBorder(Graphics2D graphics, ColorName color) {
+        graphics.setColor(this.globalContext.currentTheme().getColor(color, ColorVariant.DIMMED));
         graphics.fillRoundRect(0, 0, CELL_SIZE, CELL_SIZE, 8, 8);
+
+        graphics.setColor(this.globalContext.currentTheme().getColor(ColorName.BACKGROUND, ColorVariant.NORMAL));
+        graphics.fillRoundRect(
+                this.specialCellBorder,
+                this.specialCellBorder,
+                CELL_SIZE - 2 * this.specialCellBorder,
+                CELL_SIZE - 2 * this.specialCellBorder,
+                6,
+                6
+        );
+    }
+
+    private void drawIcon(Graphics2D graphics, int hexCode) {
+        graphics.setFont(this.globalContext.iconFont().deriveFont(33f));
+        String text = new String(Character.toChars(hexCode));
+        graphics.drawString(text, CELL_SIZE - 36, CELL_SIZE - 16);
     }
 }

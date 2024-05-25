@@ -97,8 +97,8 @@ public final class Board extends GameComponent {
             this.matchContext.dispatchEvent(MatchContext.MatchEvent.TURN_CHANGED, this.matchContext.playerInTurn());
         }
 
-        if (this.lastSecondsRemaining != this.matchContext.playerInTurn().secondRemaining()) {
-            this.lastSecondsRemaining = this.matchContext.playerInTurn().secondRemaining();
+        if (this.lastSecondsRemaining != this.matchContext.playerInTurn().secondsRemaining()) {
+            this.lastSecondsRemaining = this.matchContext.playerInTurn().secondsRemaining();
             this.matchContext.dispatchEvent(MatchContext.MatchEvent.REMAINING_TIME_CHANGED, this.matchContext.playerInTurn());
         }
     }

@@ -7,6 +7,8 @@ import view.themes.Theme;
 import view.themes.ThemeManager;
 import view.window.Window;
 
+import java.awt.*;
+
 /**
  * Provides a context for the game view.
  * <p>
@@ -23,7 +25,7 @@ import view.window.Window;
  * @param themeManager
  */
 public record GlobalContext(Window window, GameController controller, Mouse mouse, Keyboard keyboard,
-                            ThemeManager themeManager) {
+                            ThemeManager themeManager, Font gameFont, Font iconFont) {
 
     /**
      * Shorthand method to get the current theme from the theme manager.

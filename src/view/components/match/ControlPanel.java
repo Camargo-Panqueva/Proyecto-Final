@@ -169,8 +169,8 @@ public final class ControlPanel extends GameComponent {
      * </p>
      */
     private void updateTimer() {
-        int timeRemaining = this.matchContext.playerInTurn().secondRemaining();
-        String text = String.format("%d Sec.", this.matchContext.playerInTurn().secondRemaining());
+        int timeRemaining = this.matchContext.playerInTurn().secondsRemaining();
+        String text = String.format("%d Sec.", this.matchContext.playerInTurn().secondsRemaining());
 
         if (timeRemaining > 15) {
             this.timer.getStyle().foregroundColor = new ThemeColor(ColorName.GREEN, ColorVariant.NORMAL);
@@ -244,17 +244,17 @@ public final class ControlPanel extends GameComponent {
         this.components = new ArrayList<>();
 
         this.title = new Text("Control  Panel", this.globalContext);
-        this.title.getStyle().font = this.globalContext.window().getCanvas().getFont().deriveFont(32.0f);
+        this.title.getStyle().font = this.globalContext.gameFont().deriveFont(32.0f);
         this.title.fitSize();
         this.components.add(this.title);
 
         this.playerName = new Text("undefined", this.globalContext);
-        this.playerName.getStyle().font = this.globalContext.window().getCanvas().getFont().deriveFont(20.0f);
+        this.playerName.getStyle().font = this.globalContext.gameFont().deriveFont(20.0f);
         this.playerName.fitSize();
         this.components.add(this.playerName);
 
         this.timer = new Text("undefined", this.globalContext);
-        this.timer.getStyle().font = this.globalContext.window().getCanvas().getFont().deriveFont(20.0f);
+        this.timer.getStyle().font = this.globalContext.gameFont().deriveFont(20.0f);
         this.timer.fitSize();
         this.components.add(this.timer);
 
@@ -262,11 +262,11 @@ public final class ControlPanel extends GameComponent {
 
         this.wallSelector = new Selector<>(wallTypes, this.globalContext);
         this.wallSelector.getStyle().height = 44;
-        this.wallSelector.getStyle().font = this.globalContext.window().getCanvas().getFont().deriveFont(20.0f);
+        this.wallSelector.getStyle().font = this.globalContext.gameFont().deriveFont(20.0f);
         this.components.add(this.wallSelector);
 
         this.remainingWalls = new Text("0", this.globalContext);
-        this.remainingWalls.getStyle().font = this.globalContext.window().getCanvas().getFont().deriveFont(16.0f);
+        this.remainingWalls.getStyle().font = this.globalContext.gameFont().deriveFont(16.0f);
         this.remainingWalls.getStyle().foregroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.NORMAL);
         this.remainingWalls.fitSize();
         this.components.add(this.remainingWalls);

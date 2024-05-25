@@ -60,9 +60,15 @@ public final class GameView {
         this.window = new Window(600, "Quoridor", this.controller); // TODO: Set window size from controller data
         this.window.getCanvas().addMouseListener(this.mouse);
         this.window.getCanvas().addKeyListener(this.keyboard);
-        this.window.getCanvas().setFont(new Font("Yoster Island Regular", Font.PLAIN, 16));
 
-        this.globalContext = new GlobalContext(this.window, this.controller, this.mouse, this.keyboard, this.themeManager);
+        this.globalContext = new GlobalContext(
+                this.window,
+                this.controller,
+                this.mouse, this.keyboard,
+                this.themeManager,
+                new Font("Yoster Island Regular", Font.PLAIN, 16),
+                new Font("ProggyCleanSZ Nerd Font", Font.PLAIN, 24)
+        );
         this.sceneManager = new SceneManager(this.globalContext);
     }
 
@@ -210,11 +216,14 @@ public final class GameView {
         List<String> availableFontFamilyNames = Arrays.asList(GE.getAvailableFontFamilyNames());
 
         try {
-            InputStream inputStream = getClass().getResourceAsStream("/resources/fonts/yoster.ttf");
-            if (inputStream != null) {
-                Font gameFont = Font.createFont(Font.TRUETYPE_FONT, inputStream);
+            InputStream inputStreamYoster = getClass().getResourceAsStream("/resources/fonts/yoster.ttf");
+            InputStream inputStreamProggy = getClass().getResourceAsStream("/resources/fonts/proggy.ttf");
+            if (inputStreamYoster != null && inputStreamProggy != null) {
+                Font gameFont = Font.createFont(Font.TRUETYPE_FONT, inputStreamYoster);
+                Font iconFont = Font.createFont(Font.TRUETYPE_FONT, inputStreamProggy);
                 if (!availableFontFamilyNames.contains(gameFont.getFontName())) {
                     GE.registerFont(gameFont);
+                    GE.registerFont(iconFont);
                 }
             } else {
                 JOptionPane.showMessageDialog(null, "No se pudo cargar la fuente.");

@@ -2,7 +2,6 @@ package view.window;
 
 import controller.GameController;
 import controller.dto.ServiceResponse;
-import controller.handlers.MenuHandlers;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
@@ -66,8 +65,8 @@ public final class MenuBar extends JMenuBar {
         //TODO: Replace this static methods with controller getters
         JMenuItem openItem = createMenuItem("Open", this::openFileHandler);
         JMenuItem saveItem = createMenuItem("Save", this::saveFileHandler);
-        JMenuItem exitItem = createMenuItem("Exit", MenuHandlers.exitHandler());
-        JMenuItem aboutItem = createMenuItem("About", MenuHandlers.aboutHandler());
+        JMenuItem exitItem = createMenuItem("Exit", this::exitHandler);
+        JMenuItem aboutItem = createMenuItem("About", this::aboutHandler);
 
         fileMenu.add(openItem);
         fileMenu.add(saveItem);
@@ -120,6 +119,18 @@ public final class MenuBar extends JMenuBar {
 
             JOptionPane.showMessageDialog(null, "Match loaded successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
         }
+    }
+
+    private void exitHandler(ActionEvent event) {
+        System.exit(0);
+    }
+
+    private void aboutHandler(ActionEvent event) {
+        JOptionPane.showMessageDialog(
+                null,
+                "QuoriPOOB Game\nVersion 1.0\n\nDeveloped by:\n- Juan Camargo & Tomas Panqueva",
+                "About", JOptionPane.INFORMATION_MESSAGE
+        );
     }
 
     /**
