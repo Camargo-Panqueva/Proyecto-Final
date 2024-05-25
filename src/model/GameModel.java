@@ -102,7 +102,7 @@ public final class GameModel implements Serializable {
     public int getWallCount() {
         int count = 0;
         for (Player player : this.players.values()) {
-            count += player.getRemainingWallsCount();
+            count += player.getWallsInField();
         }
         return count;
     }

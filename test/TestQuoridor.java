@@ -442,11 +442,9 @@ public class TestQuoridor {
             fail();
         }
 
-        this.gameModel.getPlayers().get(0).setPosition(new Point(this.gameModel.getPlayers().get(1).getPosition().x, this.gameModel.getPlayers().get(0).getPosition().y - 1));
-
         final ArrayList<Point> possibleMoves = this.gameController.getBoardState().payload.players().get(0).allowedMoves();
 
-        Point diagonalPoint = new Point(this.gameModel.getPlayers().get(0).getPosition().x + 1, this.gameModel.getPlayers().get(0).getPosition().y);
+        Point diagonalPoint = new Point(this.gameModel.getPlayers().get(0).getPosition().x + 1, this.gameModel.getPlayers().get(0).getPosition().y + 1);
 
         if (possibleMoves.contains(diagonalPoint)) {
             fail();
