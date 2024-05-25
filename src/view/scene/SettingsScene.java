@@ -378,7 +378,7 @@ public final class SettingsScene extends Scene {
      * </p>
      */
     private void setupCellCountComponents() {
-        ColorName componentsColor = ColorName.PURPLE;
+        ColorName componentsColor = ColorName.MAGENTA;
 
         this.cellTypeTitle = new Text("Cell Type", this.globalContext);
         this.cellTypeTitle.getStyle().x = this.difficultySelect.getStyle().x + this.difficultySelect.getStyle().width + this.margin;

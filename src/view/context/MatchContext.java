@@ -165,7 +165,7 @@ public final class MatchContext {
 
         return switch (playerId) {
             case 0 -> new ThemeColor(ColorName.RED, variant);
-            case 1 -> new ThemeColor(ColorName.PURPLE, variant);
+            case 1 -> new ThemeColor(ColorName.MAGENTA, variant);
             case 2 -> new ThemeColor(ColorName.BLUE, variant);
             case 3 -> new ThemeColor(ColorName.GREEN, variant);
             default -> throw new IllegalArgumentException("Invalid player id: " + playerId);

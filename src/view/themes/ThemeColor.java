@@ -54,8 +54,12 @@ public final class ThemeColor {
         FOREGROUND("Foreground"),
         RED("Red"),
         GREEN("Green"),
+        YELLOW("Yellow"),
         BLUE("Blue"),
-        PURPLE("Purple"),
+        MAGENTA("Magenta"),
+        CYAN("Cyan"),
+        WHITE("White"),
+        BLACK("Black"),
         TRANSPARENT("Transparent");
 
         private final String name;

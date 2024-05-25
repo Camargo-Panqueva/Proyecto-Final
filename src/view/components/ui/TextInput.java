@@ -65,7 +65,7 @@ public final class TextInput extends GameComponent {
         Color borderColor = this.globalContext.currentTheme().getColor(this.getStyle().borderColor);
         Color backgroundColor = this.globalContext.currentTheme().getColor(this.getStyle().backgroundColor);
         Color foregroundColor = this.globalContext.currentTheme().getColor(this.getStyle().foregroundColor);
-        Color placeholderColor = this.globalContext.currentTheme().getColor(this.getStyle().backgroundColor.name(), ColorVariant.DIMMED);
+        Color placeholderColor = this.globalContext.currentTheme().getColor(this.getStyle().foregroundColor.name(), ColorVariant.DIMMED);
 
         graphics.setColor(
                 this.hasFocus
