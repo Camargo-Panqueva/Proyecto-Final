@@ -8,7 +8,6 @@ import model.difficulty.DifficultyType;
 import model.player.AIProfile;
 import model.player.PlayerType;
 import model.wall.WallType;
-import util.ConsumerFunction;
 import view.components.GameComponent;
 import view.components.ui.Button;
 import view.components.ui.Selector;
@@ -203,6 +202,9 @@ public final class SettingsScene extends Scene {
         this.difficultySelect.addComponentListener(GameComponent.ComponentEvent.VALUE_CHANGED,
                 (_previousValue, _currentValue) -> this.updateDisabledTime()
         );
+        this.specialCellsSelect.addComponentListener(GameComponent.ComponentEvent.VALUE_CHANGED,
+                (_previousValue, _currentValue) -> this.updateDisabledCells()
+        );
         this.widthCellsSelect.addComponentListener(GameComponent.ComponentEvent.VALUE_CHANGED,
                 (_previousValue, _currentValue) -> this.updateMaxWallCount(this.getMaxWallCount())
         );
@@ -368,7 +370,6 @@ public final class SettingsScene extends Scene {
         this.heightCellsSelect.setSelectedOption(9);
     }
 
-
     /**
      * Set up the cell count components for the scene.
      * <p>
@@ -378,7 +379,7 @@ public final class SettingsScene extends Scene {
      * </p>
      */
     private void setupCellCountComponents() {
-        ColorName componentsColor = ColorName.PURPLE;
+        ColorName componentsColor = ColorName.MAGENTA;
 
         this.cellTypeTitle = new Text("Cell Type", this.globalContext);
         this.cellTypeTitle.getStyle().x = this.difficultySelect.getStyle().x + this.difficultySelect.getStyle().width + this.margin;
@@ -393,7 +394,7 @@ public final class SettingsScene extends Scene {
         this.cellCountTitle.getStyle().x = this.paddingX + this.cellTypeTitle.getStyle().width + this.cellTypeTitle.getStyle().x;
         this.cellCountTitle.getStyle().y = this.cellTypeTitle.getStyle().y;
         this.cellCountTitle.getStyle().height = this.componentHeight;
-        this.cellCountTitle.getStyle().width = (this.componentWidth - this.paddingX) / 2;
+        this.cellCountTitle.getStyle().width = 2 * (this.componentWidth - this.paddingX) / 3;
         this.cellCountTitle.getStyle().font = this.componentFont;
         this.cellCountTitle.getStyle().backgroundColor = new ThemeColor(componentsColor, ColorVariant.NORMAL);
         this.cellCountTitle.getStyle().foregroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.NORMAL);
@@ -411,7 +412,7 @@ public final class SettingsScene extends Scene {
                     this.cellTypeLabels.size() * (this.paddingY + this.componentHeight);
 
             cellTypeLabel.getStyle().height = this.componentHeight;
-            cellTypeLabel.getStyle().width = (this.componentWidth - this.paddingX) / 2;
+            cellTypeLabel.getStyle().width = this.cellTypeTitle.getStyle().width;
             cellTypeLabel.getStyle().font = this.componentFont;
             cellTypeLabel.getStyle().backgroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.DIMMED);
             cellTypeLabel.getStyle().foregroundColor = new ThemeColor(componentsColor, ColorVariant.NORMAL);
@@ -420,7 +421,7 @@ public final class SettingsScene extends Scene {
             cellTypeSelector.getStyle().x = this.paddingX + cellTypeLabel.getStyle().width + cellTypeLabel.getStyle().x;
             cellTypeSelector.getStyle().y = cellTypeLabel.getStyle().y;
             cellTypeSelector.getStyle().height = this.componentHeight;
-            cellTypeSelector.getStyle().width = (this.componentWidth - this.paddingX) / 2;
+            cellTypeSelector.getStyle().width = this.cellCountTitle.getStyle().width;
             cellTypeSelector.getStyle().font = this.componentFont;
             cellTypeSelector.getStyle().backgroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.BRIGHT);
             cellTypeSelector.getStyle().foregroundColor = new ThemeColor(componentsColor, ColorVariant.NORMAL);
@@ -428,6 +429,8 @@ public final class SettingsScene extends Scene {
             this.cellTypeLabels.add(cellTypeLabel);
             this.cellTypeSelects.add(cellTypeSelector);
         }
+
+        this.updateDisabledCells();
     }
 
     /**
@@ -454,7 +457,7 @@ public final class SettingsScene extends Scene {
         this.wallCountTitle.getStyle().x = this.paddingX + this.wallTypeTitle.getStyle().width + this.wallTypeTitle.getStyle().x;
         this.wallCountTitle.getStyle().y = this.wallTypeTitle.getStyle().y;
         this.wallCountTitle.getStyle().height = this.componentHeight;
-        this.wallCountTitle.getStyle().width = 2 * (this.componentWidth - this.paddingX) / 3;
+        this.wallCountTitle.getStyle().width = this.cellCountTitle.getStyle().width;
         this.wallCountTitle.getStyle().font = this.componentFont;
         this.wallCountTitle.getStyle().backgroundColor = new ThemeColor(componentsColor, ColorVariant.NORMAL);
         this.wallCountTitle.getStyle().foregroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.NORMAL);
@@ -511,34 +514,16 @@ public final class SettingsScene extends Scene {
         ArrayList<PlayerType> playerTypes = new ArrayList<>(Arrays.asList(PlayerType.values()));
         ArrayList<AIProfile> aiProfiles = new ArrayList<>(Arrays.asList(AIProfile.values()));
 
-        ConsumerFunction<GameComponent> applyFirstRowStyle = component -> {
-            component.getStyle().height = this.componentHeight;
-            component.getStyle().width = 4 * this.componentWidth / 5;
-            component.getStyle().font = this.componentFont;
-            component.getStyle().backgroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.BRIGHT);
-            component.getStyle().foregroundColor = new ThemeColor(ColorName.FOREGROUND, ColorVariant.NORMAL);
-        };
-
-        ConsumerFunction<GameComponent> applySecondRowStyle = component -> {
-            GameComponent lastComponent = this.playerNameInputs.get(this.playerNameInputs.size() - 1);
-
-            component.getStyle().y = lastComponent.getStyle().y + lastComponent.getStyle().height + this.paddingY;
-            component.getStyle().height = this.componentHeight;
-            component.getStyle().width = lastComponent.getStyle().width;
-            component.getStyle().font = this.componentFont;
-            component.getStyle().backgroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.BRIGHT);
-            component.getStyle().foregroundColor = new ThemeColor(ColorName.FOREGROUND, ColorVariant.NORMAL);
-        };
-
         ArrayList<ColorName> colorNames = this.globalContext.currentTheme().getPlayerColors();
 
         for (int index = 0; index < playerCount; index++) {
 
             TextInput playerNameInput = new TextInput(this.globalContext, String.format("Enter Player %d", index + 1));
+            playerNameInput.setMaxLength(9);
             playerNameInput.getStyle().x = this.cellTypeTitle.getStyle().x;
             playerNameInput.getStyle().y =
                     playerNameInput.getStyle().height = this.componentHeight;
-            playerNameInput.getStyle().width = this.cellCountTitle.getStyle().width;
+            playerNameInput.getStyle().width = this.cellTypeTitle.getStyle().width;
             playerNameInput.getStyle().font = this.componentFont;
             playerNameInput.getStyle().textAlignment = Style.TextAlignment.CENTER;
             this.playerNameInputs.add(playerNameInput);
@@ -605,7 +590,7 @@ public final class SettingsScene extends Scene {
         this.backButton.getStyle().x = this.wallTypeTitle.getStyle().x;
         this.backButton.getStyle().y = lastPlayerType.getStyle().y + lastPlayerType.getStyle().height + this.margin;
         this.backButton.getStyle().height = this.componentHeight;
-        this.backButton.getStyle().width = this.cellCountTitle.getStyle().width;
+        this.backButton.getStyle().width = this.wallTypeTitle.getStyle().width;
         this.backButton.getStyle().font = this.componentFont;
         this.backButton.getStyle().backgroundColor = new ThemeColor(ColorName.BACKGROUND, ColorVariant.DIMMED);
         this.backButton.getStyle().foregroundColor = new ThemeColor(ColorName.FOREGROUND, ColorVariant.NORMAL);
@@ -699,6 +684,16 @@ public final class SettingsScene extends Scene {
             this.aiProfileSelects.get(index).setDisabled(isDisabled);
 
             this.updateDisabledAiProfiles(index);
+        }
+    }
+
+    private void updateDisabledCells() {
+        boolean cellsDisabled = this.specialCellsSelect.getSelectedOption().equals(false);
+        for (Selector<Integer> cellTypeSelector : this.cellTypeSelects) {
+            cellTypeSelector.setDisabled(cellsDisabled);
+        }
+        for (Text cellTypeLabel : this.cellTypeLabels) {
+            cellTypeLabel.setDisabled(cellsDisabled);
         }
     }
 

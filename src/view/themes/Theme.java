@@ -34,15 +34,21 @@ public abstract class Theme {
      * @param red              the red color of the theme.
      * @param redBright        the red contrast color of the theme.
      * @param redDimmed        the red contrast color of the theme.
+     * @param yellow           the yellow color of the theme.
+     * @param yellowBright     the yellow contrast color of the theme.
+     * @param yellowDimmed     the yellow contrast color of the theme.
      * @param green            the green color of the theme.
      * @param greenBright      the green contrast color of the theme.
      * @param greenDimmed      the green contrast color of the theme.
+     * @param cyan             the cyan color of the theme.
+     * @param cyanBright       the cyan contrast color of the theme.
+     * @param cyanDimmed       the cyan contrast color of the theme.
      * @param blue             the blue color of the theme.
      * @param blueBright       the blue contrast color of the theme.
      * @param blueDimmed       the blue contrast color of the theme.
-     * @param purple           the purple color of the theme.
-     * @param purpleBright     the purple contrast color of the theme.
-     * @param purpleDimmed     the purple contrast color of the theme.
+     * @param magenta          the magenta color of the theme.
+     * @param magentaBright    the magenta contrast color of the theme.
+     * @param magentaDimmed    the magenta contrast color of the theme.
      */
     public Theme(
             Color primary,
@@ -54,18 +60,31 @@ public abstract class Theme {
             Color foreground,
             Color foregroundBright,
             Color foregroundDimmed,
+            Color white,
+            Color whiteBright,
+            Color whiteDimmed,
+            Color black,
+            Color blackBright,
+            Color blackDimmed,
             Color red,
             Color redBright,
             Color redDimmed,
+            Color yellow,
+            Color yellowBright,
+            Color yellowDimmed,
             Color green,
             Color greenBright,
             Color greenDimmed,
+            Color cyan,
+            Color cyanBright,
+            Color cyanDimmed,
             Color blue,
             Color blueBright,
             Color blueDimmed,
-            Color purple,
-            Color purpleBright,
-            Color purpleDimmed) {
+            Color magenta,
+            Color magentaBright,
+            Color magentaDimmed
+    ) {
 
         this.colors = new HashMap<>();
 
@@ -87,10 +106,28 @@ public abstract class Theme {
             put(ColorVariant.DIMMED, foregroundDimmed);
         }});
 
+        this.colors.put(ColorName.BLACK, new HashMap<>() {{
+            put(ColorVariant.NORMAL, Color.BLACK);
+            put(ColorVariant.BRIGHT, Color.BLACK);
+            put(ColorVariant.DIMMED, Color.BLACK);
+        }});
+
+        this.colors.put(ColorName.WHITE, new HashMap<>() {{
+            put(ColorVariant.NORMAL, Color.WHITE);
+            put(ColorVariant.BRIGHT, Color.WHITE);
+            put(ColorVariant.DIMMED, Color.WHITE);
+        }});
+
         this.colors.put(ColorName.RED, new HashMap<>() {{
             put(ColorVariant.NORMAL, red);
             put(ColorVariant.BRIGHT, redBright);
             put(ColorVariant.DIMMED, redDimmed);
+        }});
+
+        this.colors.put(ColorName.YELLOW, new HashMap<>() {{
+            put(ColorVariant.NORMAL, yellow);
+            put(ColorVariant.BRIGHT, yellowBright);
+            put(ColorVariant.DIMMED, yellowDimmed);
         }});
 
         this.colors.put(ColorName.GREEN, new HashMap<>() {{
@@ -99,16 +136,22 @@ public abstract class Theme {
             put(ColorVariant.DIMMED, greenDimmed);
         }});
 
+        this.colors.put(ColorName.CYAN, new HashMap<>() {{
+            put(ColorVariant.NORMAL, cyan);
+            put(ColorVariant.BRIGHT, cyanBright);
+            put(ColorVariant.DIMMED, cyanDimmed);
+        }});
+
         this.colors.put(ColorName.BLUE, new HashMap<>() {{
             put(ColorVariant.NORMAL, blue);
             put(ColorVariant.BRIGHT, blueBright);
             put(ColorVariant.DIMMED, blueDimmed);
         }});
 
-        this.colors.put(ColorName.PURPLE, new HashMap<>() {{
-            put(ColorVariant.NORMAL, purple);
-            put(ColorVariant.BRIGHT, purpleBright);
-            put(ColorVariant.DIMMED, purpleDimmed);
+        this.colors.put(ColorName.MAGENTA, new HashMap<>() {{
+            put(ColorVariant.NORMAL, magenta);
+            put(ColorVariant.BRIGHT, magentaBright);
+            put(ColorVariant.DIMMED, magentaDimmed);
         }});
 
         this.colors.put(ColorName.TRANSPARENT, new HashMap<>() {{
@@ -143,9 +186,11 @@ public abstract class Theme {
         ArrayList<ColorName> colorList = new ArrayList<>();
 
         colorList.add(ColorName.RED);
+        colorList.add(ColorName.YELLOW);
         colorList.add(ColorName.GREEN);
+        colorList.add(ColorName.CYAN);
         colorList.add(ColorName.BLUE);
-        colorList.add(ColorName.PURPLE);
+        colorList.add(ColorName.MAGENTA);
 
         return colorList;
     }

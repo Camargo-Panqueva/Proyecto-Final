@@ -117,7 +117,7 @@ public final class CellRenderer {
      * @param graphics the graphics object to render the cell with.
      */
     private void drawTeleportCell(Graphics2D graphics) {
-        graphics.setColor(this.globalContext.currentTheme().getColor(ColorName.PURPLE, ColorVariant.DIMMED));
+        graphics.setColor(this.globalContext.currentTheme().getColor(ColorName.MAGENTA, ColorVariant.DIMMED));
         graphics.fillRoundRect(0, 0, CELL_SIZE, CELL_SIZE, 8, 8);
     }
 

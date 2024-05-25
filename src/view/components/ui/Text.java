@@ -52,7 +52,11 @@ public final class Text extends GameComponent {
         graphics.setFont(this.style.font);
         FontMetrics fontMetrics = this.globalContext.window().getCanvas().getFontMetrics(this.style.font);
         Color backgroundColor = this.globalContext.currentTheme().getColor(this.style.backgroundColor);
-        Color foregroundColor = this.globalContext.currentTheme().getColor(this.style.foregroundColor);
+        Color foregroundColor =
+                this.globalContext.currentTheme().getColor(this.style.foregroundColor.name(), this.isDisabled()
+                        ? ColorVariant.DIMMED
+                        : this.style.foregroundColor.variant()
+                );
 
         graphics.setColor(backgroundColor);
         graphics.fillRoundRect(
