@@ -5,7 +5,6 @@ import model.player.Player;
 import model.wall.WallType;
 
 public class TemporalWall extends Wall {
-    private final short turnRemaining;
 
     public TemporalWall() {
         super.wallData.setWidth(3);
@@ -18,9 +17,10 @@ public class TemporalWall extends Wall {
         super.wallData.getWallShape()[1][0] = WallType.TEMPORAL_WALL;
         super.wallData.getWallShape()[2][0] = WallType.TEMPORAL_WALL;
 
-        turnRemaining = 4;
-
         super.wallData.setAlly(false);
+    }
+    public int getTurnsAlive() {
+        return 4;
     }
 
     @Override
@@ -35,7 +35,7 @@ public class TemporalWall extends Wall {
 
     @Override
     public void actionAtFinishTurn(MatchManager matchManager) {
-        if (matchManager.getTurnCount() - this.getCreationTurn() >= this.turnRemaining) {
+        if (matchManager.getTurnCount() - this.getCreationTurn() >= this.getTurnsAlive()) {
             Player player = this.getOwner();
             matchManager.executeDeleteWall(this.getWallId());
             player.addWallToPlace(this.getWallType());

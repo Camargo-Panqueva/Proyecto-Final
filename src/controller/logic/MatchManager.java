@@ -30,8 +30,6 @@ public class MatchManager {
 
         this.aiPlayers = new HashMap<>();
 
-        this.model.getPlayers().values().stream().filter(Player::getIsAI).forEach(player -> this.aiPlayers.put(player, new AIPlayer(player, this)));
-
         if (this.model.getDifficulty().getDifficultyType() != DifficultyType.NORMAL) {
             this.startTimer();
         }
@@ -315,10 +313,11 @@ public class MatchManager {
 
 
     private void nextTurn() {
-
         if (!this.extraTurns.isEmpty()) {
             this.extraTurns.poll();
             this.model.setTurnCount(model.getTurnCount() + 1);
+
+            this.checkForAITurn();
             return;
         }
 
@@ -337,14 +336,18 @@ public class MatchManager {
             this.model.setPlayerInTurn(indexNextTurn);
         }
 
-        if (!this.aiPlayers.isEmpty() && this.aiPlayers.containsKey(this.getPlayerInTurn())) {
-            this.aiPlayers.get(this.getPlayerInTurn()).executeMove(this.getAbstractBoardFor(this.getPlayerInTurn()));
-        }
+        this.checkForAITurn();
 
         this.model.setTurnCount(model.getTurnCount() + 1);
 
         this.triggerActionBeforeTurn();
 
+    }
+
+    private void checkForAITurn() {
+        if (!this.aiPlayers.isEmpty() && this.aiPlayers.containsKey(this.getPlayerInTurn())) {
+            this.aiPlayers.get(this.getPlayerInTurn()).executeMove(this.getAbstractBoardFor(this.getPlayerInTurn()));
+        }
     }
 
     public void addATurn(Player player) {
@@ -388,6 +391,17 @@ public class MatchManager {
 
     public int getTurnCount() {
         return this.model.getTurnCount();
+    }
+
+    public int getPlayerInTurnId() {
+        return this.model.getPlayerInTurnId();
+    }
+
+    public void addAIPlayer(AIPlayer aiPlayer) {
+        if (this.aiPlayers.containsKey(aiPlayer.getPlayer()) || this.aiPlayers.size() >= this.model.getPlayerCount()) {
+            return;
+        }
+        this.aiPlayers.put(aiPlayer.getPlayer(), aiPlayer);
     }
 
     private void clockPerTurn() {

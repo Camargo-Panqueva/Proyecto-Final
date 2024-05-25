@@ -1,6 +1,7 @@
 package controller;
 
 import controller.dto.*;
+import controller.logic.AIPlayer;
 import controller.logic.MatchManager;
 import controller.states.GlobalState;
 import controller.states.GlobalStateManager;
@@ -20,7 +21,7 @@ import java.util.*;
 public final class GameController {
 
     private GameModel model;
-    private GlobalStateManager globalStateManager;
+    private final GlobalStateManager globalStateManager;
     private MatchManager matchManager;
 
     public GameController(GameModel model) {
@@ -242,9 +243,13 @@ public final class GameController {
         }
 
         for (int i = 0; i < this.model.getPlayerCount(); i++) {
-            if (players.get(i).playerType() == PlayerType.AI) {
+            PlayerSetupTransferObject player = players.get(i);
+            if (player.playerType() == PlayerType.AI) {
                 this.model.getPlayers().get(i).setAsAI();
                 this.model.getPlayers().get(i).setAiProfile(players.get(i).aiProfile());
+
+                final AIPlayer aiPlayer = new AIPlayer(this.model.getPlayers().get(i), this.matchManager, this);
+                this.matchManager.addAIPlayer(aiPlayer);
             }
             // TODO : set color
         }
