@@ -116,9 +116,12 @@ public final class Text extends GameComponent {
      *
      * @param text the new text to render.
      */
-    public void setText(String text) {
+    public void setText(String text, Boolean fitSize) {
         if (!this.text.equals(text)) {
-            this.fitSize();
+
+            if (fitSize) {
+                this.fitSize();
+            }
             this.dispatchComponentEvent(ComponentEvent.VALUE_CHANGED, this.text, text);
             this.text = text;
         }

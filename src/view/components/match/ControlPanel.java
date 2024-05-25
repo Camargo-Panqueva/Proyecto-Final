@@ -15,6 +15,8 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import static view.components.match.Board.CELL_SIZE;
+
 /**
  * Represents a control panel for the game.
  * <p>
@@ -27,10 +29,12 @@ public final class ControlPanel extends GameComponent {
 
     private final MatchContext matchContext;
     private ArrayList<GameComponent> components;
+
     private Text title;
     private Text playerName;
     private Text timer;
     private Text remainingWalls;
+    private Text turnCounter;
     private Selector<WallType> wallSelector;
 
     /**
@@ -131,6 +135,9 @@ public final class ControlPanel extends GameComponent {
 
         this.remainingWalls.getStyle().centerVertically(this.wallSelector.getBounds());
         this.remainingWalls.getStyle().x = this.wallSelector.getStyle().x + this.wallSelector.getStyle().width - 70;
+
+        this.turnCounter.getStyle().x = this.style.x + this.style.borderWidth;
+        this.turnCounter.getStyle().y = this.style.y + this.style.borderWidth;
     }
 
     /**
@@ -150,9 +157,9 @@ public final class ControlPanel extends GameComponent {
      * </p>
      */
     private void updatePlayerText() {
-        String text = String.format("Is the %s's turn!", this.matchContext.playerInTurn().name());
+        String text = String.format("Is %s's turn!", this.matchContext.playerInTurn().name());
 
-        this.playerName.setText(text);
+        this.playerName.setText(text, true);
         this.playerName.getStyle().centerHorizontally(this.getBounds());
 
         this.playerName.getStyle().foregroundColor = this.matchContext.getPlayerColor(this.matchContext.playerInTurn(), ColorVariant.NORMAL);
@@ -179,7 +186,7 @@ public final class ControlPanel extends GameComponent {
             text += " Hurry up!";
         }
 
-        this.timer.setText(text);
+        this.timer.setText(text, true);
         this.timer.getStyle().centerHorizontally(this.getBounds());
     }
 
@@ -193,7 +200,11 @@ public final class ControlPanel extends GameComponent {
      * </p>
      */
     private void updateRemainingWalls() {
-        this.remainingWalls.setText("x" + this.matchContext.playerInTurn().wallsRemaining().get(this.matchContext.selectedWallType()));
+        this.remainingWalls.setText("x" + this.matchContext.playerInTurn().wallsRemaining().get(this.matchContext.selectedWallType()), true);
+    }
+
+    private void updateTurnCounter() {
+        this.turnCounter.setText(String.valueOf(this.matchContext.turnCount()), false);
     }
 
     /**
@@ -210,6 +221,7 @@ public final class ControlPanel extends GameComponent {
         this.matchContext.addEventListener(MatchContext.MatchEvent.TURN_CHANGED, _event -> {
             this.updatePlayerText();
             this.updateRemainingWalls();
+            this.updateTurnCounter();
         });
 
         this.matchContext.addEventListener(MatchContext.MatchEvent.REMAINING_TIME_CHANGED, _event -> {
@@ -271,8 +283,16 @@ public final class ControlPanel extends GameComponent {
         this.remainingWalls.fitSize();
         this.components.add(this.remainingWalls);
 
+        this.turnCounter = new Text("0", this.globalContext);
+        this.turnCounter.getStyle().width = CELL_SIZE;
+        this.turnCounter.getStyle().height = CELL_SIZE;
+        this.turnCounter.getStyle().font = this.globalContext.gameFont().deriveFont(22.0f);
+        this.turnCounter.getStyle().foregroundColor = new ThemeColor(ColorName.PRIMARY, ColorVariant.NORMAL);
+        this.components.add(this.turnCounter);
+
         this.updatePlayerText();
         this.updateTimer();
         this.updateRemainingWalls();
+        this.updateTurnCounter();
     }
 }
