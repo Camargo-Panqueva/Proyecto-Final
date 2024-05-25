@@ -76,6 +76,13 @@ public final class SceneManager {
 
                 this.currentScene = this.scenes.get(GlobalState.PLAYING);
             }
+            case GAME_FINISHED -> {
+                if (!this.scenes.containsKey(GlobalState.GAME_FINISHED)) {
+                    this.scenes.put(GlobalState.GAME_FINISHED, new GameFinishedScene(this.globalContext));
+                }
+
+                this.currentScene = this.scenes.get(GlobalState.GAME_FINISHED);
+            }
             default -> //TODO: Handle error
                     throw new RuntimeException("Unknown state: " + state);
         }
