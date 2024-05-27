@@ -55,6 +55,8 @@ public final class LightTheme extends Theme {
      */
     public LightTheme() {
         super(
+                "Light",
+                ThemeType.LIGHT,
                 primary,
                 primaryBright,
                 primaryDimmed,

@@ -1,5 +1,12 @@
 package view.themes;
 
+import org.json.JSONArray;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+
 /**
  * Represents a theme manager that can be used to manage themes in the game view.
  * <p>
@@ -9,15 +16,16 @@ package view.themes;
  */
 public final class ThemeManager {
 
+    private final ArrayList<Theme> themes;
     private Theme currentTheme;
+    private int currentThemeIndex;
 
     /**
      * Creates a new ThemeManager with the given theme.
-     *
-     * @param theme the theme to use for the manager.
      */
-    public ThemeManager(Theme theme) {
-        this.currentTheme = theme;
+    public ThemeManager() {
+        this.themes = new ArrayList<>();
+        this.loadThemes();
     }
 
     /**
@@ -49,10 +57,30 @@ public final class ThemeManager {
      * </p>
      */
     public void toggleTheme() {
-        if (this.currentTheme instanceof LightTheme) {
-            this.currentTheme = new DarkTheme();
-        } else {
-            this.currentTheme = new LightTheme();
+        this.currentThemeIndex = (this.currentThemeIndex + 1) % this.themes.size();
+        this.currentTheme = this.themes.get(this.currentThemeIndex);
+    }
+
+    private void loadThemes() {
+        this.themes.add(new LightTheme());
+        this.themes.add(new DarkTheme());
+
+        try {
+            String content = new String(Files.readAllBytes(Paths.get("themes.json")));
+            JSONArray json = new JSONArray(content);
+
+            for (int i = 0; i < json.length(); i++) {
+                this.themes.add(Theme.fromJson(json.getJSONObject(i)));
+            }
+        } catch (IOException e) {
+            System.out.println("Failed to load themes from file. Proceeding with default themes. Error: " + e.getMessage());
         }
+
+        this.currentThemeIndex = 0;
+        this.currentTheme = this.themes.get(this.currentThemeIndex);
+    }
+
+    public ArrayList<Theme> getThemes() {
+        return this.themes;
     }
 }

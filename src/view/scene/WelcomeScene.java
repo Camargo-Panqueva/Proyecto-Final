@@ -1,10 +1,15 @@
 package view.scene;
 
 import controller.states.GlobalState;
+import view.components.GameComponent;
 import view.components.ui.Button;
+import view.components.ui.Selector;
 import view.components.ui.Text;
 import view.context.GlobalContext;
 import view.input.MouseEvent;
+import view.themes.Theme;
+
+import java.util.ArrayList;
 
 //TODO: Update docs when different modes are implemented
 
@@ -21,7 +26,7 @@ public final class WelcomeScene extends Scene {
     private Text welcomeTitle;
     private Text authorsText;
     private Button startButton;
-    private Button themeButton;
+    private Selector<Theme> themeSelector;
 
     /**
      * Creates a new WelcomeScene with the given context provider.
@@ -46,7 +51,7 @@ public final class WelcomeScene extends Scene {
         this.addComponent(this.welcomeTitle);
         this.addComponent(this.authorsText);
         this.addComponent(this.startButton);
-        this.addComponent(this.themeButton);
+        this.addComponent(this.themeSelector);
     }
 
     /**
@@ -74,11 +79,14 @@ public final class WelcomeScene extends Scene {
 
         this.startButton = new Button("Start", globalContext);
         this.startButton.getStyle().y = 400;
+        this.startButton.getStyle().width = 370;
         this.startButton.getStyle().centerHorizontally(globalContext);
 
-        this.themeButton = new Button("Toggle Theme", globalContext);
-        this.themeButton.getStyle().y = this.startButton.getStyle().y + 90;
-        this.themeButton.getStyle().centerHorizontally(globalContext);
+        ArrayList<Theme> themes = this.globalContext.themeManager().getThemes();
+        this.themeSelector = new Selector<>(themes, globalContext);
+        this.themeSelector.getStyle().y = this.startButton.getStyle().y + 90;
+        this.themeSelector.getStyle().width = this.startButton.getStyle().width;
+        this.themeSelector.getStyle().centerHorizontally(globalContext);
     }
 
     /**
@@ -92,8 +100,14 @@ public final class WelcomeScene extends Scene {
      */
     @Override
     protected void setupEvents() {
-        this.startButton.addMouseListener(MouseEvent.EventType.RELEASED, _event -> this.globalContext.controller().setGlobalState(GlobalState.SETUP_MATCH_SETTINGS));
-        this.themeButton.addMouseListener(MouseEvent.EventType.RELEASED, _event -> this.globalContext.themeManager().toggleTheme());
+        this.startButton.addMouseListener(
+                MouseEvent.EventType.RELEASED, _event -> this.globalContext.controller().setGlobalState(GlobalState.SETUP_MATCH_SETTINGS)
+        );
+
+        this.themeSelector.addComponentListener(
+                GameComponent.ComponentEvent.VALUE_CHANGED,
+                (_old, _new) -> this.globalContext.themeManager().setTheme(this.themeSelector.getSelectedOption())
+        );
     }
 
     /**

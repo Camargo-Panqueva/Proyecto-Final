@@ -1,9 +1,11 @@
 package view.themes;
 
+import org.json.JSONObject;
 import view.themes.ThemeColor.ColorName;
 import view.themes.ThemeColor.ColorVariant;
 
 import java.awt.*;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -18,10 +20,14 @@ import java.util.HashMap;
 public abstract class Theme {
 
     private final HashMap<ColorName, HashMap<ColorVariant, Color>> colors;
+    private final String name;
+    private final ThemeType type;
 
     /**
      * Creates a new Theme with the given colors.
      *
+     * @param name             the name of the theme.
+     * @param type             the type of the theme.
      * @param primary          the primary color of the theme.
      * @param primaryBright    the primary contrast color of the theme.
      * @param primaryDimmed    the secondary color of the theme.
@@ -31,6 +37,12 @@ public abstract class Theme {
      * @param foreground       the foreground color of the theme.
      * @param foregroundBright the foreground contrast color of the theme.
      * @param foregroundDimmed the foreground contrast color of the theme.
+     * @param black            the black color of the theme.
+     * @param blackBright      the black contrast color of the theme.
+     * @param blackDimmed      the black contrast color of the theme.
+     * @param white            the white color of the theme.
+     * @param whiteBright      the white contrast color of the theme.
+     * @param whiteDimmed      the white contrast color of the theme.
      * @param red              the red color of the theme.
      * @param redBright        the red contrast color of the theme.
      * @param redDimmed        the red contrast color of the theme.
@@ -51,6 +63,8 @@ public abstract class Theme {
      * @param magentaDimmed    the magenta contrast color of the theme.
      */
     public Theme(
+            String name,
+            ThemeType type,
             Color primary,
             Color primaryBright,
             Color primaryDimmed,
@@ -87,6 +101,8 @@ public abstract class Theme {
     ) {
 
         this.colors = new HashMap<>();
+        this.name = name;
+        this.type = type;
 
         this.colors.put(ColorName.PRIMARY, new HashMap<>() {{
             put(ColorVariant.NORMAL, primary);
@@ -107,15 +123,15 @@ public abstract class Theme {
         }});
 
         this.colors.put(ColorName.BLACK, new HashMap<>() {{
-            put(ColorVariant.NORMAL, Color.BLACK);
-            put(ColorVariant.BRIGHT, Color.BLACK);
-            put(ColorVariant.DIMMED, Color.BLACK);
+            put(ColorVariant.NORMAL, black);
+            put(ColorVariant.BRIGHT, blackBright);
+            put(ColorVariant.DIMMED, blackDimmed);
         }});
 
         this.colors.put(ColorName.WHITE, new HashMap<>() {{
-            put(ColorVariant.NORMAL, Color.WHITE);
-            put(ColorVariant.BRIGHT, Color.WHITE);
-            put(ColorVariant.DIMMED, Color.WHITE);
+            put(ColorVariant.NORMAL, white);
+            put(ColorVariant.BRIGHT, whiteBright);
+            put(ColorVariant.DIMMED, whiteDimmed);
         }});
 
         this.colors.put(ColorName.RED, new HashMap<>() {{
@@ -161,6 +177,107 @@ public abstract class Theme {
         }});
     }
 
+    public static Theme fromJson(JSONObject json) {
+        String themeName = json.getString("name");
+        ThemeType themeType = ThemeType.valueOf(json.getString("type").toUpperCase());
+        JSONObject colors = json.getJSONObject("colors");
+
+        Color primaryNormal = getColorFromJson(colors, "primary", "normal");
+        Color primaryBright = getColorFromJson(colors, "primary", "bright");
+        Color primaryDimmed = getColorFromJson(colors, "primary", "dimmed");
+
+        Color backgroundNormal = getColorFromJson(colors, "background", "normal");
+        Color backgroundBright = getColorFromJson(colors, "background", "bright");
+        Color backgroundDimmed = getColorFromJson(colors, "background", "dimmed");
+
+        Color foregroundNormal = getColorFromJson(colors, "foreground", "normal");
+        Color foregroundBright = getColorFromJson(colors, "foreground", "bright");
+        Color foregroundDimmed = getColorFromJson(colors, "foreground", "dimmed");
+
+        Color whiteNormal = getColorFromJson(colors, "white", "normal");
+        Color whiteBright = getColorFromJson(colors, "white", "bright");
+        Color whiteDimmed = getColorFromJson(colors, "white", "dimmed");
+
+        Color blackNormal = getColorFromJson(colors, "black", "normal");
+        Color blackBright = getColorFromJson(colors, "black", "bright");
+        Color blackDimmed = getColorFromJson(colors, "black", "dimmed");
+
+        Color redNormal = getColorFromJson(colors, "red", "normal");
+        Color redBright = getColorFromJson(colors, "red", "bright");
+        Color redDimmed = getColorFromJson(colors, "red", "dimmed");
+
+        Color yellowNormal = getColorFromJson(colors, "yellow", "normal");
+        Color yellowBright = getColorFromJson(colors, "yellow", "bright");
+        Color yellowDimmed = getColorFromJson(colors, "yellow", "dimmed");
+
+        Color greenNormal = getColorFromJson(colors, "green", "normal");
+        Color greenBright = getColorFromJson(colors, "green", "bright");
+        Color greenDimmed = getColorFromJson(colors, "green", "dimmed");
+
+        Color cyanNormal = getColorFromJson(colors, "cyan", "normal");
+        Color cyanBright = getColorFromJson(colors, "cyan", "bright");
+        Color cyanDimmed = getColorFromJson(colors, "cyan", "dimmed");
+
+        Color blueNormal = getColorFromJson(colors, "blue", "normal");
+        Color blueBright = getColorFromJson(colors, "blue", "bright");
+        Color blueDimmed = getColorFromJson(colors, "blue", "dimmed");
+
+        Color magentaNormal = getColorFromJson(colors, "magenta", "normal");
+        Color magentaBright = getColorFromJson(colors, "magenta", "bright");
+        Color magentaDimmed = getColorFromJson(colors, "magenta", "dimmed");
+
+        return new Theme(
+                themeName,
+                themeType,
+                primaryNormal,
+                primaryBright,
+                primaryDimmed,
+                backgroundNormal,
+                backgroundBright,
+                backgroundDimmed,
+                foregroundNormal,
+                foregroundBright,
+                foregroundDimmed,
+                whiteNormal,
+                whiteBright,
+                whiteDimmed,
+                blackNormal,
+                blackBright,
+                blackDimmed,
+                redNormal,
+                redBright,
+                redDimmed,
+                yellowNormal,
+                yellowBright,
+                yellowDimmed,
+                greenNormal,
+                greenBright,
+                greenDimmed,
+                cyanNormal,
+                cyanBright,
+                cyanDimmed,
+                blueNormal,
+                blueBright,
+                blueDimmed,
+                magentaNormal,
+                magentaBright,
+                magentaDimmed
+        ) {
+        };
+    }
+
+    private static Color parseHexStringToColor(String hex) {
+        if (hex.matches("^#[0-9A-Fa-f]{8}$")) {
+            return new Color(new BigInteger(hex.substring(1), 16).intValue(), true);
+        } else {
+            throw new IllegalArgumentException("Invalid hex color format: " + hex);
+        }
+    }
+
+    private static Color getColorFromJson(JSONObject colors, String colorName, String variant) {
+        return parseHexStringToColor(colors.getJSONObject(colorName).getString(variant));
+    }
+
     /**
      * Gets the color of the given name and variant.
      *
@@ -193,5 +310,28 @@ public abstract class Theme {
         colorList.add(ColorName.MAGENTA);
 
         return colorList;
+    }
+
+    public String getName() {
+        return this.name;
+    }
+
+    public ThemeType getType() {
+        return this.type;
+    }
+
+    @Override
+    public String toString() {
+        // Change all non-alphanumeric characters to spaces and limit to 20 characters, then capitalize the first letter
+        return this.name.
+                replaceAll("[^a-zA-Z0-9]", " ")
+                .substring(0, Math.min(this.name.length(), 17))
+                .toLowerCase()
+                .replaceFirst("^[a-z]", String.valueOf(this.name.charAt(0)).toUpperCase());
+    }
+
+    public enum ThemeType {
+        LIGHT,
+        DARK
     }
 }

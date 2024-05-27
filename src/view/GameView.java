@@ -7,7 +7,6 @@ import view.context.GlobalContext;
 import view.input.Keyboard;
 import view.input.Mouse;
 import view.scene.SceneManager;
-import view.themes.DarkTheme;
 import view.themes.ThemeColor.ColorName;
 import view.themes.ThemeColor.ColorVariant;
 import view.themes.ThemeManager;
@@ -56,7 +55,7 @@ public final class GameView {
         this.controller = controller;
         this.mouse = new Mouse();
         this.keyboard = new Keyboard();
-        this.themeManager = new ThemeManager(new DarkTheme());
+        this.themeManager = new ThemeManager();
         this.window = new Window(600, "Quoridor", this.controller); // TODO: Set window size from controller data
         this.window.getCanvas().addMouseListener(this.mouse);
         this.window.getCanvas().addKeyListener(this.keyboard);

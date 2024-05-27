@@ -55,6 +55,8 @@ public final class DarkTheme extends Theme {
      */
     public DarkTheme() {
         super(
+                "Dark",
+                ThemeType.DARK,
                 primary,
                 primaryBright,
                 primaryDimmed,
