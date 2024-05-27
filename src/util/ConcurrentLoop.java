@@ -23,7 +23,7 @@ public final class ConcurrentLoop implements Runnable {
     /**
      * The target TPS of the loop.
      */
-    private final int targetTPS;
+    private final double targetTPS;
 
     /**
      * The thread of the loop.
@@ -31,8 +31,8 @@ public final class ConcurrentLoop implements Runnable {
     private Thread thread;
 
     private boolean isLooping;
-    private int counterTPS;
-    private int currentTPS;
+    private double counterTPS;
+    private double currentTPS;
 
     /**
      * Creates a new ConcurrentLoop with the given function, target TPS, and thread name.
@@ -41,7 +41,7 @@ public final class ConcurrentLoop implements Runnable {
      * @param targetTPS  the target TPS of the loop.
      * @param threadName the name of the thread.
      */
-    public ConcurrentLoop(VoidFunction function, int targetTPS, String threadName) {
+    public ConcurrentLoop(VoidFunction function, double targetTPS, String threadName) {
         this.function = function;
         this.targetTPS = targetTPS;
         this.threadName = threadName;
@@ -70,6 +70,8 @@ public final class ConcurrentLoop implements Runnable {
         double time;
         double deltaTPS = 0;
 
+        double measurementScale = 1 / Math.min(1, this.targetTPS);
+
         while (this.isLooping) {
             final long start = System.nanoTime();
 
@@ -83,8 +85,8 @@ public final class ConcurrentLoop implements Runnable {
                 deltaTPS--;
             }
 
-            if (System.nanoTime() - countRef > NS_PER_SECOND) {
-                this.currentTPS = this.counterTPS;
+            if (System.nanoTime() - countRef > NS_PER_SECOND * measurementScale){
+                this.currentTPS = this.counterTPS / measurementScale;
                 this.counterTPS = 0;
                 countRef = System.nanoTime();
             }
@@ -137,7 +139,7 @@ public final class ConcurrentLoop implements Runnable {
      *
      * @return the current TPS of the loop.
      */
-    public int getCurrentTPS() {
+    public double getCurrentTPS() {
         return currentTPS;
     }
 

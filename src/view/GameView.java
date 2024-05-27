@@ -155,8 +155,8 @@ public final class GameView {
         FontMetrics fontMetrics = graphics.getFontMetrics();
         int canvasSize = this.window.getCanvasSize();
 
-        graphics.drawString(String.format("FPS: %d", this.renderLoop.getCurrentTPS()), 6, 16);
-        graphics.drawString(String.format("TPS: %d", this.updateLoop.getCurrentTPS()), 6, 32);
+        graphics.drawString(String.format("FPS: %s", this.renderLoop.getCurrentTPS()), 6, 16);
+        graphics.drawString(String.format("TPS: %s", this.updateLoop.getCurrentTPS()), 6, 32);
 
         Point mousePosition = this.mouse.getMousePosition();
         String mouseText = String.format("Mouse: [%d, %d]", mousePosition.x, mousePosition.y);
