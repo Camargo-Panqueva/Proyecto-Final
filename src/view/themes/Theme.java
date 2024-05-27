@@ -312,6 +312,31 @@ public abstract class Theme {
         return colorList;
     }
 
+    /**
+     * Gets the palette colors of the theme.
+     * <p>
+     * This method gets the palette colors of the theme.
+     * It returns a list of colors that can be used for the game palette.
+     * </p>
+     *
+     * @return the palette colors of the theme.
+     */
+    public ArrayList<ColorName> getPaletteColors() {
+        ArrayList<ColorName> colorList = new ArrayList<>();
+
+        colorList.add(ColorName.PRIMARY);
+        colorList.add(ColorName.RED);
+        colorList.add(ColorName.YELLOW);
+        colorList.add(ColorName.GREEN);
+        colorList.add(ColorName.CYAN);
+        colorList.add(ColorName.BLUE);
+        colorList.add(ColorName.MAGENTA);
+        colorList.add(ColorName.BLACK);
+        colorList.add(ColorName.WHITE);
+
+        return colorList;
+    }
+
     public String getName() {
         return this.name;
     }
