@@ -34,3 +34,4 @@ bin/
 **/Main.java
 **/*.bluej
 **/*.iml
+**/*.log
