@@ -2,8 +2,11 @@ package view.themes;
 
 import org.json.JSONArray;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
@@ -65,8 +68,26 @@ public final class ThemeManager {
         this.themes.add(new LightTheme());
         this.themes.add(new DarkTheme());
 
+        this.currentThemeIndex = 0;
+        this.currentTheme = this.themes.get(this.currentThemeIndex);
+
         try {
-            String content = new String(Files.readAllBytes(Paths.get("themes.json")));
+            InputStream defaultThemes = getClass().getResourceAsStream("/resources/themes/themes.json");
+            Path themesPath = Paths.get("themes.json");
+            File themesFile = themesPath.toFile();
+            String content = null;
+
+            if (themesFile.exists() && !themesFile.isDirectory() && themesFile.canRead()) {
+                content = new String(Files.readAllBytes(themesPath));
+                System.out.println("Loaded themes from source directory.");
+            } else if (defaultThemes != null) {
+                content = new String(defaultThemes.readAllBytes());
+                System.out.println("Loaded themes from default resources.");
+            } else {
+                System.out.println("Failed to load themes from file. Proceeding with default themes.");
+                return;
+            }
+
             JSONArray json = new JSONArray(content);
 
             for (int i = 0; i < json.length(); i++) {
@@ -75,9 +96,6 @@ public final class ThemeManager {
         } catch (IOException e) {
             System.out.println("Failed to load themes from file. Proceeding with default themes. Error: " + e.getMessage());
         }
-
-        this.currentThemeIndex = 0;
-        this.currentTheme = this.themes.get(this.currentThemeIndex);
     }
 
     public ArrayList<Theme> getThemes() {
