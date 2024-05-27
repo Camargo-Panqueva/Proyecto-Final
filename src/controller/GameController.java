@@ -379,7 +379,7 @@ public final class GameController {
         }
 
         if (!this.matchManager.getPossibleMovements(this.model.getPlayers().get(playerId)).contains(point)) {
-            return new ErrorResponse<>("Illegal Movement for " + this.model.getPlayers().get(playerId).getName());
+            return new ErrorResponse<>("Point: " + point + " Illegal Movement for " + this.model.getPlayers().get(playerId).getName());
         }
 
         this.matchManager.movePlayerAdvancingTurn(this.model.getPlayers().get(playerId), point);
@@ -541,7 +541,7 @@ public final class GameController {
                 }
             }
         }
-        if (this.matchManager.isABlockerWallFor(newWalls, this.model.getPlayers().get(this.model.getPlayerInTurnId()))) {
+        if (this.matchManager.isGoalReachable(new ArrayList<>(this.model.getPlayers().values()), newWalls)) {
             return new ErrorResponse<>("You cannot block the path, chose another position");
         }
         return null;

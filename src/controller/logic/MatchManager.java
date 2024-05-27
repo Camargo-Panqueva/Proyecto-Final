@@ -26,6 +26,7 @@ public class MatchManager {
 
     /**
      * Manages the state and logic of the game match.
+     *
      * @param gameModel The game model that match manager will manage.
      */
     public MatchManager(final GameModel gameModel) {
@@ -46,10 +47,10 @@ public class MatchManager {
     /**
      * Determines the possible movements from a player considering directions and occupation, and saves them in possibleMovements.
      *
-     * @param fromPlayer       the player to move from
-     * @param directions       the directions to consider
+     * @param fromPlayer        the player to move from
+     * @param directions        the directions to consider
      * @param possibleMovements the list to store possible movements
-     * @param playerLooking    the player looking for possible moves
+     * @param playerLooking     the player looking for possible moves
      */
     public void lookForwardMoves(final Player fromPlayer, ArrayList<Point> directions, final ArrayList<Point> possibleMovements, final Player playerLooking) {
 
@@ -153,7 +154,7 @@ public class MatchManager {
      * @return true if the point is blocked, false otherwise
      */
     private boolean isBlocker(Point playerPosition, Point objectivePoint, Player player) {
-        final Wall wall = this.getPotentialBlockerWall(playerPosition, objectivePoint);
+        final Wall wall = this.getWallBetween(playerPosition, objectivePoint);
         if (wall == null) {
             return false;
         } else return !(wall.getIsAlly() && wall.getOwner().equals(player));
@@ -181,7 +182,7 @@ public class MatchManager {
      * @param finalPoint   the final point of the movement
      * @return the wall that blocks the movement or null if no wall is present
      */
-    private Wall getPotentialBlockerWall(final Point initialPoint, final Point finalPoint) {
+    private Wall getWallBetween(final Point initialPoint, final Point finalPoint) {
 
         final int xWall = initialPoint.x == finalPoint.x ? 2 * initialPoint.x : (2 * initialPoint.x) + (finalPoint.x - initialPoint.x);
         final int yWall = initialPoint.y == finalPoint.y ? 2 * initialPoint.y : (2 * initialPoint.y) + (finalPoint.y - initialPoint.y);
@@ -204,8 +205,8 @@ public class MatchManager {
     /**
      * Moves a player to a new position and checks for special cells.
      *
-     * @param player   the player to move
-     * @param moveTo   the new position
+     * @param player    the player to move
+     * @param moveTo    the new position
      * @param isAPlayer flag indicating if the mover is a player
      */
     public void movePlayer(Player player, final Point moveTo, final boolean isAPlayer) {
@@ -236,12 +237,12 @@ public class MatchManager {
         this.movePlayer(player, moveTo, true);
     }
 
-/**
- * Moves a player to a new position without advancing the turn.
- *
- * @param player the player to move
- * @param moveTo the new position
- */
+    /**
+     * Moves a player to a new position without advancing the turn.
+     *
+     * @param player the player to move
+     * @param moveTo the new position
+     */
     public void movePlayerNotAdvancingTurn(Player player, Point moveTo) {
         this.movePlayer(player, moveTo, false);
     }
@@ -249,9 +250,9 @@ public class MatchManager {
     /**
      * Places a wall on the board.
      *
-     * @param player the player placing the wall
-     * @param wall   the wall to place
-     * @param newWalls  the point to place the wall
+     * @param player   the player placing the wall
+     * @param wall     the wall to place
+     * @param newWalls the point to place the wall
      */
     public void executePlaceWall(final Player player, final Wall wall, final ArrayList<Point> newWalls) {
         final UUID wallUuid = UUID.randomUUID();
@@ -316,53 +317,41 @@ public class MatchManager {
         final int height = this.model.getBoard().getHeight() * 2 - 1;
         final int width = this.model.getBoard().getWidth() * 2 - 1;
 
-        final int[][] abstactBoard = new int[width][height];
+        final int[][] abstractBoard = new int[width][height];
 
         for (int x = 0; x < width; x++) { //Abstract the values for the algorithm
             for (int y = 0; y < height; y++) {
                 if (x % 2 != 0 && y % 2 != 0) {
-                    abstactBoard[x][y] = 0;
-                } else if (this.model.getBoard().getWallData(x, y) == null || this.model.getBoard().getWallData(x, y).getIsAlly() && this.model.getBoard().getWallData(x, y).getOwner().equals(player)) {
-                    abstactBoard[x][y] = 1;
+                    abstractBoard[x][y] = 0;
+                } else if (this.model.getBoard().getWallData(x, y) == null || (this.model.getBoard().getWallData(x, y).getIsAlly() && this.model.getBoard().getWallData(x, y).getOwner().equals(player))) {
+                    abstractBoard[x][y] = 1;
                 } else {
-                    abstactBoard[x][y] = 0;
+                    abstractBoard[x][y] = 0;
                 }
             }
         }
-        return abstactBoard;
-    }
-
-    /**
-     * Checks if a wall is a blocker for a player.
-     *
-     * @param newWalls the new walls to check
-     * @param player   the player to check for
-     * @return true if the wall is a blocker, false otherwise
-     */
-    public boolean isABlockerWallFor(final ArrayList<Point> newWalls, final Player player) {
-
-        final int[][] wantedBoard = getAbstractBoardFor(player);
-
-        for (Point point : newWalls) { //Add the new wall
-            wantedBoard[point.x][point.y] = 0;
-        }
-
-        return isGoalReachable(wantedBoard, new ArrayList<>(this.model.getPlayers().values()));
+        return abstractBoard;
     }
 
     /**
      * Checks if a goal is reachable for all players in the ArrayList.
      *
-     * @param wantedBoard the board to check
-     * @param players     the players to check for
+     * @param newWalls the new walls to check for
+     * @param players  the players to check for
      * @return true if all goals are reachable, false otherwise
      */
-    public boolean isGoalReachable(final int[][] wantedBoard, final ArrayList<Player> players) {
+    public boolean isGoalReachable(final ArrayList<Player> players, final ArrayList<Point> newWalls) {
 
         final HashSet<Player> playersThatGoalIsReachable = new HashSet<>();
         ArrayList<Point> island;
 
         for (Player player : this.model.getPlayers().values()) {
+
+            int[][] wantedBoard = this.getAbstractBoardFor(player);
+
+            for (Point point : newWalls) { //Add the new wall
+                wantedBoard[point.x][point.y] = 0;
+            }
 
             island = getIslandBFS(wantedBoard, player.getPosition());
 
@@ -370,7 +359,6 @@ public class MatchManager {
                 playersThatGoalIsReachable.add(player);
             }
         }
-
         return playersThatGoalIsReachable.size() != players.size(); // if all players can reach their goal -> true
     }
 
@@ -381,7 +369,7 @@ public class MatchManager {
      * @param searchFrom the player to check for
      * @return true if the points contain a winner position, false otherwise
      */
-    private boolean containsWinnerPosition(final ArrayList<Point> points, final Player searchFrom) {
+    public boolean containsWinnerPosition(final ArrayList<Point> points, final Player searchFrom) {
         for (Point point : points) {
             if ((searchFrom.getYWinPosition() != -1 && point.y == searchFrom.getYWinPosition() * 2) ||
                     (searchFrom.getXWinPosition() != -1 && point.x == searchFrom.getXWinPosition() * 2)) {
@@ -478,6 +466,8 @@ public class MatchManager {
      */
     private void checkForAITurn() {
         if (!this.aiPlayers.isEmpty() && this.aiPlayers.containsKey(this.getPlayerInTurn())) {
+            System.out.println("Board For: " + this.getPlayerInTurn().getName());
+            this.printMatrix(this.getAbstractBoardFor(this.getPlayerInTurn()));
             this.aiPlayers.get(this.getPlayerInTurn()).executeMove(this.getAbstractBoardFor(this.getPlayerInTurn()));
         }
     }
@@ -596,4 +586,7 @@ public class MatchManager {
         System.out.println(sb);
     }
 
+    public ArrayList<Player> getPlayers() {
+        return new ArrayList<>(this.model.getPlayers().values());
+    }
 }
