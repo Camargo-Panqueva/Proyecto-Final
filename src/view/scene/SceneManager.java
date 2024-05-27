@@ -2,6 +2,7 @@ package view.scene;
 
 import controller.dto.ServiceResponse;
 import controller.states.GlobalState;
+import util.Logger;
 import view.context.GlobalContext;
 
 import java.awt.*;
@@ -45,6 +46,7 @@ public final class SceneManager {
 
         if (!stateResponse.ok) {
             //TODO: Handle error
+            Logger.error("Failed to get current global state: " + stateResponse.message);
             throw new RuntimeException("Failed to get current global state: " + stateResponse.message);
         }
 
@@ -83,8 +85,10 @@ public final class SceneManager {
 
                 this.currentScene = this.scenes.get(GlobalState.GAME_FINISHED);
             }
-            default -> //TODO: Handle error
-                    throw new RuntimeException("Unknown state: " + state);
+            default -> {
+                Logger.error("Trying to render an invalid or nonexistent scene for state: " + state);
+                throw new RuntimeException("Unknown state: " + state);
+            }
         }
 
         this.lastState = state;

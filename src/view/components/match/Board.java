@@ -82,6 +82,7 @@ public final class Board extends GameComponent {
 
         if (!boardStateResponse.ok) {
             //TODO: Handle error
+            Logger.error("Failed to get board state: " + boardStateResponse.message);
             throw new RuntimeException("Failed to get board state: " + boardStateResponse.message);
         }
 
@@ -386,6 +387,7 @@ public final class Board extends GameComponent {
 
         if (!movementResponse.ok) {
             //TODO: Handle error
+            Logger.error("Failed to process player move: " + movementResponse.message);
             throw new RuntimeException("Failed to process player move: " + movementResponse.message);
         }
 

@@ -145,11 +145,11 @@ public abstract class Logger {
      * The message is not logged to a log file.
      * </p>
      *
-     * @param level   the level of the message.
-     * @param log the message to log.
+     * @param level the level of the message.
+     * @param log   the message to log.
      */
     private static void logToConsole(LogLevel level, String log) {
-        System.out.printf("%s%s%s\n", level.color, addIndentation(log), ConsoleColor.RESET);
+        System.out.printf("%s%s%s %s\n", level.color, addIndentation(log), ConsoleColor.RESET, getCallerHyperlink());
     }
 
     /**
@@ -234,6 +234,33 @@ public abstract class Logger {
     }
 
     /**
+     * Gets the hyperlink of the caller of the logger.
+     * <p>
+     * This method gets the hyperlink of the caller of the logger.
+     * The hyperlink is the class name, file name, and line number of the caller.
+     * </p>
+     *
+     * @return the hyperlink of the caller of the logger.
+     */
+    private static String getCallerHyperlink() {
+        StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+        for (int i = 2; i < stackTraceElements.length; i++) {
+            if (!stackTraceElements[i].getClassName().equals(Logger.class.getName())) {
+                return String.format(
+                        "%s%s%s.(%s:%d)%s",
+                        ConsoleColor.DIMMED,
+                        ConsoleColor.WHITE,
+                        stackTraceElements[i].getClassName(),
+                        stackTraceElements[i].getFileName(),
+                        stackTraceElements[i].getLineNumber(),
+                        ConsoleColor.RESET
+                );
+            }
+        }
+        return "";
+    }
+
+    /**
      * Represents the target to log a message to.
      * <p>
      * This enum represents the target to log a message to.
@@ -299,7 +326,9 @@ public abstract class Logger {
         RED("\u001B[31m"),
         GREEN("\u001B[32m"),
         YELLOW("\u001B[33m"),
-        BLUE("\u001B[34m");
+        BLUE("\u001B[34m"),
+        WHITE("\u001B[37m"),
+        DIMMED("\u001B[2m");
 
         private final String color;
 

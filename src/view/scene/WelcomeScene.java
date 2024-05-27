@@ -11,14 +11,12 @@ import view.themes.Theme;
 
 import java.util.ArrayList;
 
-//TODO: Update docs when different modes are implemented
-
 /**
  * Represents the scene for welcoming the player to the game.
  * <p>
  * This class represents the scene for welcoming the player to the game.
  * It provides a basic structure for rendering the welcome screen.
- * The scene contains a welcome title, authors text, start button, and theme button.
+ * The scene contains a welcome title, authors text, start button, and theme selector.
  * </p>
  */
 public final class WelcomeScene extends Scene {

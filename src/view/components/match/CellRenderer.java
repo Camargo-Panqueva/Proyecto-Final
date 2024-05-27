@@ -1,6 +1,7 @@
 package view.components.match;
 
 import model.cell.CellType;
+import util.Logger;
 import view.context.GlobalContext;
 import view.context.MatchContext;
 import view.context.Style;
@@ -83,9 +84,10 @@ public final class CellRenderer {
             case DOUBLE_TURN -> drawDoubleTurnCell(graphics);
             case TELEPORT -> drawTeleportCell(graphics);
             case RETURN -> drawReturnCell(graphics);
-            default ->
-                //TODO: Handle this case or throw
-                    throw new IllegalArgumentException("Invalid cell type: " + cellType);
+            default -> {
+                Logger.error("Trying to render an invalid or nonexistent cell type: " + cellType);
+                throw new IllegalArgumentException("Invalid cell type: " + cellType);
+            }
         }
 
         graphics.dispose();
