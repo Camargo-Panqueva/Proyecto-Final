@@ -4,6 +4,7 @@ import controller.GameController;
 import model.player.AIProfile;
 import model.player.Player;
 import model.wall.WallType;
+import util.Timeout;
 
 import java.awt.*;
 import java.util.ArrayDeque;
@@ -39,13 +40,18 @@ public class AIPlayer {
      */
     public void executeMove(final int[][] abstractBoard) {
         this.abstractBoard = abstractBoard;
-        this.intermediateMove();
+
+        if (this.profile == AIProfile.BEGINNER) {
+            Timeout.startTimeout(this::beginnerTurn, 500);
+        } else if (this.profile == AIProfile.INTERMEDIATE) {
+            Timeout.startTimeout(this::intermediateTurn, 500);
+        }
     }
 
     /**
      * This method moves the player or places a wall, with a 50% chance of each, his movement is random, but principally he moves to his goal, walls are placed randomly
      */
-    private void beginnerMove() {
+    private void beginnerTurn() {
         ArrayList<Point> possibleMoves = this.matchManager.getPossibleMovements(this.player);
         Random random = new Random();
         Point winDirection = this.player.getWinDirection();
@@ -73,7 +79,7 @@ public class AIPlayer {
         }
     }
 
-    private void intermediateMove() {
+    private void intermediateTurn() {
         int minPathSize = Integer.MAX_VALUE;
         Player bestPlayer = null;
 
@@ -85,10 +91,12 @@ public class AIPlayer {
             }
         }
 
-        final ArrayList<Point> possibleMoves = this.matchManager.getPossibleMovements(this.player);
-
-        if ((bestPlayer == null || !bestPlayer.equals(this.player)) && player.getRemainingWallsCount() != 0) {
-
+        if (((bestPlayer == null || !bestPlayer.equals(this.player)) && player.getRemainingWallsCount() != 0)) {
+            double PROBABILITY_FOR_MOVE = 0.30;
+            if (Math.random() < PROBABILITY_FOR_MOVE) {
+                this.intermediateMovement();
+                return;
+            }
             ArrayDeque<Point> bestPath = this.getShortestPath(bestPlayer);
             for (int i = 0; i < bestPath.size(); i++) {
                 Point point = bestPath.pollLast();
@@ -96,9 +104,13 @@ public class AIPlayer {
                     return;
                 }
             }
-
         }
 
+        this.intermediateMovement();
+    }
+
+    private void intermediateMovement() {
+        final ArrayList<Point> possibleMoves = this.matchManager.getPossibleMovements(this.player);
         ArrayDeque<Point> path = new ArrayDeque<>();
 
         for (Point point : this.getShortestPath(this.player)) {
@@ -106,7 +118,6 @@ public class AIPlayer {
                 path.add(new Point(point.x / 2, point.y / 2));
             }
         }
-
 
         for (Point point : path) {
             for (Point point1 : possibleMoves) {
@@ -126,8 +137,6 @@ public class AIPlayer {
             }
         }
         this.gameController.processPlayerMove(matchManager.getPlayerInTurnId(), bestMove);
-
-
     }
 
     private ArrayDeque<Point> findPathBFS(final int[][] abstractBoard, final Player player, final ArrayList<Point> island) {
@@ -172,7 +181,6 @@ public class AIPlayer {
                 return path;
             }
         }
-        System.out.println("I shouldn't be here, for: " + player.getName());
         return new ArrayDeque<>();
     }
 

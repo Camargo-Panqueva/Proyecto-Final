@@ -355,12 +355,18 @@ public final class GameController {
             }
         }));
 
+        final PlayerTransferObject playerInTurn = playerTransferObjectArrayList.stream().filter(PlayerTransferObject::isInTurn).findFirst().orElse(null);
+
+        if (playerInTurn == null) {
+            return new ErrorResponse<>("There is no player in turn!!!!");
+        }
+
         return new SuccessResponse<>(
                 new BoardTransferObject(
                         cellTypesCopy,
                         wallTransferObjectArrayList, this.model.getTurnCount(),
                         playerTransferObjectArrayList,
-                        playerTransferObjectArrayList.stream().filter(PlayerTransferObject::isInTurn).findFirst().orElse(null) //TODO : check if this is correct
+                        playerInTurn
                 ), "Ok");
     }
 
@@ -412,6 +418,10 @@ public final class GameController {
      * @return PlayerTransferObject
      */
     private PlayerTransferObject getPlayerTransferObject(int playerId) {
+//        System.out.println();
+//        System.out.println("PlayerId: " + playerId);
+//        System.out.println("TurnId: " + this.model.getPlayerInTurnId());
+//        System.out.println();
         final Player player = this.model.getPlayers().get(playerId);
         return new PlayerTransferObject(playerId, player.getName(), new Point(player.getPosition()),
                 this.model.getPlayerInTurnId() == playerId, this.matchManager.getPossibleMovements(player), player.getWallsInField(),

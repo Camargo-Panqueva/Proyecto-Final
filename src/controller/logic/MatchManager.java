@@ -40,8 +40,6 @@ public class MatchManager {
             this.startTimer();
         }
 
-        //TODO : if start AI player???
-
         this.triggerActionBeforeTurn();
     }
 
@@ -324,7 +322,7 @@ public class MatchManager {
             for (int y = 0; y < height; y++) {
                 if (x % 2 != 0 && y % 2 != 0) {
                     abstractBoard[x][y] = 0;
-                } else if (this.model.getBoard().getWallData(x, y) == null || (this.model.getBoard().getWallData(x, y).getIsAlly() && this.model.getBoard().getWallData(x, y).getOwner().equals(player))) {
+                } else if (!this.blockCondition(x, y, player)) {
                     abstractBoard[x][y] = 1;
                 } else {
                     abstractBoard[x][y] = 0;
@@ -332,6 +330,10 @@ public class MatchManager {
             }
         }
         return abstractBoard;
+    }
+
+    private boolean blockCondition(final int x, final int y, final Player player) {
+        return ((this.model.getBoard().getWallData(x, y) != null && (!this.model.getBoard().getWallData(x, y).getIsAlly() || !this.model.getBoard().getWallData(x, y).getOwner().equals(player))));
     }
 
     /**
@@ -467,8 +469,6 @@ public class MatchManager {
      */
     private void checkForAITurn() {
         if (!this.aiPlayers.isEmpty() && this.aiPlayers.containsKey(this.getPlayerInTurn())) {
-            System.out.println("Board For: " + this.getPlayerInTurn().getName());
-            this.printMatrix(this.getAbstractBoardFor(this.getPlayerInTurn()));
             this.aiPlayers.get(this.getPlayerInTurn()).executeMove(this.getAbstractBoardFor(this.getPlayerInTurn()));
         }
     }
@@ -483,7 +483,7 @@ public class MatchManager {
     }
 
     /**
-     * Returns player two turns if is possible.
+     * Return player two turns if is possible.
      *
      * @param player the player to return
      */
@@ -552,6 +552,7 @@ public class MatchManager {
             return;
         }
         this.aiPlayers.put(aiPlayer.getPlayer(), aiPlayer);
+        this.checkForAITurn();
     }
 
     /**
