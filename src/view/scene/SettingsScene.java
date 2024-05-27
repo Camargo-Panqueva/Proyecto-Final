@@ -8,6 +8,7 @@ import model.difficulty.DifficultyType;
 import model.player.AIProfile;
 import model.player.PlayerType;
 import model.wall.WallType;
+import util.Logger;
 import view.components.GameComponent;
 import view.components.ui.Button;
 import view.components.ui.Selector;
@@ -193,8 +194,11 @@ public final class SettingsScene extends Scene {
             var response = this.globalContext.controller().createMatch(setupTransferObject);
 
             if (!response.ok) {
-                System.out.println(response.message);
+                Logger.error(response.message);
+                return;
             }
+
+            Logger.success("Match created successfully");
         });
 
         this.backButton.addMouseListener(MouseEvent.EventType.RELEASED, event -> this.globalContext.controller().setGlobalState(GlobalState.WELCOME));

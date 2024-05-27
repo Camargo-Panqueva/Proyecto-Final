@@ -38,8 +38,8 @@ public abstract class Logger {
      *
      * @param message the message to log.
      */
-    public static void logSuccess(String message) {
-        logSuccess(message, Logger.defaultTarget);
+    public static void success(String message) {
+        success(message, Logger.defaultTarget);
     }
 
     /**
@@ -52,7 +52,7 @@ public abstract class Logger {
      * @param message the message to log.
      * @param target  the target to log the message to.
      */
-    public static void logSuccess(String message, LogTarget target) {
+    public static void success(String message, LogTarget target) {
         log(LogLevel.SUCCESS, target, message);
     }
 
@@ -65,8 +65,8 @@ public abstract class Logger {
      *
      * @param message the message to log.
      */
-    public static void logInfo(String message) {
-        logInfo(message, Logger.defaultTarget);
+    public static void info(String message) {
+        info(message, Logger.defaultTarget);
     }
 
     /**
@@ -79,7 +79,7 @@ public abstract class Logger {
      * @param message the message to log.
      * @param target  the target to log the message to.
      */
-    public static void logInfo(String message, LogTarget target) {
+    public static void info(String message, LogTarget target) {
         log(LogLevel.INFO, target, message);
     }
 
@@ -92,8 +92,8 @@ public abstract class Logger {
      *
      * @param message the message to log.
      */
-    public static void logWarning(String message) {
-        logWarning(message, Logger.defaultTarget);
+    public static void warning(String message) {
+        warning(message, Logger.defaultTarget);
     }
 
     /**
@@ -106,7 +106,7 @@ public abstract class Logger {
      * @param message the message to log.
      * @param target  the target to log the message to.
      */
-    public static void logWarning(String message, LogTarget target) {
+    public static void warning(String message, LogTarget target) {
         log(LogLevel.WARNING, target, message);
     }
 
@@ -119,8 +119,8 @@ public abstract class Logger {
      *
      * @param message the message to log.
      */
-    public static void logError(String message) {
-        logError(message, Logger.defaultTarget);
+    public static void error(String message) {
+        error(message, Logger.defaultTarget);
     }
 
     /**
@@ -133,7 +133,7 @@ public abstract class Logger {
      * @param message the message to log.
      * @param target  the target to log the message to.
      */
-    public static void logError(String message, LogTarget target) {
+    public static void error(String message, LogTarget target) {
         log(LogLevel.ERROR, target, message);
     }
 
@@ -175,7 +175,7 @@ public abstract class Logger {
         try (OutputStream out = new FileOutputStream(LOG_FILE, true)) {
             out.write((log + "\n").getBytes());
         } catch (Exception e) {
-            logError("Failed to write to log file: " + e.getMessage(), LogTarget.CONSOLE);
+            error("Failed to write to log file: " + e.getMessage(), LogTarget.CONSOLE);
         }
     }
 

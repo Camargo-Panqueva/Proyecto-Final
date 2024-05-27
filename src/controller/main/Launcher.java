@@ -8,19 +8,19 @@ import view.GameView;
 public final class Launcher {
 
     public static void main(String[] args) {
-        Logger.logInfo("Starting launcher...");
+        Logger.info("Starting launcher...");
 
         GameModel gameModel = new GameModel();
-        Logger.logSuccess("Game model created");
+        Logger.success("Game model created");
 
         GameController gameController = new GameController(gameModel);
-        Logger.logSuccess("Game controller created");
+        Logger.success("Game controller created");
 
         GameView gameView = new GameView(gameController);
-        Logger.logSuccess("Game view created");
+        Logger.success("Game view created");
 
         gameView.start();
 
-        Logger.logSuccess("Game started");
+        Logger.success("Game started");
     }
 }

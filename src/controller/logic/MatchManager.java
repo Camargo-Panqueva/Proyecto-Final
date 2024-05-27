@@ -10,6 +10,7 @@ import model.difficulty.DifficultyType;
 import model.player.Player;
 import model.wall.WallData;
 import util.ConcurrentLoop;
+import util.Logger;
 
 import java.awt.*;
 import java.time.Duration;
@@ -576,9 +577,9 @@ public class MatchManager {
     }
 
     public void printMatrix(int[][] matrix) {
-        System.out.println(" ________matrix________ ");
+        Logger.info(" ________matrix________ ");
         if (matrix == null) {
-            System.out.println("Null");
+            Logger.warning("Null");
         }
         StringBuilder sb = new StringBuilder();
 
@@ -593,7 +594,7 @@ public class MatchManager {
             }
             sb.append("\n");
         }
-        System.out.println(sb);
+        Logger.info(sb.toString());
     }
 
 }

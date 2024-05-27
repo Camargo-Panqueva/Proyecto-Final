@@ -130,7 +130,7 @@ public final class ConcurrentLoop implements Runnable {
         try {
             this.thread.join();
         } catch (InterruptedException e) {
-            System.out.println("Could not join thread " + this.threadName);
+            Logger.error("Could not join thread " + this.threadName);
         }
     }
 

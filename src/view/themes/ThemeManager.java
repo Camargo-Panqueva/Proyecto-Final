@@ -1,6 +1,7 @@
 package view.themes;
 
 import org.json.JSONArray;
+import util.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -79,12 +80,12 @@ public final class ThemeManager {
 
             if (themesFile.exists() && !themesFile.isDirectory() && themesFile.canRead()) {
                 content = new String(Files.readAllBytes(themesPath));
-                System.out.println("Loaded themes from source directory.");
+                Logger.info("Loaded themes from source directory.");
             } else if (defaultThemes != null) {
                 content = new String(defaultThemes.readAllBytes());
-                System.out.println("Loaded themes from default resources.");
+                Logger.info("Loaded themes from default resources.");
             } else {
-                System.out.println("Failed to load themes from file. Proceeding with default themes.");
+                Logger.warning("Failed to load themes from file. Proceeding with default themes.");
                 return;
             }
 
@@ -94,7 +95,7 @@ public final class ThemeManager {
                 this.themes.add(Theme.fromJson(json.getJSONObject(i)));
             }
         } catch (IOException e) {
-            System.out.println("Failed to load themes from file. Proceeding with default themes. Error: " + e.getMessage());
+            Logger.error("Failed to load themes from file. Proceeding with default themes. Error: " + e.getMessage());
         }
     }
 

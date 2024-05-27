@@ -81,7 +81,6 @@ public final class WallRenderer {
         ServiceResponse<WallTransferObject> wallResponse = this.globalContext.controller().getWallPreview(new Point(x, y), this.matchContext.selectedWallType());
 
         if (!wallResponse.ok) {
-
             return;
         }
 

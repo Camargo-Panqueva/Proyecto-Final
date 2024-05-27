@@ -69,7 +69,7 @@ public final class Timeout implements Runnable {
             Thread.sleep(this.timeOut);
             this.function.run();
         } catch (InterruptedException e) {
-            System.out.println("TimeOut interrupted: " + e.getMessage());
+            Logger.error("Timeout interrupted: " + e.getMessage());
         }
 
         this.thread = null;
