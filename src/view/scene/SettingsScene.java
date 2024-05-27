@@ -8,6 +8,7 @@ import model.difficulty.DifficultyType;
 import model.player.AIProfile;
 import model.player.PlayerType;
 import model.wall.WallType;
+import util.Logger;
 import view.components.GameComponent;
 import view.components.ui.Button;
 import view.components.ui.Selector;
@@ -25,14 +26,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 
-//TODO: Update docs when different modes are implemented
-
 /**
- * Represents the scene for selecting the game mode.
+ * Represents the settings scene of the game.
  * <p>
- * This class represents the scene for selecting the game mode.
- * It provides a basic structure for rendering the game mode selection screen.
- * The scene contains buttons for selecting the single player and multiplayer modes.
+ * This class represents the settings scene of the game.
+ * It provides a structure for setting up the game settings.
+ * The settings scene is used to set up the game settings before starting a match.
+ * The settings scene allows the player to set up the game settings such as the board size,
+ * the special cells, the difficulty, the time limit, the player setups, and the wall counts.
+ * The settings scene also allows the player to start a match with the given settings.
  * </p>
  */
 public final class SettingsScene extends Scene {
@@ -193,8 +195,11 @@ public final class SettingsScene extends Scene {
             var response = this.globalContext.controller().createMatch(setupTransferObject);
 
             if (!response.ok) {
-                System.out.println(response.message);
+                Logger.error(response.message);
+                return;
             }
+
+            Logger.success("Match created successfully");
         });
 
         this.backButton.addMouseListener(MouseEvent.EventType.RELEASED, event -> this.globalContext.controller().setGlobalState(GlobalState.WELCOME));

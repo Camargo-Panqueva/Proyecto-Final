@@ -5,6 +5,7 @@ import controller.GameController;
 import util.ConcurrentLoop;
 import view.context.GlobalContext;
 import view.input.Keyboard;
+import view.input.KeyboardEvent;
 import view.input.Mouse;
 import view.scene.SceneManager;
 import view.themes.ThemeColor.ColorName;
@@ -19,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -43,6 +45,8 @@ public final class GameView {
     private ConcurrentLoop renderLoop;
     private ConcurrentLoop updateLoop;
     private BufferStrategy bufferStrategy;
+
+    private boolean renderPerformance;
 
     /**
      * Creates a new GameView with the given controller.
@@ -69,6 +73,12 @@ public final class GameView {
                 new Font("ProggyCleanSZ Nerd Font", Font.PLAIN, 24)
         );
         this.sceneManager = new SceneManager(this.globalContext);
+
+        this.keyboard.addEventHandler(KeyboardEvent.EventType.RELEASED, (event) -> {
+            if (event.keyCode == KeyboardEvent.VK_F3) {
+                this.renderPerformance = !this.renderPerformance;
+            }
+        });
     }
 
     /**
@@ -149,18 +159,43 @@ public final class GameView {
      * @param graphics the graphics object to render the performance information.
      */
     private void renderPerformance(Graphics2D graphics) {
+        if (!this.renderPerformance) {
+            return;
+        }
+
         graphics.setColor(this.globalContext.currentTheme().getColor(ColorName.FOREGROUND, ColorVariant.NORMAL));
         graphics.setFont(new Font("Arial", Font.PLAIN, 12));
 
         FontMetrics fontMetrics = graphics.getFontMetrics();
         int canvasSize = this.window.getCanvasSize();
 
-        graphics.drawString(String.format("FPS: %d", this.renderLoop.getCurrentTPS()), 6, 16);
-        graphics.drawString(String.format("TPS: %d", this.updateLoop.getCurrentTPS()), 6, 32);
+        graphics.drawString(String.format("FPS: %s", this.renderLoop.getCurrentTPS()), 6, 16);
+        graphics.drawString(String.format("TPS: %s", this.updateLoop.getCurrentTPS()), 6, 32);
 
         Point mousePosition = this.mouse.getMousePosition();
         String mouseText = String.format("Mouse: [%d, %d]", mousePosition.x, mousePosition.y);
         graphics.drawString(mouseText, 6, 48);
+
+        ArrayList<ColorName> colorNames = this.globalContext.currentTheme().getPaletteColors();
+        ArrayList<ColorVariant> colorVariants = new ArrayList<>(Arrays.asList(ColorVariant.values()));
+
+        int colorSize = 14;
+        int paletteX = 8;
+        int paletteY = this.window.getCanvas().getHeight() - colorSize * colorVariants.size() - 8;
+
+        graphics.setColor(Color.WHITE);
+        graphics.fillRect(paletteX, paletteY, colorSize * colorNames.size(), colorSize * colorVariants.size());
+
+        for (int variantIndex = 0; variantIndex < colorVariants.size(); variantIndex++) {
+            for (int nameIndex = 0; nameIndex < colorNames.size(); nameIndex++) {
+                ColorName colorName = colorNames.get(nameIndex);
+                ColorVariant colorVariant = colorVariants.get(variantIndex);
+
+                graphics.setColor(this.globalContext.currentTheme().getColor(colorName, colorVariant));
+                graphics.fillRect(paletteX + colorSize * nameIndex, paletteY + colorSize * variantIndex, colorSize, colorSize);
+            }
+        }
+        graphics.setColor(this.globalContext.currentTheme().getColor(ColorName.FOREGROUND, ColorVariant.NORMAL));
 
         OperatingSystemMXBean osBean = ManagementFactory.getPlatformMXBean(OperatingSystemMXBean.class);
         double cpuLoad = osBean.getCpuLoad() * 100;

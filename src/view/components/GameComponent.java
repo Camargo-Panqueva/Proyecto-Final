@@ -126,7 +126,6 @@ public abstract class GameComponent {
             }
         } else {
 
-            //TODO: Delete this comment after check that the code below allows drag and drop functionality
             if (mouse.isButtonPressed(Mouse.LEFT_BUTTON)) {
                 if (this.hasFocus) {
                     this.hasFocus = false;

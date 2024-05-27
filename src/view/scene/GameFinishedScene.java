@@ -2,6 +2,7 @@ package view.scene;
 
 import controller.dto.PlayerTransferObject;
 import controller.dto.ServiceResponse;
+import util.Logger;
 import view.components.ui.Text;
 import view.context.GlobalContext;
 import view.themes.ThemeColor;
@@ -65,6 +66,7 @@ public final class GameFinishedScene extends Scene {
 
         if (!response.ok) {
             //TODO: Handle error
+            Logger.error("Failed to get winner: " + response.message);
             throw new RuntimeException("Failed to get winner: " + response.message);
         }
 

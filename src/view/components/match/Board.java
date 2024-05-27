@@ -3,6 +3,7 @@ package view.components.match;
 import controller.dto.BoardTransferObject;
 import controller.dto.ServiceResponse;
 import model.wall.WallType;
+import util.Logger;
 import view.components.GameComponent;
 import view.context.GlobalContext;
 import view.context.MatchContext;
@@ -81,6 +82,7 @@ public final class Board extends GameComponent {
 
         if (!boardStateResponse.ok) {
             //TODO: Handle error
+            Logger.error("Failed to get board state: " + boardStateResponse.message);
             throw new RuntimeException("Failed to get board state: " + boardStateResponse.message);
         }
 
@@ -356,7 +358,7 @@ public final class Board extends GameComponent {
 
         if (!response.ok) {
             //TODO: Handle error
-            System.out.println("Failed to place wall: " + response.message);
+            Logger.error("Failed to place wall: " + response.message, Logger.LogTarget.CONSOLE);
         }
 
         this.matchContext.dispatchEvent(MatchContext.MatchEvent.WALL_PLACED, this.matchContext.playerInTurn());
@@ -385,6 +387,7 @@ public final class Board extends GameComponent {
 
         if (!movementResponse.ok) {
             //TODO: Handle error
+            Logger.error("Failed to process player move: " + movementResponse.message);
             throw new RuntimeException("Failed to process player move: " + movementResponse.message);
         }
 

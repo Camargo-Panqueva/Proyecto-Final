@@ -11,14 +11,12 @@ import view.themes.Theme;
 
 import java.util.ArrayList;
 
-//TODO: Update docs when different modes are implemented
-
 /**
  * Represents the scene for welcoming the player to the game.
  * <p>
  * This class represents the scene for welcoming the player to the game.
  * It provides a basic structure for rendering the welcome screen.
- * The scene contains a welcome title, authors text, start button, and theme button.
+ * The scene contains a welcome title, authors text, start button, and theme selector.
  * </p>
  */
 public final class WelcomeScene extends Scene {
@@ -67,26 +65,22 @@ public final class WelcomeScene extends Scene {
     protected void setupComponents() {
         this.welcomeTitle = new Text("Quoridor!", globalContext);
         this.welcomeTitle.getStyle().y = 80;
-        this.welcomeTitle.getStyle().font = this.globalContext.gameFont().deriveFont(100.0f);
+        this.welcomeTitle.getStyle().font = this.globalContext.gameFont().deriveFont(104.0f);
         this.welcomeTitle.fitSize();
-        this.welcomeTitle.getStyle().centerHorizontally(globalContext);
 
         this.authorsText = new Text("Camargo # Panqueva", globalContext);
         this.authorsText.getStyle().y = 200;
         this.authorsText.getStyle().font = this.globalContext.gameFont().deriveFont(21.0f);
         this.authorsText.fitSize();
-        this.authorsText.getStyle().centerHorizontally(globalContext);
 
         this.startButton = new Button("Start", globalContext);
         this.startButton.getStyle().y = 400;
         this.startButton.getStyle().width = 370;
-        this.startButton.getStyle().centerHorizontally(globalContext);
 
         ArrayList<Theme> themes = this.globalContext.themeManager().getThemes();
         this.themeSelector = new Selector<>(themes, globalContext);
         this.themeSelector.getStyle().y = this.startButton.getStyle().y + 90;
         this.themeSelector.getStyle().width = this.startButton.getStyle().width;
-        this.themeSelector.getStyle().centerHorizontally(globalContext);
     }
 
     /**
@@ -121,6 +115,10 @@ public final class WelcomeScene extends Scene {
      */
     @Override
     public void fixCanvasSize() {
-        this.globalContext.window().setCanvasSize(600);
+        this.globalContext.window().setCanvasSize(610);
+        this.welcomeTitle.getStyle().centerHorizontally(globalContext);
+        this.authorsText.getStyle().centerHorizontally(globalContext);
+        this.startButton.getStyle().centerHorizontally(globalContext);
+        this.themeSelector.getStyle().centerHorizontally(globalContext);
     }
 }

@@ -2,6 +2,7 @@ package view.window;
 
 import controller.GameController;
 import controller.dto.ServiceResponse;
+import util.Logger;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
@@ -62,7 +63,6 @@ public final class MenuBar extends JMenuBar {
         JMenu aboutMenu = new JMenu("Help");
         aboutMenu.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 
-        //TODO: Replace this static methods with controller getters
         JMenuItem openItem = createMenuItem("Open", this::openFileHandler);
         JMenuItem saveItem = createMenuItem("Save", this::saveFileHandler);
         JMenuItem exitItem = createMenuItem("Exit", this::exitHandler);
@@ -92,11 +92,12 @@ public final class MenuBar extends JMenuBar {
             ServiceResponse<Void> response = this.controller.saveMatch(path);
 
             if (!response.ok) {
-                //TODO: Improve error message
+                Logger.error("Failed to save match: " + response.message);
                 JOptionPane.showMessageDialog(null, response.message, "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 
+            Logger.success(String.format("Match saved successfully to \"%s\"", path));
             JOptionPane.showMessageDialog(null, "Match saved successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
         }
     }
@@ -112,16 +113,16 @@ public final class MenuBar extends JMenuBar {
             ServiceResponse<Void> response = this.controller.loadMatch(file.getAbsolutePath());
 
             if (!response.ok) {
-                //TODO: Improve error message
-                JOptionPane.showMessageDialog(null, response.message, "Error", JOptionPane.ERROR_MESSAGE);
+                Logger.error("Failed to load match: " + response.message);
                 return;
             }
 
-            JOptionPane.showMessageDialog(null, "Match loaded successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+            Logger.success(String.format("Match \"%s\" loaded successfully", file.getName()));
         }
     }
 
     private void exitHandler(ActionEvent event) {
+        Logger.info("Exiting game from exit option in menu bar. Goodbye!");
         System.exit(0);
     }
 

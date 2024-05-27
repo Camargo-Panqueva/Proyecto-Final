@@ -77,6 +77,11 @@ public class KeyboardEvent {
     public static final int VK_SPACE = 32;
 
     /**
+     * The key code for the F3 key.
+     */
+    public static final int VK_F3 = 114;
+
+    /**
      * The keyboard that dispatched the event.
      */
     public final Keyboard keyboard;
