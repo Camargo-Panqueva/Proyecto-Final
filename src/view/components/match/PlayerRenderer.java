@@ -109,7 +109,7 @@ public final class PlayerRenderer {
     private void renderPlayer(Graphics2D graphics, PlayerTransferObject player) {
         graphics.setFont(this.globalContext.gameFont().deriveFont(16.0f));
 
-        ColorVariant variant = player.isInTurn() ? ColorVariant.NORMAL : ColorVariant.DIMMED;
+        ColorVariant variant = (player.isInTurn() && player.isAlive()) ? ColorVariant.NORMAL : ColorVariant.DIMMED;
         Color color = this.globalContext.currentTheme().getColor(this.matchContext.getPlayerColor(player, variant));
 
         int x = player.position().x * (CELL_SIZE + WALL_SIZE) + this.boardStyle.x + this.boardStyle.borderWidth;
@@ -141,7 +141,7 @@ public final class PlayerRenderer {
         graphics.setColor(color);
         graphics.drawString(player.name(), x + CELL_SIZE, y - 3);
 
-        if (player.isAI()) {
+        if (player.isAI() || !player.isAlive()) {
             this.renderBotIcon(graphics, player, x, y);
         } else {
             this.renderPlayerIcon(graphics, player, x, y);
@@ -155,6 +155,11 @@ public final class PlayerRenderer {
      * @return the icon for the bot.
      */
     private String getBotIcon(PlayerTransferObject bot) {
+
+        if (!bot.isAlive()) {
+            return new String(Character.toChars(0xf068c));
+        }
+
         String[] icons = {
                 new String(Character.toChars(0xf06a9)),
                 new String(Character.toChars(0xf169d)),
@@ -177,12 +182,24 @@ public final class PlayerRenderer {
      * @param y        the y-coordinate of the icon.
      */
     private void renderBotIcon(Graphics2D graphics, PlayerTransferObject player, int x, int y) {
+
+        int renderX;
+        int renderY;
+
+        if (player.isAlive()) {
+            renderX = x + (CELL_SIZE - 28) / 2;
+            renderY = y + CELL_SIZE / 2 + 5;
+        } else {
+            renderX = x + (CELL_SIZE - 24) / 2;
+            renderY = y + CELL_SIZE / 2 + 7;
+        }
+
         graphics.setFont(this.globalContext.iconFont().deriveFont(32.0f));
         graphics.setColor(this.globalContext.currentTheme().getColor(ColorName.BACKGROUND, ColorVariant.NORMAL));
         graphics.drawString(
                 getBotIcon(player),
-                x + (CELL_SIZE - 28) / 2,
-                y + CELL_SIZE / 2 + 5
+                renderX,
+                renderY
         );
     }
 
