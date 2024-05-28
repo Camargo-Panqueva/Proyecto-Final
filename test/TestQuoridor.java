@@ -486,4 +486,54 @@ public class TestQuoridor {
             fail();
         }
     }
+
+    @Test
+    public void integrationTest() {
+        // Test creating a match
+        assertTrue(gameController.createMatch(setupTransferObject).ok);
+
+        // Test board size
+        assertEquals(9, gameModel.getBoard().getHeight());
+        assertEquals(9, gameModel.getBoard().getWidth());
+
+        // Test assigning walls to players
+        gameController.createMatch(setupTransferObject);
+        gameModel.getPlayers().values().forEach(player -> {
+            assertEquals(wallsPerPlayer, player.getPlayerWalls());
+        });
+
+        // Test orthogonal movement
+        var possibleMoves = gameController.getBoardState().payload.players().get(0).allowedMoves();
+        assertFalse(possibleMoves.isEmpty());
+
+        Point move = possibleMoves.get(random.nextInt(possibleMoves.size()));
+        gameController.processPlayerMove(0, move);
+        assertEquals(move, gameModel.getPlayers().get(0).getPosition());
+
+        // Test diagonal movement
+        gameModel.getPlayers().get(1).setPosition(new Point(gameModel.getPlayers().get(0).getPosition().x, gameModel.getPlayers().get(0).getPosition().y + 1));
+        possibleMoves = gameController.getBoardState().payload.players().get(0).allowedMoves();
+        Point diagonalMove = new Point(gameModel.getPlayers().get(0).getPosition().x + 1, gameModel.getPlayers().get(0).getPosition().y);
+        assertTrue(possibleMoves.contains(diagonalMove));
+
+        // Test placing barriers
+        gameController.placeWall(0, new Point(0, 1), WallType.NORMAL);
+        gameController.placeWall(1, new Point(2, 5), WallType.NORMAL);
+        assertEquals(2, gameModel.getWallCount());
+
+        // Test placing barriers at invalid positions
+        assertFalse(gameController.placeWall(0, new Point(-1, -1), WallType.NORMAL).ok);
+        assertFalse(gameController.placeWall(0, new Point(22, 22), WallType.NORMAL).ok);
+
+        // Test winning condition
+        gameModel.getPlayers().get(0).setPosition(new Point(4, 8));
+        gameController.processPlayerMove(0, new Point(4, 8));
+        assertEquals(GameModel.MatchState.WINNER, gameModel.getMatchState());
+
+        // Test barrier limits
+        gameController.placeWall(0, new Point(8, 1), WallType.NORMAL);
+        gameController.placeWall(1, new Point(8, 3), WallType.NORMAL);
+        assertEquals(2, gameModel.getPlayers().get(0).getWallsInField());
+        assertEquals(2, gameModel.getPlayers().get(1).getWallsInField());
+    }
 }
