@@ -80,7 +80,7 @@ public final class SceneManager {
             }
             case GAME_FINISHED -> {
                 if (!this.scenes.containsKey(GlobalState.GAME_FINISHED)) {
-                    this.scenes.put(GlobalState.GAME_FINISHED, new GameFinishedScene(this.globalContext));
+                    this.scenes.put(GlobalState.GAME_FINISHED, new WinnerScene(this.globalContext));
                 }
 
                 this.currentScene = this.scenes.get(GlobalState.GAME_FINISHED);

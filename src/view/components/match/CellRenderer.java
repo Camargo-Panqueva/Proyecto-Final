@@ -169,6 +169,12 @@ public final class CellRenderer {
         );
     }
 
+    /**
+     * Draws an icon on the cell.
+     *
+     * @param graphics the graphics object to render the icon with.
+     * @param hexCode  the hex code of the icon to render.
+     */
     private void drawIcon(Graphics2D graphics, int hexCode) {
         graphics.setFont(this.globalContext.iconFont().deriveFont(33f));
         String text = new String(Character.toChars(hexCode));

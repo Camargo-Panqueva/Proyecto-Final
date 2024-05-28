@@ -7,7 +7,15 @@ import view.components.ui.Text;
 import view.context.GlobalContext;
 import view.themes.ThemeColor;
 
-public final class GameFinishedScene extends Scene {
+/**
+ * Represents a scene that is displayed when the game is finished.
+ * <p>
+ * This class represents a scene that is displayed when the game is finished.
+ * It provides a structure for displaying the game finished message.
+ * The scene is displayed when the game is finished and a player has won.
+ * </p>
+ */
+public final class WinnerScene extends Scene {
 
 
     private Text congratulationsText;
@@ -19,7 +27,7 @@ public final class GameFinishedScene extends Scene {
      *
      * @param globalContext the context provider for the scene.
      */
-    public GameFinishedScene(GlobalContext globalContext) {
+    public WinnerScene(GlobalContext globalContext) {
         super(globalContext);
     }
 

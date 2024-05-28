@@ -169,9 +169,25 @@ public final class Style {
         this.y = (bounds.height - this.height) / 2 + bounds.y;
     }
 
+    /**
+     * Enum representing the text alignment options.
+     * <p>
+     * This enum provides the possible values for text alignment within a component.
+     * The values can be:
+     * </p>
+     */
     public enum TextAlignment {
+        /**
+         * Aligns the text to the left.
+         */
         LEFT,
+        /**
+         * Aligns the text to the center.
+         */
         CENTER,
+        /**
+         * Aligns the text to the right.
+         */
         RIGHT
     }
 }

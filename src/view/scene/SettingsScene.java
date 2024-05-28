@@ -692,6 +692,13 @@ public final class SettingsScene extends Scene {
         }
     }
 
+    /**
+     * Updates the disabled cells.
+     * <p>
+     * This method updates the disabled cells.
+     * It disables the cell type fields if the special cells are disabled.
+     * </p>
+     */
     private void updateDisabledCells() {
         boolean cellsDisabled = this.specialCellsSelect.getSelectedOption().equals(false);
         for (Selector<Integer> cellTypeSelector : this.cellTypeSelects) {
