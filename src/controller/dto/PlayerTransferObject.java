@@ -23,7 +23,7 @@ import java.util.HashMap;
  */
 public record PlayerTransferObject(int id, String name, Point position, boolean isInTurn,
                                    ArrayList<Point> allowedMoves, int wallsPlaced, int secondsRemaining,
-                                   HashMap<WallType, Integer> wallsRemaining, boolean isAI) {
+                                   HashMap<WallType, Integer> wallsRemaining, boolean isAI, boolean isAlive) {
 
 }
 

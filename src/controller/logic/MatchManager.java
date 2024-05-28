@@ -9,12 +9,9 @@ import model.cell.CellType;
 import model.difficulty.DifficultyType;
 import model.player.Player;
 import model.wall.WallData;
-import util.ConcurrentLoop;
 import util.Logger;
 
 import java.awt.*;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -23,7 +20,7 @@ public class MatchManager {
     private final HashMap<UUID, Wall> walls;
     private final HashMap<Player, AIPlayer> aiPlayers;
     private final Deque<Player> extraTurns = new ArrayDeque<>();
-    private Instant secondCount;
+    private final Chronometer chronometer;
 
     /**
      * Manages the state and logic of the game match.
@@ -33,14 +30,24 @@ public class MatchManager {
     public MatchManager(final GameModel gameModel) {
         this.model = gameModel;
         this.walls = new HashMap<>();
+        this.chronometer = new Chronometer(this, this.model.getDifficulty());
 
         this.aiPlayers = new HashMap<>();
 
-        if (this.model.getDifficulty().getDifficultyType() != DifficultyType.NORMAL) {
-            this.startTimer();
+        if (this.model.getDifficulty().getDifficultyType() == DifficultyType.AGAINST_THE_CLOCK) {
+            this.chronometer.setFunctionToExecute(this::nextTurn);
+            this.chronometer.startTimer();
+        } else if (this.model.getDifficulty().getDifficultyType() == DifficultyType.TIMED) {
+            this.chronometer.setFunctionToExecute(this::killPlayerInTurn);
+            this.chronometer.startTimer();
         }
 
         this.triggerActionBeforeTurn();
+    }
+
+    private void killPlayerInTurn() {
+        this.getPlayerInTurn().kill();
+        this.nextTurn();
     }
 
     /**
@@ -433,6 +440,8 @@ public class MatchManager {
      * It will trigger the actions before and after the turn.
      */
     private void nextTurn() {
+        Player playerInTurn = this.getPlayerInTurn();
+
         if (!this.extraTurns.isEmpty()) {
             this.extraTurns.poll();
             this.model.setTurnCount(model.getTurnCount() + 1);
@@ -443,18 +452,15 @@ public class MatchManager {
 
         this.triggerActionsAfterTurn();
 
-        if (this.model.getDifficulty().getDifficultyType() != DifficultyType.NORMAL) {
-            this.newTime();
+        if (this.model.getDifficulty().getDifficultyType() == DifficultyType.AGAINST_THE_CLOCK) {
+            playerInTurn.setTimePlayed(0);
         }
 
-        int indexNextTurn = this.model.getPlayerInTurnId() + 1;
-
-        if (!this.model.getPlayers().containsKey(indexNextTurn)) {
-            this.model.setPlayerInTurn(0);
-
-        } else {
-            this.model.setPlayerInTurn(indexNextTurn);
+        int indexNextTurn = this.calcNextTurn();
+        if (indexNextTurn == -1) {
+            return;
         }
+        this.model.setPlayerInTurn(indexNextTurn);
 
         this.checkForAITurn();
 
@@ -462,6 +468,21 @@ public class MatchManager {
 
         this.triggerActionBeforeTurn();
 
+    }
+
+    private int calcNextTurn() {
+        //find the next player alive
+        int nextTurn = this.model.getPlayerInTurnId();
+        for (int i = 0; i < this.model.getPlayers().size(); i++) {
+            nextTurn++;
+            if (!this.model.getPlayers().containsKey(nextTurn)) {
+                nextTurn = 0;
+            }
+            if (this.model.getPlayers().get(nextTurn).isAlive()) {
+                return nextTurn;
+            }
+        }
+        return -1;
     }
 
     /**
@@ -494,24 +515,6 @@ public class MatchManager {
         if (this.isValidPoint(point) && !isOccupiedPoint(point) && this.containsWinnerPosition(this.getIslandBFS(getAbstractBoardFor(player), point), player)) {
             this.movePlayerNotAdvancingTurn(player, point);
         }
-    }
-
-    /**
-     * Starts the timer for the turn.
-     */
-    private void startTimer() {
-        ConcurrentLoop clockCurrentTurn = new ConcurrentLoop(this::clockPerTurn, 10, "Time Limit per Turn");
-        this.secondCount = Instant.now();
-        clockCurrentTurn.start();
-    }
-
-    /**
-     * Starts a new turn.
-     */
-    private void newTime() {
-        Player playerInTurn = getPlayerInTurn();
-        playerInTurn.setTimePlayed(0);
-        this.secondCount = Instant.now();
     }
 
     /**
@@ -553,18 +556,6 @@ public class MatchManager {
         }
         this.aiPlayers.put(aiPlayer.getPlayer(), aiPlayer);
         this.checkForAITurn();
-    }
-
-    /**
-     * Listens to the time per turn.
-     */
-    private void clockPerTurn() {
-        final Player playerInTurn = this.getPlayerInTurn();
-        playerInTurn.setTimePlayed((int) Duration.between(this.secondCount, Instant.now()).getSeconds());
-
-        if (playerInTurn.getTimePlayed() >= this.model.getDifficulty().getTimePerTurn()) {
-            this.nextTurn();
-        }
     }
 
     public void printMatrix(int[][] matrix) {

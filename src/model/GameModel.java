@@ -134,6 +134,7 @@ public final class GameModel implements Serializable {
     public enum MatchState {
         INITIALIZED,
         PLAYING,
+        DEAD_ZONE,
         WINNER
     }
 }
