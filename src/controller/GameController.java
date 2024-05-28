@@ -71,7 +71,6 @@ public final class GameController {
      * @param path String
      * @return ServiceResponse<Void>
      */
-
     public ServiceResponse<Void> loadMatch(String path) {
         try {
             FileInputStream fileIn = new FileInputStream(path);
