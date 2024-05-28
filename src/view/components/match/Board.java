@@ -364,7 +364,6 @@ public final class Board extends GameComponent {
         this.matchContext.dispatchEvent(MatchContext.MatchEvent.WALL_PLACED, this.matchContext.playerInTurn());
     }
 
-
     /**
      * Tries to move the player to the given position.
      *

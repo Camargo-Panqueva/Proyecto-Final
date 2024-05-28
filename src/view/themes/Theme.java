@@ -177,6 +177,17 @@ public abstract class Theme {
         }});
     }
 
+    /**
+     * Creates a new Theme from the given JSON object.
+     * <p>
+     * This method creates a new Theme from the given JSON object.
+     * It reads the theme properties from the JSON object and creates a new theme object.
+     * The theme object is then returned.
+     * </p>
+     *
+     * @param json the JSON object to create the theme from.
+     * @return the theme created from the JSON object.
+     */
     public static Theme fromJson(JSONObject json) {
         String themeName = json.getString("name");
         ThemeType themeType = ThemeType.valueOf(json.getString("type").toUpperCase());
@@ -266,6 +277,17 @@ public abstract class Theme {
         };
     }
 
+    /**
+     * Parses a hex string to a color object.
+     * <p>
+     * This method parses a hex string to a color object.
+     * It reads the hex string and creates a new color object from it.
+     * The color object is then returned.
+     * </p>
+     *
+     * @param hex the hex string to parse.
+     * @return the color object parsed from the hex string.
+     */
     private static Color parseHexStringToColor(String hex) {
         if (hex.matches("^#[0-9A-Fa-f]{8}$")) {
             return new Color(new BigInteger(hex.substring(1), 16).intValue(), true);
@@ -274,6 +296,19 @@ public abstract class Theme {
         }
     }
 
+    /**
+     * Gets the color from the JSON object.
+     * <p>
+     * This method gets the color from the JSON object.
+     * It reads the color from the JSON object and creates a new color object from it.
+     * The color object is then returned.
+     * </p>
+     *
+     * @param colors    the JSON object to get the color from.
+     * @param colorName the name of the color to get.
+     * @param variant   the variant of the color to get.
+     * @return the color object from the JSON object.
+     */
     private static Color getColorFromJson(JSONObject colors, String colorName, String variant) {
         return parseHexStringToColor(colors.getJSONObject(colorName).getString(variant));
     }
@@ -299,6 +334,15 @@ public abstract class Theme {
         return colors.get(themeColor.name()).get(themeColor.variant());
     }
 
+    /**
+     * Gets the player colors of the theme.
+     * <p>
+     * This method gets the player colors of the theme.
+     * It returns a list of colors that can be used for the player colors.
+     * </p>
+     *
+     * @return the player colors of the theme.
+     */
     public ArrayList<ColorName> getPlayerColors() {
         ArrayList<ColorName> colorList = new ArrayList<>();
 
@@ -337,10 +381,20 @@ public abstract class Theme {
         return colorList;
     }
 
+    /**
+     * Gets the name of the theme.
+     *
+     * @return the name of the theme.
+     */
     public String getName() {
         return this.name;
     }
 
+    /**
+     * Gets the type of the theme.
+     *
+     * @return the type of the theme.
+     */
     public ThemeType getType() {
         return this.type;
     }
@@ -355,8 +409,21 @@ public abstract class Theme {
                 .replaceFirst("^[a-z]", String.valueOf(this.name.charAt(0)).toUpperCase());
     }
 
+    /**
+     * Represents the type of theme.
+     * <p>
+     * This enum represents the type of a theme.
+     * It provides a structure for managing the types of themes.
+     * </p>
+     */
     public enum ThemeType {
+        /**
+         * A light theme.
+         */
         LIGHT,
+        /**
+         * A dark theme.
+         */
         DARK
     }
 }

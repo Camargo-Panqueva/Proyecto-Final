@@ -203,6 +203,14 @@ public final class ControlPanel extends GameComponent {
         this.remainingWalls.setText("x" + this.matchContext.playerInTurn().wallsRemaining().get(this.matchContext.selectedWallType()), true);
     }
 
+    /**
+     * Updates the turn counter.
+     *
+     * <p>
+     * This method updates the turn counter.
+     * It sets the text of the turn counter to the current turn count.
+     * </p>
+     */
     private void updateTurnCounter() {
         this.turnCounter.setText(String.valueOf(this.matchContext.turnCount()), false);
     }

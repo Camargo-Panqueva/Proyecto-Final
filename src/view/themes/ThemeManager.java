@@ -65,6 +65,14 @@ public final class ThemeManager {
         this.currentTheme = this.themes.get(this.currentThemeIndex);
     }
 
+    /**
+     * Loads the themes from the themes.json file.
+     * <p>
+     * This method loads the themes from the themes.json file.
+     * It reads the themes from the file and adds them to the list of themes.
+     * If the file is not found, it proceeds with the default themes.
+     * </p>
+     */
     private void loadThemes() {
         this.themes.add(new LightTheme());
         this.themes.add(new DarkTheme());
@@ -99,6 +107,11 @@ public final class ThemeManager {
         }
     }
 
+    /**
+     * Gets the themes managed by the manager.
+     *
+     * @return the themes managed by the manager.
+     */
     public ArrayList<Theme> getThemes() {
         return this.themes;
     }

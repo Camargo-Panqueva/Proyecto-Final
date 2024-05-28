@@ -148,6 +148,12 @@ public final class PlayerRenderer {
         }
     }
 
+    /**
+     * Returns the icon for the bot.
+     *
+     * @param bot the bot to get the icon for.
+     * @return the icon for the bot.
+     */
     private String getBotIcon(PlayerTransferObject bot) {
         String[] icons = {
                 new String(Character.toChars(0xf06a9)),
@@ -162,6 +168,14 @@ public final class PlayerRenderer {
         return icons[bot.id() % icons.length];
     }
 
+    /**
+     * Renders the icon for the bot on the screen.
+     *
+     * @param graphics the graphics object to render the icon with.
+     * @param player   the player to render the icon for.
+     * @param x        the x-coordinate of the icon.
+     * @param y        the y-coordinate of the icon.
+     */
     private void renderBotIcon(Graphics2D graphics, PlayerTransferObject player, int x, int y) {
         graphics.setFont(this.globalContext.iconFont().deriveFont(32.0f));
         graphics.setColor(this.globalContext.currentTheme().getColor(ColorName.BACKGROUND, ColorVariant.NORMAL));
@@ -172,6 +186,14 @@ public final class PlayerRenderer {
         );
     }
 
+    /**
+     * Renders the icon for the player on the screen.
+     *
+     * @param graphics the graphics object to render the icon with.
+     * @param player   the player to render the icon for.
+     * @param x        the x-coordinate of the icon.
+     * @param y        the y-coordinate of the icon.
+     */
     private void renderPlayerIcon(Graphics2D graphics, PlayerTransferObject player, int x, int y) {
         graphics.setFont(this.globalContext.gameFont().deriveFont(22.0f));
         FontMetrics metrics = this.globalContext.window().getCanvas().getFontMetrics(graphics.getFont());
