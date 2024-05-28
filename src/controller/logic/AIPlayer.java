@@ -1,9 +1,11 @@
 package controller.logic;
 
 import controller.GameController;
+import controller.wall.Wall;
 import model.player.AIProfile;
 import model.player.Player;
 import model.wall.WallType;
+import util.Logger;
 import util.Timeout;
 
 import java.awt.*;
@@ -41,10 +43,17 @@ public class AIPlayer {
     public void executeMove(final int[][] abstractBoard) {
         this.abstractBoard = abstractBoard;
 
+        final int TIME_FOR_MOVE = 150;
+
         if (this.profile == AIProfile.BEGINNER) {
-            Timeout.startTimeout(this::beginnerTurn, 500);
+            Timeout.startTimeout(this::beginnerTurn, TIME_FOR_MOVE);
         } else if (this.profile == AIProfile.INTERMEDIATE) {
-            Timeout.startTimeout(this::intermediateTurn, 500);
+            Timeout.startTimeout(this::intermediateTurn, TIME_FOR_MOVE);
+        } else if (this.profile == AIProfile.ADVANCED) {
+            Timeout.startTimeout(this::advanceTurn, TIME_FOR_MOVE);
+        } else {
+            Logger.error("Invalid Profile for AIPlayer: " + this.profile.toString());
+
         }
     }
 
@@ -79,17 +88,113 @@ public class AIPlayer {
         }
     }
 
-    private void intermediateTurn() {
+    private Player getOpponentWithBestPath() {
         int minPathSize = Integer.MAX_VALUE;
         Player bestPlayer = null;
 
         for (Player player1 : this.matchManager.getPlayers()) {
-            ArrayDeque<Point> path = this.getShortestPath(player1);
+            ArrayDeque<Point> path = this.getShortestPath(player1, this.abstractBoard);
             if (path != null && path.size() <= minPathSize) {
                 minPathSize = path.size();
                 bestPlayer = player1;
             }
         }
+        return bestPlayer;
+    }
+
+    private void advanceTurn() {
+
+        Player bestPlayer = getOpponentWithBestPath();
+
+        int selfDistance = this.getShortestPath(this.player, this.abstractBoard).size();
+        int opponentDistance = this.getShortestPath(bestPlayer, this.abstractBoard).size();
+        double PROBABILITY_FOR_MOVE = Math.min(((double) opponentDistance) / (selfDistance + opponentDistance), 1);
+        System.out.println(PROBABILITY_FOR_MOVE);
+        if (Math.random() < 0.5) {
+            this.advancedMove();
+            return;
+        }
+        if (((bestPlayer == null || !bestPlayer.equals(this.player)) && player.getRemainingWallsCount() != 0)) {
+
+            Wall bestWall = null;
+
+            int bestScore = Integer.MIN_VALUE;
+
+            ArrayDeque<Point> bestPath = this.getShortestPath(bestPlayer, this.abstractBoard);
+            for (Point pathPoint : bestPath) {
+
+                WallType wallTypeRandom = getRandomWallType();
+
+                if (pathPoint.x % 2 == 0 && pathPoint.y % 2 == 0) {
+                    continue;
+                }
+                if (!this.gameController.canPlaceWall(this.matchManager.getPlayerInTurnId(), pathPoint, wallTypeRandom).ok) {
+                    continue; //TODO : check all wall types
+                }
+
+                Wall testWall = this.gameController.createNewWall(pathPoint, wallTypeRandom);
+                ArrayList<Point> newPoints = new ArrayList<>();
+
+                for (int x = 0; x < testWall.getWallShape().length; x++) {
+                    for (int y = 0; y < testWall.getWallShape()[0].length; y++) {
+                        if (testWall.getWallShape()[x][y] != null) {
+                            newPoints.add(new Point(pathPoint.x + x, pathPoint.y + y));
+                        }
+                    }
+                }
+
+                int[][] abstractBoardCopy = new int[this.abstractBoard.length][this.abstractBoard[0].length];
+                for (int x = 0; x < this.abstractBoard.length; x++) {
+                    System.arraycopy(this.abstractBoard[x], 0, abstractBoardCopy[x], 0, this.abstractBoard[0].length);
+                }
+
+                this.matchManager.placeWallsOnABoard(abstractBoardCopy, newPoints);
+
+                ArrayDeque<Point> longestPathTest = this.getShortestPath(bestPlayer, abstractBoardCopy);
+
+                ArrayDeque<Point> aiPath = this.getShortestPath(this.player, abstractBoardCopy);
+
+                int score = longestPathTest.size() - aiPath.size();
+
+                if (score >= bestScore) {
+                    bestScore = score;
+                    bestWall = testWall;
+                }
+            }
+
+            if (bestWall == null) { // move player when
+                this.advancedMove();
+                return;
+            }
+
+            System.out.println(this.gameController.placeWall(matchManager.getPlayerInTurnId(), bestWall.getPositionOnBoard(), bestWall.getWallType()).message);
+
+        }
+
+        this.advancedMove();
+    }
+
+
+    private void advancedMove() {
+        Point bestMove = new Point(0, 0);
+        int bestPathSize = Integer.MAX_VALUE;
+
+        Player playerCopy = new Player(player);
+
+        for (Point possiblePoint : this.matchManager.getPossibleMovements(this.player)) {
+            playerCopy.setPosition(possiblePoint);
+            ArrayDeque<Point> path = this.getShortestPath(playerCopy, this.abstractBoard);
+
+            if (path.size() < bestPathSize) {
+                bestPathSize = path.size();
+                bestMove = possiblePoint;
+            }
+        }
+        System.out.println(this.gameController.processPlayerMove(matchManager.getPlayerInTurnId(), bestMove).message);
+    }
+
+    private void intermediateTurn() {
+        Player bestPlayer = this.getOpponentWithBestPath();
 
         if (((bestPlayer == null || !bestPlayer.equals(this.player)) && player.getRemainingWallsCount() != 0)) {
             double PROBABILITY_FOR_MOVE = 0.30;
@@ -97,7 +202,7 @@ public class AIPlayer {
                 this.intermediateMovement();
                 return;
             }
-            ArrayDeque<Point> bestPath = this.getShortestPath(bestPlayer);
+            ArrayDeque<Point> bestPath = this.getShortestPath(bestPlayer, this.abstractBoard);
             for (int i = 0; i < bestPath.size(); i++) {
                 Point point = bestPath.pollLast();
                 if (this.gameController.placeWall(matchManager.getPlayerInTurnId(), point, this.getRandomWallType()).ok) {
@@ -113,7 +218,7 @@ public class AIPlayer {
         final ArrayList<Point> possibleMoves = this.matchManager.getPossibleMovements(this.player);
         ArrayDeque<Point> path = new ArrayDeque<>();
 
-        for (Point point : this.getShortestPath(this.player)) {
+        for (Point point : this.getShortestPath(this.player, this.abstractBoard)) {
             if (point.x % 2 == 0 && point.y % 2 == 0) {
                 path.add(new Point(point.x / 2, point.y / 2));
             }
@@ -195,9 +300,9 @@ public class AIPlayer {
 
     }
 
-    private ArrayDeque<Point> getShortestPath(Player player) {
+    private ArrayDeque<Point> getShortestPath(Player player, int[][] abstractBoard) {
         final ArrayList<Point> island = new ArrayList<>();
-        return findPathBFS(this.abstractBoard, player, island);
+        return findPathBFS(abstractBoard, player, island);
     }
 
 

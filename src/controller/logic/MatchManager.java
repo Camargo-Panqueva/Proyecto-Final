@@ -359,9 +359,7 @@ public class MatchManager {
 
             int[][] wantedBoard = this.getAbstractBoardFor(player);
 
-            for (Point point : newWalls) { //Add the new wall
-                wantedBoard[point.x][point.y] = 0;
-            }
+            this.placeWallsOnABoard(wantedBoard, newWalls);
 
             island = getIslandBFS(wantedBoard, player.getPosition());
 
@@ -370,6 +368,11 @@ public class MatchManager {
             }
         }
         return playersThatGoalIsReachable.size() != players.size(); // if all players can reach their goal -> true
+    }
+    public void placeWallsOnABoard(final int[][] board, final ArrayList<Point> newPoint){
+        for (Point point : newPoint) {
+            board[point.x][point.y] = 0;
+        }
     }
 
     /**
