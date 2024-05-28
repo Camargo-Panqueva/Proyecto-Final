@@ -58,6 +58,10 @@ public class Player implements Serializable {
      * The AI profile associated with the player.
      */
     private AIProfile aiProfile;
+    /**
+     * The player's status.
+     */
+    private boolean isAlive;
 
     public Player(final Point initialPosition, final String name, final HashMap<WallType, Integer> allowedWalls, final int xWinner, final int yWinner) {
         this.name = name;
@@ -71,6 +75,7 @@ public class Player implements Serializable {
         this.winDirection = this.generateWinDirection();
         this.timePlayed = 0;
         this.isAI = false;
+        this.isAlive = true;
     }
 
     private Point generateWinDirection() {
@@ -144,6 +149,10 @@ public class Player implements Serializable {
         return this.isAI;
     }
 
+    public boolean isAlive() {
+        return isAlive;
+    }
+
     public ArrayDeque<Point> getMoveBuffer() {
         return moveBuffer;
     }
@@ -176,6 +185,10 @@ public class Player implements Serializable {
     public void subtractWall(WallType wallType) {
         final Integer newValue = this.playerWalls.get(wallType) - 1;
         this.getPlayerWalls().put(wallType, newValue);
+    }
+
+    public void kill() {
+        this.isAlive = false;
     }
 
     public void removeWallPlaced(WallData wallData) {

@@ -358,7 +358,7 @@ public final class GameController {
         final PlayerTransferObject playerInTurn = playerTransferObjectArrayList.stream().filter(PlayerTransferObject::isInTurn).findFirst().orElse(null);
 
         if (playerInTurn == null) {
-            return new ErrorResponse<>("There is no player in turn!!!!");
+            return new ErrorResponse<>("There is no player in turn!... Something went wrong");
         }
 
         return new SuccessResponse<>(
@@ -418,15 +418,20 @@ public final class GameController {
      * @return PlayerTransferObject
      */
     private PlayerTransferObject getPlayerTransferObject(int playerId) {
-//        System.out.println();
-//        System.out.println("PlayerId: " + playerId);
-//        System.out.println("TurnId: " + this.model.getPlayerInTurnId());
-//        System.out.println();
+        int timeRemaining = 0;
         final Player player = this.model.getPlayers().get(playerId);
+
+        if (this.model.getDifficulty().getDifficultyType() == DifficultyType.AGAINST_THE_CLOCK) {
+            timeRemaining = this.model.getDifficulty().getTimePerTurn() - player.getTimePlayed();
+        } else if (this.model.getDifficulty().getDifficultyType() == DifficultyType.TIMED) {
+            timeRemaining = this.model.getDifficulty().getTimeTotal() - player.getTimePlayed();
+        }
+
+        timeRemaining = Math.max(0, timeRemaining);
+
         return new PlayerTransferObject(playerId, player.getName(), new Point(player.getPosition()),
                 this.model.getPlayerInTurnId() == playerId, this.matchManager.getPossibleMovements(player), player.getWallsInField(),
-                this.model.getDifficulty().getTimePerTurn() - player.getTimePlayed(),
-                player.getPlayerWalls(), player.isAI());
+                timeRemaining, player.getPlayerWalls(), player.isAI(), player.isAlive());
     }
 
     /**
@@ -607,7 +612,7 @@ public final class GameController {
     private ServiceResponse<Void> validBasicParameters(final int playerId) {
         if (this.model.getMatchState() == GameModel.MatchState.WINNER) {
             this.setGlobalState(GlobalState.GAME_FINISHED);
-            return new ErrorResponse<>("There is a WINNER!! Congratulations " + this.model.getWinningPlayer().getName());
+            return null;
         }
         if (!this.model.getMatchState().equals(GameModel.MatchState.PLAYING)) {
             return new ErrorResponse<>("There is not a match, call startGame");
@@ -662,6 +667,17 @@ public final class GameController {
      * @return ServiceResponse<BoardTransferObject>
      */
     public ServiceResponse<GlobalState> getGlobalCurrentState() {
+        final ArrayList<Player> players = new ArrayList<>();
+        for (Player player : new ArrayList<>(model.getPlayers().values())) {
+            if (player.isAlive()) {
+                players.add(player);
+            }
+        }
+        if (players.size() == 1) {
+            this.model.setWinningPlayer(players.get(0));
+            this.model.setMatchState(GameModel.MatchState.WINNER);
+            this.setGlobalState(GlobalState.GAME_FINISHED);
+        }
         return new SuccessResponse<>(this.globalStateManager.getCurrentState(), "ok");
     }
 
