@@ -441,7 +441,7 @@ public final class GameController {
      * @param wallType        WallType
      * @return Wall
      */
-    private Wall createNewWall(final Point positionOnBoard, final WallType wallType) {
+    public Wall createNewWall(final Point positionOnBoard, final WallType wallType) {
 
         Wall newWall;
         final WallManager wallManager = new WallManager();

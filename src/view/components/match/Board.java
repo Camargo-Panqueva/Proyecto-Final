@@ -83,7 +83,8 @@ public final class Board extends GameComponent {
         if (!boardStateResponse.ok) {
             //TODO: Handle error
             Logger.error("Failed to get board state: " + boardStateResponse.message);
-            throw new RuntimeException("Failed to get board state: " + boardStateResponse.message);
+            //throw new RuntimeException("Failed to get board state: " + boardStateResponse.message);
+            return;
         }
 
         BoardTransferObject boardState = boardStateResponse.payload;

@@ -63,6 +63,21 @@ public class Player implements Serializable {
      */
     private boolean isAlive;
 
+    public Player (Player playerReference){
+        this.name = playerReference.getName();
+        this.position = new Point(playerReference.getPosition());
+        this.playerWalls = new HashMap<>(playerReference.getPlayerWalls());
+        this.playerWallsPlaced = new ArrayList<>(playerReference.getPlayerWallsPlaced());
+        this.moveBuffer = new ArrayDeque<>(playerReference.getMoveBuffer());
+        this.xWinPosition = playerReference.getXWinPosition();
+        this.yWinPosition = playerReference.getYWinPosition();
+        this.winDirection = new Point(playerReference.getWinDirection());
+        this.timePlayed = playerReference.getTimePlayed();
+        this.isAI = playerReference.isAI();
+        this.isAlive = playerReference.isAlive();
+
+    }
+
     public Player(final Point initialPosition, final String name, final HashMap<WallType, Integer> allowedWalls, final int xWinner, final int yWinner) {
         this.name = name;
         this.position = initialPosition;
