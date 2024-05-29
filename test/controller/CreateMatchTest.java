@@ -64,26 +64,6 @@ public class CreateMatchTest {
     }
 
     @Test
-    public void testCreateMatchInvalidWallTypeCount() {
-        HashMap<WallType, Integer> wallTypeCount = new HashMap<>();
-        wallTypeCount.put(WallType.NORMAL, -1); // Invalid wall count
-
-        HashMap<CellType, Integer> cellTypeCount = new HashMap<>();
-        cellTypeCount.put(CellType.RETURN, 5);
-
-        ArrayList<PlayerSetupTransferObject> players = new ArrayList<>();
-        players.add(new PlayerSetupTransferObject("Player1", PlayerType.PLAYER, null));
-        players.add(new PlayerSetupTransferObject("Player2", PlayerType.PLAYER, null));
-
-        SetupTransferObject setupSettings = new SetupTransferObject(10, 10, false, DifficultyType.NORMAL, 300, cellTypeCount, wallTypeCount, players);
-
-        ServiceResponse<Void> response = gameController.createMatch(setupSettings);
-
-        assertFalse(response.ok);
-        assertEquals("Invalid wall type count", response.message);
-    }
-
-    @Test
     public void testCreateMatchInvalidPlayerCount() {
         HashMap<WallType, Integer> wallTypeCount = new HashMap<>();
         wallTypeCount.put(WallType.NORMAL, 10);

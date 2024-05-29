@@ -21,6 +21,7 @@ import view.themes.ThemeColor;
 import view.themes.ThemeColor.ColorName;
 import view.themes.ThemeColor.ColorVariant;
 
+import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -196,6 +197,7 @@ public final class SettingsScene extends Scene {
 
             if (!response.ok) {
                 Logger.error(response.message);
+                JOptionPane.showMessageDialog(null, response.message, "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
 

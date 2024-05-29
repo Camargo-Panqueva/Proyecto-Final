@@ -13,6 +13,7 @@ import view.themes.ThemeColor;
 import view.themes.ThemeColor.ColorName;
 import view.themes.ThemeColor.ColorVariant;
 
+import javax.swing.*;
 import java.awt.*;
 
 /**
@@ -360,6 +361,7 @@ public final class Board extends GameComponent {
         if (!response.ok) {
             //TODO: Handle error
             Logger.error("Failed to place wall: " + response.message, Logger.LogTarget.CONSOLE);
+            JOptionPane.showMessageDialog(null, "Failed to place wall: " + response.message, "Error", JOptionPane.ERROR_MESSAGE);
         }
 
         this.matchContext.dispatchEvent(MatchContext.MatchEvent.WALL_PLACED, this.matchContext.playerInTurn());
