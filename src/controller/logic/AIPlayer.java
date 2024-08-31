@@ -281,7 +281,7 @@ public class AIPlayer {
                 }
             }
 
-            if (this.matchManager.containsWinnerPosition(possibleWinPoint, player)) {
+            if (this.matchManager.containsWinPosition(possibleWinPoint, player)) {
                 tree.getAllParents(new Point(currPoint)).forEach(tree1 -> path.add(tree1.data));
                 return path;
             }

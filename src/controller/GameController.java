@@ -209,7 +209,7 @@ public final class GameController {
                 continue;
             }
 
-            if (random.nextDouble() < SPECIAL_CELL_PROBABILITY && !this.matchManager.isOccupiedPoint(new Point(x, y))) {
+            if (random.nextDouble() < SPECIAL_CELL_PROBABILITY && !this.matchManager.isCellOccupied(new Point(x, y))) {
                 this.model.getBoard().getBoardCells()[x][y] = cellType;
                 cellTypeCount.put(cellType, cellTypeCount.get(cellType) - 1);
             }
@@ -506,7 +506,7 @@ public final class GameController {
         }
 
         if (placeIt) {
-            this.matchManager.executePlaceWall(this.model.getPlayers().get(playerId), wall, newWalls);
+            this.matchManager.executeWallPlacement(this.model.getPlayers().get(playerId), wall, newWalls);
             return new SuccessResponse<>(null, "Ok, The Wall was placed");
         }
         return new SuccessResponse<>(null, "Can place the Wall");

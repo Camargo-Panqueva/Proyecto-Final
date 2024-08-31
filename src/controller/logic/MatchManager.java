@@ -58,7 +58,7 @@ public class MatchManager {
      * @param possibleMovements the list to store possible movements
      * @param playerLooking     the player looking for possible moves
      */
-    public void lookForwardMoves(final Player fromPlayer, ArrayList<Point> directions, final ArrayList<Point> possibleMovements, final Player playerLooking) {
+    private void lookForwardMoves(final Player fromPlayer, ArrayList<Point> directions, final ArrayList<Point> possibleMovements, final Player playerLooking) {
 
         final Point basePoint = new Point(fromPlayer.getPosition());
 
@@ -68,23 +68,23 @@ public class MatchManager {
             if (this.model.getBoard().getCellType(playerLooking.getPosition()) == CellType.TELEPORT && basePoint.equals(playerLooking.getPosition())) {
                 for (Point tpDir : new TeleportCell().getTeleportPoints()) {
                     final Point tpPoint = new Point(playerLooking.getPosition().x + tpDir.x, playerLooking.getPosition().y + tpDir.y);
-                    if (isValidPoint(tpPoint) && !isOccupiedPoint(tpPoint) && containsWinnerPosition(this.getIslandBFS(getAbstractBoardFor(playerLooking), tpPoint), playerLooking)) {
+                    if (isPointInsideBoard(tpPoint) && !isCellOccupied(tpPoint) && containsWinPosition(this.getIslandBFS(getAbstractBoardFor(playerLooking), tpPoint), playerLooking)) {
                         possibleMovements.add(new Point(tpPoint));
                     }
                 }
             }
 
-            if (!isValidPoint(objectivePoint) || isBlocker(fromPlayer.getPosition(), objectivePoint, playerLooking)) {
+            if (!isPointInsideBoard(objectivePoint) || isBlockedBetween(fromPlayer.getPosition(), objectivePoint, playerLooking)) {
                 continue;
             }
 
-            if (isOccupiedPoint(objectivePoint)) {
+            if (isCellOccupied(objectivePoint)) {
                 final ArrayList<Point> jumpedPlayerMoves = new ArrayList<>();
 
                 final Point blockerPlayer = new Point(this.getPlayer(objectivePoint).getPosition());
 
                 for (Point dir : directions) {
-                    if (!isOppositeDirection(dir, direction) && !isBlocker(blockerPlayer, objectivePoint, playerLooking)) {
+                    if (!isOppositeDirection(dir, direction) && !isBlockedBetween(blockerPlayer, objectivePoint, playerLooking)) {
                         jumpedPlayerMoves.add(new Point(dir));
                     }
                 }
@@ -145,7 +145,7 @@ public class MatchManager {
      * @param point the point to check
      * @return true if the point is valid, false otherwise
      */
-    private boolean isValidPoint(Point point) {
+    private boolean isPointInsideBoard(Point point) {
         final int width = model.getBoard().getWidth();
         final int height = model.getBoard().getHeight();
         return point.x >= 0 && point.x < width && point.y >= 0 && point.y < height;
@@ -159,7 +159,7 @@ public class MatchManager {
      * @param player         the player to check for
      * @return true if the point is blocked, false otherwise
      */
-    private boolean isBlocker(Point playerPosition, Point objectivePoint, Player player) {
+    private boolean isBlockedBetween(Point playerPosition, Point objectivePoint, Player player) {
         final Wall wall = this.getWallBetween(playerPosition, objectivePoint);
         if (wall == null) {
             return false;
@@ -172,7 +172,7 @@ public class MatchManager {
      * @param point the point to check
      * @return true if the point is occupied, false otherwise
      */
-    public boolean isOccupiedPoint(Point point) {
+    public boolean isCellOccupied(Point point) {
         for (Player player : this.model.getPlayers().values()) {
             if (player.getPosition().equals(point)) {
                 return true;
@@ -215,7 +215,7 @@ public class MatchManager {
      * @param moveTo    the new position
      * @param isAPlayer flag indicating if the mover is a player
      */
-    public void movePlayer(Player player, final Point moveTo, final boolean isAPlayer) {
+    private void movePlayer(Player player, final Point moveTo, final boolean isAPlayer) {
         player.setPosition(moveTo);
         //Win Condition
         if (player.getXWinPosition() == player.getPosition().x || player.getYWinPosition() == player.getPosition().y) {
@@ -260,7 +260,7 @@ public class MatchManager {
      * @param wall     the wall to place
      * @param newWalls the point to place the wall
      */
-    public void executePlaceWall(final Player player, final Wall wall, final ArrayList<Point> newWalls) {
+    public void executeWallPlacement(final Player player, final Wall wall, final ArrayList<Point> newWalls) {
         final UUID wallUuid = UUID.randomUUID();
         wall.setWallId(wallUuid);
 
@@ -282,7 +282,7 @@ public class MatchManager {
      * @param wallId the id of the wall to delete
      * @return the deleted wall
      */
-    public Wall executeDeleteWall(UUID wallId) {
+    public Wall executeWallDeletion(UUID wallId) {
         final Wall wall = this.walls.get(wallId);
         if (wall == null) {
             return null;
@@ -327,9 +327,11 @@ public class MatchManager {
 
         for (int x = 0; x < width; x++) { //Abstract the values for the algorithm
             for (int y = 0; y < height; y++) {
-                if (x % 2 != 0 && y % 2 != 0) {
+                if ((x % 2 != 0 && y % 2 != 0)) {
                     abstractBoard[x][y] = 0;
-                } else if (!this.blockCondition(x, y, player)) {
+                } else if ((x % 2 == 0 && y % 2 == 0) && (this.model.getBoard().getCellType(x / 2, y / 2) == CellType.RETURN)) { // TODO : An hardcode solution for blockers cells
+                    abstractBoard[x][y] = 0;
+                } else if (!this.conditionWallAsABlocker(x, y, player)) {
                     abstractBoard[x][y] = 1;
                 } else {
                     abstractBoard[x][y] = 0;
@@ -339,7 +341,7 @@ public class MatchManager {
         return abstractBoard;
     }
 
-    private boolean blockCondition(final int x, final int y, final Player player) {
+    private boolean conditionWallAsABlocker(final int x, final int y, final Player player) {
         return ((this.model.getBoard().getWallData(x, y) != null && (!this.model.getBoard().getWallData(x, y).getIsAlly() || !this.model.getBoard().getWallData(x, y).getOwner().equals(player))));
     }
 
@@ -363,13 +365,14 @@ public class MatchManager {
 
             island = getIslandBFS(wantedBoard, player.getPosition());
 
-            if (containsWinnerPosition(island, player)) {
+            if (containsWinPosition(island, player)) {
                 playersThatGoalIsReachable.add(player);
             }
         }
         return playersThatGoalIsReachable.size() != players.size(); // if all players can reach their goal -> true
     }
-    public void placeWallsOnABoard(final int[][] board, final ArrayList<Point> newPoint){
+
+    public void placeWallsOnABoard(final int[][] board, final ArrayList<Point> newPoint) {
         for (Point point : newPoint) {
             board[point.x][point.y] = 0;
         }
@@ -382,7 +385,7 @@ public class MatchManager {
      * @param searchFrom the player to check for
      * @return true if the points contain a winner position, false otherwise
      */
-    public boolean containsWinnerPosition(final ArrayList<Point> points, final Player searchFrom) {
+    public boolean containsWinPosition(final ArrayList<Point> points, final Player searchFrom) {
         for (Point point : points) {
             if ((searchFrom.getYWinPosition() != -1 && point.y == searchFrom.getYWinPosition() * 2) ||
                     (searchFrom.getXWinPosition() != -1 && point.x == searchFrom.getXWinPosition() * 2)) {
@@ -515,7 +518,7 @@ public class MatchManager {
         final ArrayDeque<Point> points = new ArrayDeque<>(player.getMoveBuffer());
 
         final Point point = points.getFirst();
-        if (this.isValidPoint(point) && !isOccupiedPoint(point) && this.containsWinnerPosition(this.getIslandBFS(getAbstractBoardFor(player), point), player)) {
+        if (this.isPointInsideBoard(point) && !isCellOccupied(point) && this.containsWinPosition(this.getIslandBFS(getAbstractBoardFor(player), point), player)) {
             this.movePlayerNotAdvancingTurn(player, point);
         }
     }

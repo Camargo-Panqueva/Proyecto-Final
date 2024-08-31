@@ -45,7 +45,7 @@ public class TemporalWall extends Wall {
     public void actionAtFinishTurn(MatchManager matchManager) {
         if (matchManager.getTurnCount() - this.getCreationTurn() >= this.getTurnsAlive()) {
             Player player = this.getOwner();
-            matchManager.executeDeleteWall(this.getWallId());
+            matchManager.executeWallDeletion(this.getWallId());
             player.addWallToPlace(this.getWallType());
         }
     }
