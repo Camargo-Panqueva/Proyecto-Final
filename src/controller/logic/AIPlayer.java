@@ -94,13 +94,14 @@ public class AIPlayer {
 
         for (Player player1 : this.matchManager.getPlayers()) {
             ArrayDeque<Point> path = this.getShortestPath(player1, this.abstractBoard);
-            if (path != null && path.size() <= minPathSize) {
+            if (path != null && path.size() < minPathSize) {
                 minPathSize = path.size();
                 bestPlayer = player1;
             }
         }
         return bestPlayer;
     }
+
 
     private void advanceTurn() {
 
@@ -111,7 +112,7 @@ public class AIPlayer {
         double PROBABILITY_FOR_MOVE = Math.min(((double) opponentDistance) / (selfDistance + opponentDistance), 1);
         System.out.println(PROBABILITY_FOR_MOVE);
         if (Math.random() < 0.5) {
-            this.advancedMove();
+            this.advancedPlayerMovement();
             return;
         }
         if (((bestPlayer == null || !bestPlayer.equals(this.player)) && player.getRemainingWallsCount() != 0)) {
@@ -163,7 +164,7 @@ public class AIPlayer {
             }
 
             if (bestWall == null) { // move player when
-                this.advancedMove();
+                this.advancedPlayerMovement();
                 return;
             }
 
@@ -171,11 +172,11 @@ public class AIPlayer {
 
         }
 
-        this.advancedMove();
+        this.advancedPlayerMovement();
     }
 
 
-    private void advancedMove() {
+    private void advancedPlayerMovement() {
         Point bestMove = new Point(0, 0);
         int bestPathSize = Integer.MAX_VALUE;
 
@@ -196,14 +197,16 @@ public class AIPlayer {
     private void intermediateTurn() {
         Player bestPlayer = this.getOpponentWithBestPath();
 
-        if (((bestPlayer == null || !bestPlayer.equals(this.player)) && player.getRemainingWallsCount() != 0)) {
-            double PROBABILITY_FOR_MOVE = 0.30;
-            if (Math.random() < PROBABILITY_FOR_MOVE) {
-                this.intermediateMovement();
+        final boolean shouldMove = (bestPlayer == null || !bestPlayer.equals(this.player)) && player.getRemainingWallsCount() > 0;
+        final double MOVE_PROBABILITY = 0.30;
+
+        if (shouldMove) {
+            if (Math.random() < MOVE_PROBABILITY) {
+                this.intermediatePlayerMovement();
                 return;
             }
             ArrayDeque<Point> bestPath = this.getShortestPath(bestPlayer, this.abstractBoard);
-            for (int i = 0; i < bestPath.size(); i++) {
+            while (!bestPath.isEmpty()) {
                 Point point = bestPath.pollLast();
                 if (this.gameController.placeWall(matchManager.getPlayerInTurnId(), point, this.getRandomWallType()).ok) {
                     return;
@@ -211,11 +214,13 @@ public class AIPlayer {
             }
         }
 
-        this.intermediateMovement();
+        this.intermediatePlayerMovement();
     }
 
-    private void intermediateMovement() {
-        final ArrayList<Point> possibleMoves = this.matchManager.getPossibleMovements(this.player);
+
+    private void intermediatePlayerMovement() {
+        //TODO: Find path based in possibles movements not the other way around.
+        final ArrayList<Point> possibleInitialMoves = this.matchManager.getPossibleMovements(this.player);
         ArrayDeque<Point> path = new ArrayDeque<>();
 
         for (Point point : this.getShortestPath(this.player, this.abstractBoard)) {
@@ -224,10 +229,10 @@ public class AIPlayer {
             }
         }
 
-        for (Point point : path) {
-            for (Point point1 : possibleMoves) {
-                if (point.equals(new Point(point1.x, point1.y))) { //Exists any possible move point in the shortest path?
-                    this.gameController.processPlayerMove(matchManager.getPlayerInTurnId(), point);
+        for (Point pathPoint : path) {
+            for (Point initialPoint : possibleInitialMoves) {
+                if (pathPoint.equals(new Point(initialPoint.x, initialPoint.y))) { //Exists any possible move point in the shortest path?
+                    this.gameController.processPlayerMove(matchManager.getPlayerInTurnId(), pathPoint);
                     return;
                 }
             }
@@ -235,7 +240,7 @@ public class AIPlayer {
 
         Point bestDirection = this.player.getWinDirection();
         Point bestMove = new Point(0, 0);
-        for (Point point : possibleMoves) {
+        for (Point point : possibleInitialMoves) {
             if (Math.abs(point.x * bestDirection.x) >= Math.abs(bestMove.x * bestDirection.x) ||
                     Math.abs(point.y * bestDirection.y) >= Math.abs(bestMove.y * bestDirection.y)) { //Else move in the direction of the win
                 bestMove = point;
@@ -244,7 +249,7 @@ public class AIPlayer {
         this.gameController.processPlayerMove(matchManager.getPlayerInTurnId(), bestMove);
     }
 
-    private ArrayDeque<Point> findPathBFS(final int[][] abstractBoard, final Player player, final ArrayList<Point> island) {
+    private ArrayDeque<Point> findPathBFS(final int[][] abstractBoard, final Player player) {
 
         final int width = abstractBoard.length;
         final int height = abstractBoard[0].length;
@@ -263,8 +268,6 @@ public class AIPlayer {
 
         while (!deque.isEmpty()) {
             final Point currPoint = new Point(deque.pop());
-
-            island.add(currPoint);
 
             ArrayList<Point> possibleWinPoint = new ArrayList<>();
             possibleWinPoint.add(new Point(currPoint));
@@ -290,7 +293,7 @@ public class AIPlayer {
     }
 
     private ArrayList<Point> favorableDirections(Player player) {
-        ArrayList<Point> directions = new ArrayList<>();
+        ArrayList<Point> directions = new ArrayList<>(4);
         Point winDirection = player.getWinDirection();
         directions.add(winDirection);
         directions.add(new Point(winDirection.y, winDirection.x));
@@ -301,8 +304,7 @@ public class AIPlayer {
     }
 
     private ArrayDeque<Point> getShortestPath(Player player, int[][] abstractBoard) {
-        final ArrayList<Point> island = new ArrayList<>();
-        return findPathBFS(abstractBoard, player, island);
+        return findPathBFS(abstractBoard, player);
     }
 
 
