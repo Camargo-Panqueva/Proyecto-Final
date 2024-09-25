@@ -11,6 +11,7 @@ import util.Timeout;
 import java.awt.*;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 
 public class AIPlayer {
@@ -175,6 +176,38 @@ public class AIPlayer {
         this.advancedPlayerMovement();
     }
 
+    private int boardScore(final int[][] board, final Player playerPOV) {
+
+        final int selfDistance = this.getShortestPath(playerPOV, board).size();
+
+        int boardScore = 0;
+
+        final HashMap<Player, Integer> opponentsScore = this.calculateOpponentsScore(board, selfDistance, playerPOV);
+
+        for (Player opponent : this.matchManager.getPlayers()) {
+            if (opponent.equals(playerPOV)){continue;}
+
+            final int opponentScore = opponentsScore.get(opponent);
+            if (opponentScore > 0) {
+                boardScore += opponentScore;
+            }
+            else if (opponentScore < 0) {
+                boardScore += opponentScore;
+            }
+        }
+        return boardScore;
+    }
+
+    private HashMap<Player, Integer> calculateOpponentsScore(final int[][] board, final int selfDistance, final Player playerPOV) {
+        final HashMap<Player, Integer> opponentsScore = new HashMap<Player, Integer>();
+        for (Player opponent : this.matchManager.getPlayers()) {
+            if (!opponent.equals(playerPOV)) {
+                opponentsScore.put(opponent, this.getShortestPath(opponent, board).size() - selfDistance);
+            }
+        }
+        return opponentsScore;
+    }
+
 
     private void advancedPlayerMovement() {
         Point bestMove = new Point(0, 0);
@@ -196,6 +229,8 @@ public class AIPlayer {
 
     private void intermediateTurn() {
         Player bestPlayer = this.getOpponentWithBestPath();
+
+        System.out.println(this.boardScore(this.abstractBoard, this.player));
 
         final boolean shouldMove = (bestPlayer == null || !bestPlayer.equals(this.player)) && player.getRemainingWallsCount() > 0;
         final double MOVE_PROBABILITY = 0.30;
