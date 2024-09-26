@@ -9,10 +9,8 @@ import util.Logger;
 import util.Timeout;
 
 import java.awt.*;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Random;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class AIPlayer {
 
@@ -185,13 +183,14 @@ public class AIPlayer {
         final HashMap<Player, Integer> opponentsScore = this.calculateOpponentsScore(board, selfDistance, playerPOV);
 
         for (Player opponent : this.matchManager.getPlayers()) {
-            if (opponent.equals(playerPOV)){continue;}
+            if (opponent.equals(playerPOV)) {
+                continue;
+            }
 
             final int opponentScore = opponentsScore.get(opponent);
             if (opponentScore > 0) {
                 boardScore += opponentScore;
-            }
-            else if (opponentScore < 0) {
+            } else if (opponentScore < 0) {
                 boardScore += opponentScore;
             }
         }
@@ -208,6 +207,51 @@ public class AIPlayer {
         return opponentsScore;
     }
 
+    private void nextMoveMinMax(final int[][] abstractBoard, final Player player) {
+        final int width = abstractBoard.length;
+        final int height = abstractBoard[0].length;
+
+        final HashSet<Point> searchSpace = this.getSearchSpaceForPlaceWall(abstractBoard);
+        HashSet<Point> searchSpaceForBlockOpponent = this.getShortestPath(player, abstractBoard).stream() //get point from getShortestPath where is possible place a wall
+                .filter(p -> (p.x % 2 != p.y % 2)).collect(Collectors.toCollection(HashSet::new));
+
+        searchSpace.addAll(searchSpaceForBlockOpponent);
+        System.out.println(searchSpace);
+    }
+
+    public HashSet<Point> getSearchSpaceForPlaceWall(int[][] matrix) {
+        HashSet<Point> proximityPoints = new HashSet<>();
+        int rows = matrix.length;
+        int cols = matrix[0].length;
+
+        this.matchManager.printMatrix(matrix);
+
+        for (int i = 1; i < rows; i += 2) {
+            for (int j = 1; j < cols; j += 2) {
+                if (hasAdjacentZero(matrix, i, j, rows, cols)) {
+                    // Check adjacent points (non 0)
+                    addIfNonZero(matrix, proximityPoints, i - 1, j, rows, cols);
+                    addIfNonZero(matrix, proximityPoints, i + 1, j, rows, cols);
+                    addIfNonZero(matrix, proximityPoints, i, j - 1, rows, cols);
+                    addIfNonZero(matrix, proximityPoints, i, j + 1, rows, cols);
+                }
+            }
+        }
+        return proximityPoints;
+    }
+
+    private boolean hasAdjacentZero(int[][] matrix, int i, int j, int rows, int cols) {
+        return (i > 0 && matrix[i - 1][j] == 0) ||
+                (i < rows - 1 && matrix[i + 1][j] == 0) ||
+                (j > 0 && matrix[i][j - 1] == 0) ||
+                (j < cols - 1 && matrix[i][j + 1] == 0);
+    }
+
+    private void addIfNonZero(int[][] matrix, HashSet<Point> points, int i, int j, int rows, int cols) {
+        if (i >= 0 && i < rows && j >= 0 && j < cols && matrix[i][j] != 0) {
+            points.add(new Point(i, j));
+        }
+    }
 
     private void advancedPlayerMovement() {
         Point bestMove = new Point(0, 0);
@@ -231,6 +275,8 @@ public class AIPlayer {
         Player bestPlayer = this.getOpponentWithBestPath();
 
         System.out.println(this.boardScore(this.abstractBoard, this.player));
+
+        this.nextMoveMinMax(this.abstractBoard, this.player);
 
         final boolean shouldMove = (bestPlayer == null || !bestPlayer.equals(this.player)) && player.getRemainingWallsCount() > 0;
         final double MOVE_PROBABILITY = 0.30;
